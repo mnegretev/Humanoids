@@ -2,7 +2,7 @@
 #include "std_msgs/Float32.h"
 #include "dynamixel_sdk/dynamixel_sdk.h"
 
-#define DEVICE_NAME      "/dev/ttyUSB0"
+#define DEVICE_NAME      "/dev/ttyUSB0" //
 #define BAUDRATE         57600
 #define PROTOCOL_VERSION 1.0
 
