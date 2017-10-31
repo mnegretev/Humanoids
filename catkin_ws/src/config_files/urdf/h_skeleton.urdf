@@ -1,0 +1,665 @@
+<?xml version="1.0"?>
+<robot name="h_skeleton">
+
+  <material name="blue">
+    <color rgba="0.2 0.6 0.9 1"/>
+  </material>
+  <material name="black">
+    <color rgba="0 0 0 1"/>
+  </material>
+  <material name="white">
+    <color rgba="0.9 0.9 1 1"/>
+  </material>
+
+<!-- Trunk: center of all /-->
+  <link name="trunk">
+    <visual>
+      <geometry>
+        <box size="0.12 0.15 0.23"/><!-- 120-x  150-y  230-z  [mm] /-->
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <material name="blue"/>
+    </visual>
+  </link>
+
+<!-- Head's links: head, eyes and mouth /-->
+  <link name="head">
+    <visual>
+      <geometry>
+        <box size="0.11 0.12 0.144"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <material name="black"/>
+    </visual>
+  </link>
+
+  <link name="eye_1">
+    <visual>
+      <geometry>
+        <box size="0.01 0.01 0.01"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <material name="white"/>
+    </visual>
+  </link>
+
+  <link name="eye_2">
+    <visual>
+      <geometry>
+        <box size="0.01 0.01 0.01"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <material name="white"/>
+    </visual>
+  </link>
+
+  <link name="mouth">
+    <visual>
+      <geometry>
+        <cylinder length="0.0025" radius="0.05"/>
+      </geometry>
+      <origin rpy="0 0.5 0" xyz="0 0 0"/>
+      <material name="white"/>
+    </visual>
+  </link>
+
+<!-- Neck's links /-->
+  <link name="neck_link_pitch">
+    <visual>
+      <geometry>
+        <cylinder length="0.025" radius="0.005"/>
+      </geometry>
+      <origin rpy="1.570795 0 0" xyz="0 0 0"/>
+      <material name="white"/>
+    </visual>
+  </link>
+
+  <link name="neck_link_yaw">
+    <visual>
+      <geometry>
+        <cylinder length="0.035" radius="0.0125"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <material name="white"/>
+    </visual>
+  </link>
+
+<!-- Left arm links: arm_pitch(joint_11), arm_roll(joint_12) /-->
+<!-- arm_link_E11(fixed), arm_link_E12(fixed), arm_pitch(joint_13) and arm_link_E13(fixed)/-->
+  <link name="left_link_shoulder_pitch">
+    <visual>
+      <geometry>
+        <cylinder length="0.0025" radius="0.015"/>
+      </geometry>
+      <origin rpy="1.570795 0 0" xyz="0 0 0"/>
+      <material name="white"/>
+    </visual>
+  </link>
+
+  <link name="left_link_shoulder_roll">
+    <visual>
+      <geometry>
+        <cylinder length="0.02" radius="0.01"/>
+      </geometry>
+      <origin rpy="0 1.570795 0" xyz="0 0 0"/>
+      <material name="white"/>
+    </visual>
+  </link>
+
+  <link name="left_arm_link_up">
+    <visual>
+      <geometry>
+        <box size="0.18 0.02 0.02"/>
+      </geometry>
+      <origin rpy="0 1.570795 0" xyz="0 0 0"/>
+      <material name="black"/>
+    </visual>
+  </link>
+
+  <link name="left_arm_elbow_link">
+    <visual>
+      <geometry>
+        <box size="0.03 0.02 0.02"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <material name="black"/>
+    </visual>
+  </link>
+
+  <link name="left_link_elbow_pitch">
+    <visual>
+      <geometry>
+        <cylinder length="0.02" radius="0.01"/>
+      </geometry>
+      <origin rpy="1.570795 0 0" xyz="0 0 0"/>
+      <material name="white"/>
+    </visual>
+  </link>
+
+  <link name="left_arm_link_down">
+    <visual>
+      <geometry>
+        <box size="0.18 0.02 0.02"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <material name="black"/>
+    </visual>
+  </link>
+
+<!-- Right arm links: arm_pitch(joint_21), arm_roll(joint_22) /-->
+<!-- arm_link_E21(fixed), arm_link_E22(fixed), arm_pitch(joint_23) and arm_link_E23(fixed)/-->
+  <link name="right_link_shoulder_pitch">
+    <visual>
+      <geometry>
+        <cylinder length="0.0025" radius="0.015"/>
+      </geometry>
+      <origin rpy="1.570795 0 0" xyz="0 0 0"/>
+      <material name="white"/>
+    </visual>
+  </link>
+
+  <link name="right_link_shoulder_roll">
+    <visual>
+      <geometry>
+        <cylinder length="0.02" radius="0.01"/>
+      </geometry>
+      <origin rpy="0 1.570795 0" xyz="0 0 0"/>
+      <material name="white"/>
+    </visual>
+  </link>
+
+  <link name="right_arm_link_up">
+    <visual>
+      <geometry>
+        <box size="0.18 0.02 0.02"/>
+      </geometry>
+      <origin rpy="0 1.570795 0" xyz="0 0 0"/>
+      <material name="black"/>
+    </visual>
+  </link>
+
+  <link name="right_arm_elbow_link">
+    <visual>
+      <geometry>
+        <box size="0.03 0.02 0.02"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <material name="black"/>
+    </visual>
+  </link>
+
+  <link name="right_link_elbow_pitch">
+    <visual>
+      <geometry>
+        <cylinder length="0.02" radius="0.01"/>
+      </geometry>
+      <origin rpy="1.570795 0 0" xyz="0 0 0"/>
+      <material name="white"/>
+    </visual>
+  </link>
+
+  <link name="right_arm_link_down">
+    <visual>
+      <geometry>
+        <box size="0.18 0.02 0.02"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <material name="black"/>
+    </visual>
+  </link>
+
+<!-- Left leg links: leg_yaw(joint_14), leg_pitch(joint_15), leg_Roll(joint_16),  /-->
+<!-- leg_link_E14, leg_pitch(joint_17), leg_link_E15, leg_pitch(joint_17) /-->
+<!-- leg_pitch(joint_18), leg_roll(joint_19) and leg_link_E16/-->
+
+  <link name="left_link_leg_yaw">
+    <visual>
+      <geometry>
+        <cylinder length="0.0025" radius="0.015"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <material name="white"/>
+    </visual>
+  </link>
+
+  <link name="left_link_leg_pitch">
+    <visual>
+      <geometry>
+        <cylinder length="0.02" radius="0.01"/>
+      </geometry>
+      <origin rpy="1.570795 0 0" xyz="0 0 0"/>
+      <material name="white"/>
+    </visual>
+  </link>
+
+  <link name="left_link_leg_roll">
+    <visual>
+      <geometry>
+        <cylinder length="0.015" radius="0.01"/>
+      </geometry>
+      <origin rpy="0 1.570795 0" xyz="0 0 0"/>
+      <material name="white"/>
+    </visual>
+  </link>
+
+  <link name="left_leg_link_up">
+    <visual>
+      <geometry>
+        <box size="0.18 0.02 0.02"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <material name="black"/>
+    </visual>
+  </link>
+
+  <link name="left_link_knee_pitch">
+    <visual>
+      <geometry>
+        <cylinder length="0.02" radius="0.01"/>
+      </geometry>
+      <origin rpy="1.570795 0 0" xyz="0 0 0"/>
+      <material name="white"/>
+    </visual>
+  </link>
+
+  <link name="left_leg_link_down">
+    <visual>
+      <geometry>
+        <box size="0.18 0.02 0.02"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <material name="black"/>
+    </visual>
+  </link>
+
+  <link name="left_link_ankle_pitch">
+    <visual>
+      <geometry>
+        <cylinder length="0.02" radius="0.01"/>
+      </geometry>
+      <origin rpy="1.570795 0 0" xyz="0 0 0"/>
+      <material name="white"/>
+    </visual>
+  </link>
+
+  <link name="left_link_ankle_roll">
+    <visual>
+      <geometry>
+        <cylinder length="0.02" radius="0.01"/>
+      </geometry>
+      <origin rpy="0 1.570795 0" xyz="0 0 0"/>
+      <material name="white"/>
+    </visual>
+  </link>
+
+  <link name="left_foot">
+    <visual>
+      <geometry>
+        <box size="0.2 0.12 0.01"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <material name="black"/>
+    </visual>
+  </link>
+<!-- Right leg links: leg_yaw(joint_24), leg_pitch(joint_25), leg_Roll(joint_26),  /-->
+<!-- leg_link_E24, leg_pitch(joint_27), leg_link_E25, leg_pitch(joint_27) /-->
+<!-- leg_pitch(joint_28), leg_roll(joint_29) and leg_link_E26/-->
+  <link name="right_link_leg_yaw">
+    <visual>
+      <geometry>
+        <cylinder length="0.0025" radius="0.015"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <material name="white"/>
+    </visual>
+  </link>
+
+  <link name="right_link_leg_pitch">
+    <visual>
+      <geometry>
+        <cylinder length="0.02" radius="0.01"/>
+      </geometry>
+      <origin rpy="1.570795 0 0" xyz="0 0 0"/>
+      <material name="white"/>
+    </visual>
+  </link>
+
+  <link name="right_link_leg_roll">
+    <visual>
+      <geometry>
+        <cylinder length="0.015" radius="0.01"/>
+      </geometry>
+      <origin rpy="0 1.570795 0" xyz="0 0 0"/>
+      <material name="white"/>
+    </visual>
+  </link>
+
+  <link name="right_leg_link_up">
+    <visual>
+      <geometry>
+        <box size="0.18 0.02 0.02"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <material name="black"/>
+    </visual>
+  </link>
+
+  <link name="right_link_knee_pitch">
+    <visual>
+      <geometry>
+        <cylinder length="0.02" radius="0.01"/>
+      </geometry>
+      <origin rpy="1.570795 0 0" xyz="0 0 0"/>
+      <material name="white"/>
+    </visual>
+  </link>
+
+  <link name="right_leg_link_down">
+    <visual>
+      <geometry>
+        <box size="0.18 0.02 0.02"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <material name="black"/>
+    </visual>
+  </link>
+
+  <link name="right_link_ankle_pitch">
+    <visual>
+      <geometry>
+        <cylinder length="0.02" radius="0.01"/>
+      </geometry>
+      <origin rpy="1.570795 0 0" xyz="0 0 0"/>
+      <material name="white"/>
+    </visual>
+  </link>
+
+  <link name="right_link_ankle_roll">
+    <visual>
+      <geometry>
+        <cylinder length="0.02" radius="0.01"/>
+      </geometry>
+      <origin rpy="0 1.570795 0" xyz="0 0 0"/>
+      <material name="white"/>
+    </visual>
+  </link>
+
+  <link name="right_foot">
+    <visual>
+      <geometry>
+        <box size="0.2 0.12 0.01"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <material name="black"/>
+    </visual>
+  </link>
+
+<!-- fixed joints head: eyes and mouth /-->
+  <joint name="eye_1_to_head" type="fixed">
+    <parent link="head"/>
+    <child link="eye_1"/>
+    <origin xyz="0.06 0.03 0.03"/>
+  </joint>
+
+  <joint name="eye_2_to_head" type="fixed">
+    <parent link="head"/>
+    <child link="eye_2"/>
+    <origin xyz="0.06 -0.03 0.03"/>
+  </joint>
+
+  <joint name="mouth_to_head" type="fixed">
+    <parent link="head"/>
+    <child link="mouth"/>
+    <origin xyz="0.025 0 -0.02"/>
+  </joint>
+
+  <joint name="head_to_neck_link_pitch" type="fixed">
+    <parent link="neck_link_pitch"/>
+    <child link="head"/>
+    <origin xyz="0 0 0.08"/>
+  </joint>
+
+<!-- revolute Joints head: neck_pitch(joint_01) and neck_yaw(joint_02) /-->
+
+  <joint name="neck_joint_pitch" type="revolute">
+    <axis xyz="0 1 0"/>
+    <limit effort="1000.0" lower="0.0" upper="1.570795" velocity="0.5"/>
+    <parent link="neck_link_yaw"/>
+    <child link="neck_link_pitch"/>
+    <origin xyz="0 0 0.025"/>
+  </joint>
+
+  <joint name="neck_joint_yaw" type="revolute">
+    <axis xyz="0 0 1"/>
+    <limit effort="1000.0" lower="-1.570795" upper="1.570795" velocity="0.5"/>
+    <parent link="trunk"/>
+    <child link="neck_link_yaw"/>
+    <origin xyz="0 0 0.135"/>
+  </joint>
+<!-- Left arm links: arm_pitch(joint_11), arm_roll(joint_12) /-->
+<!-- arm_link_E11(fixed), arm_link_E12(fixed) /-->
+  <joint name="left_joint_shoulder_pitch" type="revolute">
+    <axis xyz="0 1 0"/>
+    <limit effort="1000.0" lower="-1.570795" upper="1.570795" velocity="0.5"/>
+    <parent link="trunk"/>
+    <child link="left_link_shoulder_pitch"/>
+    <origin xyz="0 0.08 0.085"/>
+  </joint>
+
+  <joint name="left_joint_shoulder_roll" type="revolute">
+    <axis xyz="1 0 0"/>
+    <limit effort="1000.0" lower="0.0" upper="1.570795" velocity="0.5"/>
+    <parent link="left_link_shoulder_pitch"/>
+    <child link="left_link_shoulder_roll"/>
+    <origin xyz="0 0.013 0"/>
+  </joint>
+
+  <joint name="left_arm_up" type="fixed">
+    <parent link="left_link_shoulder_roll"/>
+    <child link="left_arm_link_up"/>
+    <origin xyz="0 0 -0.102"/>
+  </joint>
+
+  <joint name="left_arm_elbow" type="fixed">
+    <parent link="left_arm_link_up"/>
+    <child link="left_arm_elbow_link"/>
+    <origin rpy="0 0.5235985 0" xyz="0 0 -0.082"/>
+  </joint>
+
+  <joint name="left_joint_elbow_pitch" type="revolute">
+    <axis xyz="0 1 0"/>
+    <limit effort="1000.0" lower="-1.570795" upper="0.0" velocity="0.5"/>
+    <parent link="left_arm_elbow_link"/>
+    <child link="left_link_elbow_pitch"/>
+    <origin xyz="0.027 0 0"/>
+  </joint>
+
+  <joint name="left_arm_down" type="fixed">
+    <parent link="left_link_elbow_pitch"/>
+    <child link="left_arm_link_down"/>
+    <origin rpy="0 0 0" xyz="0.104 0 0"/>
+  </joint>
+
+<!-- Right arm joints: arm_pitch(joint_21), arm_roll(joint_22) /-->
+<!-- arm_link_E21(fixed), arm_link_E22(fixed) /-->
+  <joint name="right_joint_shoulder_pitch" type="revolute">
+    <axis xyz="0 1 0"/>
+    <limit effort="1000.0" lower="-1.570795" upper="1.570795" velocity="0.5"/>
+    <parent link="trunk"/>
+    <child link="right_link_shoulder_pitch"/>
+    <origin xyz="0 -0.08 0.085"/>
+  </joint>
+
+  <joint name="right_joint_shoulder_roll" type="revolute">
+    <axis xyz="1 0 0"/>
+    <limit effort="1000.0" lower="0.0" upper="1.570795" velocity="0.5"/>
+    <parent link="right_link_shoulder_pitch"/>
+    <child link="right_link_shoulder_roll"/>
+    <origin xyz="0 -0.013 0"/>
+  </joint>
+
+  <joint name="right_arm_up" type="fixed">
+    <parent link="right_link_shoulder_roll"/>
+    <child link="right_arm_link_up"/>
+    <origin xyz="0 0 -0.102"/>
+  </joint>
+
+  <joint name="right_arm_elbow" type="fixed">
+    <parent link="right_arm_link_up"/>
+    <child link="right_arm_elbow_link"/>
+    <origin rpy="0 0.5235985 0" xyz="0 0 -0.082"/>
+  </joint>
+
+  <joint name="right_joint_elbow_pitch" type="revolute">
+    <axis xyz="0 1 0"/>
+    <limit effort="1000.0" lower="-1.570795" upper="0.0" velocity="0.5"/>
+    <parent link="right_arm_elbow_link"/>
+    <child link="right_link_elbow_pitch"/>
+    <origin xyz="0.027 0 0"/>
+  </joint>
+
+  <joint name="right_arm_down" type="fixed">
+    <parent link="right_link_elbow_pitch"/>
+    <child link="right_arm_link_down"/>
+    <origin rpy="0 0 0" xyz="0.104 0 0"/>
+  </joint>
+
+<!-- Left leg joints: leg_yaw(joint_14), leg_pitch(joint_15), leg_Roll(joint_16),  /-->
+<!-- leg_link_E14, leg_pitch(joint_17), leg_link_E15, leg_pitch(joint_17) /-->
+<!-- leg_pitch(joint_18), leg_roll(joint_19) and leg_link_E16/-->
+  <joint name="left_joint_leg_yaw" type="revolute">
+    <axis xyz="0 0 1"/>
+    <limit effort="1000.0" lower="-1.570795" upper="0.0" velocity="0.5"/>
+    <parent link="trunk"/>
+    <child link="left_link_leg_yaw"/>
+    <origin xyz="0.02 0.055 -0.12"/>
+  </joint>
+
+  <joint name="left_joint_leg_roll" type="revolute">
+    <axis xyz="1 0 0"/>
+    <limit effort="1000.0" lower="0.0" upper="1.570795" velocity="0.5"/>
+    <parent link="left_link_leg_yaw"/>
+    <child link="left_link_leg_roll"/>
+    <origin xyz="0 0 -0.0125"/>
+  </joint>
+
+  <joint name="left_joint_leg_pitch" type="revolute">
+    <axis xyz="0 1 0"/>
+    <limit effort="1000.0" lower="-1.570795" upper="0.0" velocity="0.5"/>
+    <parent link="left_link_leg_roll"/>
+    <child link="left_link_leg_pitch"/>
+    <origin rpy="0 1.0472 0" xyz="-0.02 0 0"/>
+  </joint>
+
+  <joint name="left_leg_up" type="fixed">
+    <parent link="left_link_leg_pitch"/>
+    <child link="left_leg_link_up"/>
+    <origin rpy="0 0 0" xyz="0.102 0 0"/> <!-- 60 grados = 1.0472/-->
+  </joint>
+
+  <joint name="left_joint_knee_pitch" type="revolute">
+    <axis xyz="0 1 0"/>
+    <limit effort="1000.0" lower="0.0" upper="1.570795" velocity="0.5"/>
+    <parent link="left_leg_link_up"/>
+    <child link="left_link_knee_pitch"/>
+    <origin rpy="0 1.0472 0" xyz="0.102 0 0"/>
+  </joint>
+
+  <joint name="left_leg_down" type="fixed">
+    <parent link="left_link_knee_pitch"/>
+    <child link="left_leg_link_down"/>
+    <origin rpy="0 0 0" xyz="0.102 0 0"/> <!-- 60 grados = 1.0472/-->
+  </joint>
+
+   <joint name="left_joint_ankle_pitch" type="revolute">
+    <axis xyz="0 1 0"/>
+    <limit effort="1000.0" lower="-1.570795" upper="0.0" velocity="0.5"/>
+    <parent link="left_leg_link_down"/>
+    <child link="left_link_ankle_pitch"/>
+    <origin rpy="0 -2.0944 0" xyz="0.105 0 0"/>
+  </joint>
+
+  <joint name="left_joint_ankle_roll" type="revolute">
+    <axis xyz="1 0 0"/>
+    <limit effort="1000.0" lower="0.0" upper="1.570795" velocity="0.5"/>
+    <parent link="left_link_ankle_pitch"/>
+    <child link="left_link_ankle_roll"/>
+    <origin xyz="-0.024 0 0"/>
+  </joint>
+
+  <joint name="left_footprint" type="fixed">
+    <parent link="left_link_ankle_roll"/>
+    <child link="left_foot"/>
+    <origin rpy="0 0 0" xyz="0.024 0.010 -0.02"/> <!-- 60 grados = 1.0472/-->
+  </joint>
+
+<!-- Right leg joints: leg_yaw(joint_24), leg_pitch(joint_25), leg_Roll(joint_26),  /-->
+<!-- leg_link_E24, leg_pitch(joint_27), leg_link_E25, leg_pitch(joint_27) /-->
+<!-- leg_pitch(joint_28), leg_roll(joint_29) and leg_link_E26/-->
+  <joint name="right_joint_leg_yaw" type="revolute">
+    <axis xyz="0 0 1"/>
+    <limit effort="1000.0" lower="-1.570795" upper="0.0" velocity="0.5"/>
+    <parent link="trunk"/>
+    <child link="right_link_leg_yaw"/>
+    <origin xyz="0.02 -0.055 -0.12"/>
+  </joint>
+
+  <joint name="right_joint_leg_roll" type="revolute">
+    <axis xyz="1 0 0"/>
+    <limit effort="1000.0" lower="0.0" upper="1.570795" velocity="0.5"/>
+    <parent link="right_link_leg_yaw"/>
+    <child link="right_link_leg_roll"/>
+    <origin xyz="0 0 -0.0125"/>
+  </joint>
+
+  <joint name="right_joint_leg_pitch" type="revolute">
+    <axis xyz="0 1 0"/>
+    <limit effort="1000.0" lower="-1.570795" upper="0.0" velocity="0.5"/>
+    <parent link="right_link_leg_roll"/>
+    <child link="right_link_leg_pitch"/>
+    <origin rpy="0 1.0472 0" xyz="-0.02 0 0"/>
+  </joint>
+
+  <joint name="right_leg_up" type="fixed">
+    <parent link="right_link_leg_pitch"/>
+    <child link="right_leg_link_up"/>
+    <origin rpy="0 0 0" xyz="0.102 0 0"/> <!-- 60 grados = 1.0472/-->
+  </joint>
+
+  <joint name="right_joint_knee_pitch" type="revolute">
+    <axis xyz="0 1 0"/>
+    <limit effort="1000.0" lower="0.0" upper="1.570795" velocity="0.5"/>
+    <parent link="right_leg_link_up"/>
+    <child link="right_link_knee_pitch"/>
+    <origin rpy="0 1.0472 0" xyz="0.102 0 0"/>
+  </joint>
+
+  <joint name="right_leg_down" type="fixed">
+    <parent link="right_link_knee_pitch"/>
+    <child link="right_leg_link_down"/>
+    <origin rpy="0 0 0" xyz="0.102 0 0"/> <!-- 60 grados = 1.0472/-->
+  </joint>
+
+   <joint name="right_joint_ankle_pitch" type="revolute">
+    <axis xyz="0 1 0"/>
+    <limit effort="1000.0" lower="-1.570795" upper="0.0" velocity="0.5"/>
+    <parent link="right_leg_link_down"/>
+    <child link="right_link_ankle_pitch"/>
+    <origin rpy="0 -2.0944 0" xyz="0.105 0 0"/>
+  </joint>
+
+  <joint name="right_joint_ankle_roll" type="revolute">
+    <axis xyz="1 0 0"/>
+    <limit effort="1000.0" lower="0.0" upper="1.570795" velocity="0.5"/>
+    <parent link="right_link_ankle_pitch"/>
+    <child link="right_link_ankle_roll"/>
+    <origin xyz="-0.024 0 0"/>
+  </joint>
+
+  <joint name="right_footprint" type="fixed">
+    <parent link="right_link_ankle_roll"/>
+    <child link="right_foot"/>
+    <origin rpy="0 0 0" xyz="0.024 -0.010 -0.02"/> <!-- 60 grados = 1.0472/-->
+  </joint>
+
+</robot>
