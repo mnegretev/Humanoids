@@ -46,6 +46,9 @@ void callback_goal_pose(const std_msgs::Float32::ConstPtr& msg)
 
 int main(int argc, char** argv)
  {
+
+    packetHandler->write2ByteTxRx(portHandler, 1, 14, 1023, &dxl_error); //Máximo par
+
     //Inicializamos el publicador de simulación
     ros::init(argc, argv, "state_publisher");
     ros::NodeHandle n1;
@@ -169,7 +172,8 @@ int main(int argc, char** argv)
 	if(new_goal_position)
 	{
 	    new_goal_position = false;
-	    packetHandler->write2ByteTxRx(portHandler, 1, 30, goal_position, &dxl_error);
+      dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, 1, 24, 1, &dxl_error); //Habilita par
+	    packetHandler->write2ByteTxRx(portHandler, 1, 30, goal_position, &dxl_error); //Escribe la posición deseada
 	}
 	ros::spinOnce();
 	loop.sleep();
