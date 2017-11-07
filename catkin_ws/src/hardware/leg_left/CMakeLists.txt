@@ -9,12 +9,16 @@ project(leg_left)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   dynamixel_sdk
-  geometry_msgs
   roscpp
   rospy
-  sensor_msgs
+  std_msgs
+  geometry_msgs
+  rviz
   std_msgs
   tf
+  urdf
+  xacro
+  sensor_msgs
 )
 
 ## System dependencies are found with CMake's conventions
