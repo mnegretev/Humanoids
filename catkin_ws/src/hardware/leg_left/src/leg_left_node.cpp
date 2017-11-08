@@ -17,10 +17,17 @@
 #define BAUDRATE         57600
 #define PROTOCOL_VERSION 1.0
 
+#define SERVO_MX_RANGE_IN_BITS 4096
+#define SERVO_MX_RANGE_IN_RADS 2*M_PI
+#define SERVO_MX_BITS_PER_RAD  SERVO_MX_RANGE_IN_BITS/SERVO_MX_RANGE_IN_RADS
+
+#define LEG_LEFT_YAW_ZERO     2048
+#define LEG_LEFT_YAW_CW       1
+
 uint16_t goal_position;
 bool new_goal_position = false;
 
-float conv (float a)
+float conv (float a) //Convert an angle in radians to a value in bits for a MX servomotor
 {
   float bitrad = 0.0; //Variable para conversión bit a rad
   bitrad = 2*M_PI*a/4095 - M_PI; //Conversión de bit a rad
@@ -45,10 +52,7 @@ void callback_goal_pose(const std_msgs::Float32::ConstPtr& msg)
 }
 
 int main(int argc, char** argv)
- {
-
-    packetHandler->write2ByteTxRx(portHandler, 1, 14, 1023, &dxl_error); //Máximo par
-
+ {     
     //Inicializamos el publicador de simulación
     ros::init(argc, argv, "state_publisher");
     ros::NodeHandle n1;
@@ -123,13 +127,16 @@ int main(int argc, char** argv)
 
     int problem_counter = 0;
     int total_counter = 0;
+
+    uint16_t dxl_current_pos;
+    uint8_t  dxl_error;
+    packetHandler->write2ByteTxRx(portHandler, 1, 14, 1023, &dxl_error); //Máximo par
     while(ros::ok())
     {
 	
-	uint16_t dxl_current_pos;
-	uint8_t  dxl_error;
+      
 
-	  joint_state.header.stamp = ros::Time::now();
+      joint_state.header.stamp = ros::Time::now();
       joint_state.position[0] = conv(dxl_current_pos);
       joint_state.position[1] = 0;
       joint_state.position[2] = 0;
@@ -172,7 +179,7 @@ int main(int argc, char** argv)
 	if(new_goal_position)
 	{
 	    new_goal_position = false;
-      dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, 1, 24, 1, &dxl_error); //Habilita par
+	    dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, 1, 24, 1, &dxl_error); //Habilita par
 	    packetHandler->write2ByteTxRx(portHandler, 1, 30, goal_position, &dxl_error); //Escribe la posición deseada
 	}
 	ros::spinOnce();
