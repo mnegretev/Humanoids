@@ -2,20 +2,20 @@
 	<arg name="model" />
 	<!-- Parsing xacro and setting robot_description parameter -->
 <!--	<param name="robot_description" command="$(find xacro)/xacro.py $(find mastering_ros_robot_description_pkg)/urdf/seven_dof_arm.xacro" /> -->
-	<param name="robot_description" textfile="$(find humanoid_urdf)/urdf/h_skeleton.urdf" />
+	<param name="robot_description" textfile="$(find config_files)/urdf/h_skeleton.urdf"/>
 
 	<!-- Setting gui parameter to true for display joint slider -->
 	<param name="use_gui" value="true"/>
 	<!-- Starting Joint state publisher node which will publish the joint values -->
 	<!--node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"/-->
 	<!-- Starting robot state publish which will publish tf -->
-	<node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
+	<node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher"/>
 
-	<node name="humanoid_motion_head_node" pkg="humanoid_motion" type="humanoid_motion_head_node"/>
-	<node name="humanoid_motion_arms_node" pkg="humanoid_motion" type="humanoid_motion_arms_node"/>
-	<node name="inverse_kinematics_node.py" pkg="inverse_kinematics" type="inverse_kinematics_node.py"/>
+	<node name="humanoid_motion_head_node" pkg="inverse_kinematics" type="humanoid_motion_head_node"/>
+	<node name="humanoid_motion_arms_node" pkg="inverse_kinematics" type="humanoid_motion_arms_node"/>
+	<!--node name="kinematics.py" pkg="inverse_kinematics" type="kinematics.py"/-->
 	<!--node name="humanoid_motion_legs_node" pkg="humanoid_motion" type="humanoid_motion_legs_node" -->
 
 	<!-- Launch visualization in rviz -->
-	<node name="rviz" pkg="rviz" type="rviz" args="-d $(find humanoid_urdf)/rviz/config.rviz" required="true" />
+	<node name="rviz" pkg="rviz" type="rviz" args="-d $(find config_files)/rviz/config.rviz" required="true"/>
 </launch>
