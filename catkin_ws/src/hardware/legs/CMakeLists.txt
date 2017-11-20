@@ -224,4 +224,4 @@ add_executable(legs_simul_node src/legs_simul_node.cpp)
 add_dependencies(legs_simul_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(legs_simul_node ${catkin_LIBRARIES})
+target_link_libraries(legs_simul_node ${catkin_LIBRARIES}) 
