@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(legs)
+project(arms)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -12,9 +12,12 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   roscpp
   rospy
+  rviz
   sensor_msgs
   std_msgs
   tf
+  urdf
+  xacro
 )
 
 ## System dependencies are found with CMake's conventions
@@ -108,8 +111,8 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES legs
-#  CATKIN_DEPENDS dynamixel_sdk geometry_msgs roscpp rospy sensor_msgs std_msgs tf
+#  LIBRARIES arms
+#  CATKIN_DEPENDS dynamixel_sdk geometry_msgs roscpp rospy rviz sensor_msgs std_msgs tf urdf xacro
 #  DEPENDS system_lib
 )
 
@@ -126,7 +129,7 @@ include_directories(
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/legs.cpp
+#   src/${PROJECT_NAME}/arms.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -137,7 +140,7 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/legs_node.cpp)
+# add_executable(${PROJECT_NAME}_node src/arms_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -194,7 +197,7 @@ include_directories(
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_legs.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_arms.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
@@ -205,24 +208,11 @@ include_directories(
 ###########################
 
 ## Declare a C++ executable
-add_executable(legs_node src/legs_node.cpp)
+add_executable(arms_simul_node src/arms_simul_node.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-add_dependencies(legs_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(arms_simul_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(legs_node ${catkin_LIBRARIES})
-
-###########################
-
-## Declare a C++ executable
-add_executable(legs_simul_node src/legs_simul_node.cpp)
-
-## Add cmake target dependencies of the executable
-## same as for the library above
-add_dependencies(legs_simul_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
-## Specify libraries to link a library or executable target against
-target_link_libraries(legs_simul_node ${catkin_LIBRARIES}) 
-
+target_link_libraries(arms_simul_node ${catkin_LIBRARIES}) 
