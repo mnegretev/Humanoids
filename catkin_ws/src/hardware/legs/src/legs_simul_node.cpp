@@ -1,5 +1,5 @@
 #include "ros/ros.h" 
-#include "std_msgs/Float32.h"
+#include "std_msgs/Float32MultiArray.h"
 #include "dynamixel_sdk/dynamixel_sdk.h"
 #include <sensor_msgs/JointState.h>
 #include <tf/transform_broadcaster.h>
@@ -23,10 +23,55 @@
 #define LEG_LEFT_YAW_ZERO     2048
 #define LEG_LEFT_YAW_CW       1
 
-uint16_t goal_position;
+#define LEG_LEFT_PITCH_ZERO     2048
+#define LEG_LEFT_PITCH_CW       1
+
+#define LEG_LEFT_ROLL_ZERO     2048
+#define LEG_LEFT_ROLL_CW       1
+
+#define LEG_LEFT_KNEE_PITCH_ZERO     2048
+#define LEG_LEFT_KNEE_PITCH_CW       1
+
+#define LEG_LEFT_ANKLE_PITCH_ZERO     2048
+#define LEG_LEFT_ANKLE_PITCH_CW       1
+
+#define LEG_LEFT_ANKLE_ROLL_ZERO     2048
+#define LEG_LEFT_ANKLE_ROLL_CW       1
+
+
+#define LEG_RIGHT_YAW_ZERO     2048
+#define LEG_RIGHT_YAW_CW       1
+
+#define LEG_RIGHT_PITCH_ZERO     2048
+#define LEG_RIGHT_PITCH_CW       1
+
+#define LEG_RIGHT_ROLL_ZERO     2048
+#define LEG_RIGHT_ROLL_CW       1
+
+#define LEG_RIGHT_KNEE_PITCH_ZERO     2048
+#define LEG_RIGHT_KNEE_PITCH_CW       1
+
+#define LEG_RIGHT_ANKLE_PITCH_ZERO     2048
+#define LEG_RIGHT_ANKLE_PITCH_CW       1
+
+#define LEG_RIGHT_ANKLE_ROLL_ZERO     2048
+#define LEG_RIGHT_ANKLE_ROLL_CW       1
+
+uint16_t goal_position_0;
+uint16_t goal_position_1;
+uint16_t goal_position_2;
+uint16_t goal_position_3;
+uint16_t goal_position_4;
+uint16_t goal_position_5;
+uint16_t goal_position_6;
+uint16_t goal_position_7;
+uint16_t goal_position_8;
+uint16_t goal_position_9;
+uint16_t goal_position_10;
+uint16_t goal_position_11;
 bool new_goal_position = false;
 
-float conv2 (float b)
+float conv (float b)
 {
   float radbit = 0.0; //Variable para conversión rad a bit
   radbit = 651.739492*b+2047.5; //Conversión de rad a bit
@@ -36,10 +81,21 @@ float conv2 (float b)
   return entero;
 }
 
-void callback_goal_pose(const std_msgs::Float32::ConstPtr& msg)
+void callback_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg)
 {
-    std::cout << "LegLeft.->New goal position: " << msg->data << std::endl;
-    goal_position = conv2(msg->data);
+    goal_position_0 = conv(msg->data[0]);
+    goal_position_1 = conv(msg->data[1]);
+    goal_position_2 = conv(msg->data[2]);
+    goal_position_3 = conv(msg->data[3]);
+    goal_position_4 = conv(msg->data[4]);
+    goal_position_5 = conv(msg->data[5]);
+    goal_position_6 = conv(msg->data[6]);
+    goal_position_7 = conv(msg->data[7]);
+    goal_position_8 = conv(msg->data[8]);
+    goal_position_9 = conv(msg->data[9]);
+    goal_position_10= conv(msg->data[10]);
+    goal_position_11 = conv(msg->data[11]);
+    
     new_goal_position = true;
 }
 
@@ -86,39 +142,61 @@ int main(int argc, char** argv)
     ros::init(argc, argv, "legs");
     ros::NodeHandle n;
     ros::Rate loop(1000);
-    ros::Subscriber subGoalPose = n.subscribe("goal_pose", 1, callback_goal_pose);
+    ros::Subscriber subGoalPose = n.subscribe("goal_pose_legs", 1, callback_goal_pose);
 
     
 	std::cout << "LegLeft.->Serial port successfully openned" << std::endl;
-    
-	std::cout << "LegLeft.->Cannot open serial port" << std::endl;
-	
 	std::cout << "LegLeft.->Baudrate successfully set " << std::endl;
 
 
     int problem_counter = 0;
     int total_counter = 0;
 
-    uint16_t dxl_current_pos_sim = 0;
+    uint16_t dxl_current_pos_sim_0 = 0;
+    uint16_t dxl_current_pos_sim_1 = 0;
+    uint16_t dxl_current_pos_sim_2 = 0;
+    uint16_t dxl_current_pos_sim_3 = 0;
+    uint16_t dxl_current_pos_sim_4 = 0;
+    uint16_t dxl_current_pos_sim_5 = 0;
+    uint16_t dxl_current_pos_sim_6 = 0;
+    uint16_t dxl_current_pos_sim_7 = 0;
+    uint16_t dxl_current_pos_sim_8 = 0;
+    uint16_t dxl_current_pos_sim_9 = 0;
+    uint16_t dxl_current_pos_sim_10 = 0;
+    uint16_t dxl_current_pos_sim_11 = 0;
+
 
     while(ros::ok())
     {
  
-      std::cout << "Current position: " << (int)dxl_current_pos_sim << std::endl;
+      std::cout << "Current position 0: " << (int)dxl_current_pos_sim_0 << std::endl;
+      std::cout << "Current position 1: " << (int)dxl_current_pos_sim_1 << std::endl;
+      std::cout << "Current position 2: " << (int)dxl_current_pos_sim_2 << std::endl;
+      std::cout << "Current position 3: " << (int)dxl_current_pos_sim_3 << std::endl;
+      std::cout << "Current position 4: " << (int)dxl_current_pos_sim_4 << std::endl;
+      std::cout << "Current position 5: " << (int)dxl_current_pos_sim_5 << std::endl;
+      std::cout << "Current position 6: " << (int)dxl_current_pos_sim_6 << std::endl;
+      std::cout << "Current position 7: " << (int)dxl_current_pos_sim_7 << std::endl;
+      std::cout << "Current position 8: " << (int)dxl_current_pos_sim_8 << std::endl;
+      std::cout << "Current position 9: " << (int)dxl_current_pos_sim_9 << std::endl;
+      std::cout << "Current position 10: " << (int)dxl_current_pos_sim_10 << std::endl;
+      std::cout << "Current position 11: " << (int)dxl_current_pos_sim_11 << std::endl;
+
 
       joint_state_legs.header.stamp = ros::Time::now();
-      joint_state_legs.position[0] = ((int)(dxl_current_pos_sim) - LEG_LEFT_YAW_ZERO)*LEG_LEFT_YAW_CW * (2*M_PI / 4096.0);
-      joint_state_legs.position[1] = 0;
-      joint_state_legs.position[2] = 0;
-      joint_state_legs.position[3] = 0;
-      joint_state_legs.position[4] = 0;
-      joint_state_legs.position[5] = 0;
-      joint_state_legs.position[6] = 0;
-      joint_state_legs.position[7] = 0;
-      joint_state_legs.position[8] = 0;
-      joint_state_legs.position[9] = 0;
-      joint_state_legs.position[10] = 0;
-      joint_state_legs.position[11] = 0;
+      joint_state_legs.position[0] = ((int)(dxl_current_pos_sim_0) - LEG_LEFT_YAW_ZERO)*LEG_LEFT_YAW_CW * (2*M_PI / 4096.0);
+      joint_state_legs.position[1] = ((int)(dxl_current_pos_sim_1) - LEG_LEFT_PITCH_ZERO)*LEG_LEFT_PITCH_CW * (2*M_PI / 4096.0);
+      joint_state_legs.position[2] = ((int)(dxl_current_pos_sim_2) - LEG_LEFT_ROLL_ZERO)*LEG_LEFT_ROLL_CW * (2*M_PI / 4096.0);
+      joint_state_legs.position[3] = ((int)(dxl_current_pos_sim_3) - LEG_LEFT_KNEE_PITCH_ZERO)*LEG_LEFT_KNEE_PITCH_CW * (2*M_PI / 4096.0);
+      joint_state_legs.position[4] = ((int)(dxl_current_pos_sim_4) - LEG_LEFT_ANKLE_PITCH_ZERO)*LEG_LEFT_ANKLE_PITCH_CW * (2*M_PI / 4096.0);
+      joint_state_legs.position[5] = ((int)(dxl_current_pos_sim_5) - LEG_LEFT_ANKLE_ROLL_ZERO)*LEG_LEFT_ANKLE_ROLL_CW * (2*M_PI / 4096.0);
+      joint_state_legs.position[6] = ((int)(dxl_current_pos_sim_6) - LEG_RIGHT_YAW_ZERO)*LEG_RIGHT_YAW_CW * (2*M_PI / 4096.0);
+      joint_state_legs.position[7] = ((int)(dxl_current_pos_sim_7) - LEG_RIGHT_PITCH_ZERO)*LEG_RIGHT_PITCH_CW * (2*M_PI / 4096.0);
+      joint_state_legs.position[8] = ((int)(dxl_current_pos_sim_8) - LEG_RIGHT_ROLL_ZERO)*LEG_RIGHT_ROLL_CW * (2*M_PI / 4096.0);
+      joint_state_legs.position[9] = ((int)(dxl_current_pos_sim_9) - LEG_RIGHT_KNEE_PITCH_ZERO)*LEG_RIGHT_KNEE_PITCH_CW * (2*M_PI / 4096.0);
+      joint_state_legs.position[10] = ((int)(dxl_current_pos_sim_10) - LEG_RIGHT_ANKLE_PITCH_ZERO)*LEG_RIGHT_ANKLE_PITCH_CW * (2*M_PI / 4096.0);
+      joint_state_legs.position[11] = ((int)(dxl_current_pos_sim_11) - LEG_RIGHT_ANKLE_ROLL_ZERO)*LEG_RIGHT_ANKLE_ROLL_CW * (2*M_PI / 4096.0);
+
 
       // (moving in a circle with radius=2)
       odom_trans.header.stamp = ros::Time::now();
@@ -127,15 +205,139 @@ int main(int argc, char** argv)
       joint_pub.publish(joint_state_legs);
       broadcaster.sendTransform(odom_trans);
 
-      if((dxl_current_pos_sim - goal_position) > 0)
+      // 0
+      if((dxl_current_pos_sim_0 - goal_position_0) > 0)
       {
-      	dxl_current_pos_sim--;
+      	dxl_current_pos_sim_0--;
       }
 
-      if((dxl_current_pos_sim - goal_position) < 0)
+      if((dxl_current_pos_sim_0 - goal_position_0) < 0)
       {
-      	dxl_current_pos_sim++;
+      	dxl_current_pos_sim_0++;
       }
+
+      // 1
+      if((dxl_current_pos_sim_1 - goal_position_1) > 0)
+      {
+      	dxl_current_pos_sim_1--;
+      }
+
+      if((dxl_current_pos_sim_1 - goal_position_1) < 0)
+      {
+      	dxl_current_pos_sim_1++;
+      }
+
+      // 2
+      if((dxl_current_pos_sim_2 - goal_position_2) > 0)
+      {
+      	dxl_current_pos_sim_2--;
+      }
+
+      if((dxl_current_pos_sim_2 - goal_position_2) < 0)
+      {
+      	dxl_current_pos_sim_2++;
+      }
+
+      // 3
+      if((dxl_current_pos_sim_3 - goal_position_3) > 0)
+      {
+      	dxl_current_pos_sim_3--;
+      }
+
+      if((dxl_current_pos_sim_3 - goal_position_3) < 0)
+      {
+      	dxl_current_pos_sim_3++;
+      }
+
+      // 4
+      if((dxl_current_pos_sim_4 - goal_position_4) > 0)
+      {
+      	dxl_current_pos_sim_4--;
+      }
+
+      if((dxl_current_pos_sim_4 - goal_position_4) < 0)
+      {
+      	dxl_current_pos_sim_4++;
+      }
+
+      // 5
+      if((dxl_current_pos_sim_5 - goal_position_5) > 0)
+      {
+      	dxl_current_pos_sim_5--;
+      }
+
+      if((dxl_current_pos_sim_5 - goal_position_5) < 0)
+      {
+      	dxl_current_pos_sim_5++;
+      }
+
+      // 6
+      if((dxl_current_pos_sim_6 - goal_position_6) > 0)
+      {
+      	dxl_current_pos_sim_6--;
+      }
+
+      if((dxl_current_pos_sim_6 - goal_position_6) < 0)
+      {
+      	dxl_current_pos_sim_6++;
+      }
+
+      // 7
+      if((dxl_current_pos_sim_7 - goal_position_7) > 0)
+      {
+      	dxl_current_pos_sim_7--;
+      }
+
+      if((dxl_current_pos_sim_7 - goal_position_7) < 0)
+      {
+      	dxl_current_pos_sim_7++;
+      }
+
+      // 8
+      if((dxl_current_pos_sim_8 - goal_position_8) > 0)
+      {
+      	dxl_current_pos_sim_8--;
+      }
+
+      if((dxl_current_pos_sim_8 - goal_position_8) < 0)
+      {
+      	dxl_current_pos_sim_8++;
+      }
+
+      // 9
+      if((dxl_current_pos_sim_9 - goal_position_9) > 0)
+      {
+      	dxl_current_pos_sim_9--;
+      }
+
+      if((dxl_current_pos_sim_9 - goal_position_9) < 0)
+      {
+      	dxl_current_pos_sim_9++;
+      }
+
+      // 10
+      if((dxl_current_pos_sim_10 - goal_position_10) > 0)
+      {
+      	dxl_current_pos_sim_10--;
+      }
+
+      if((dxl_current_pos_sim_10 - goal_position_10) < 0)
+      {
+      	dxl_current_pos_sim_10++;
+      }
+
+      // 11
+      if((dxl_current_pos_sim_11 - goal_position_11) > 0)
+      {
+      	dxl_current_pos_sim_11--;
+      }
+
+      if((dxl_current_pos_sim_11 - goal_position_11) < 0)
+      {
+      	dxl_current_pos_sim_11++;
+      }
+
+      
        
       if(new_goal_position)
 	{
