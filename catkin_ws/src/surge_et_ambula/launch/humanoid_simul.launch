@@ -1,0 +1,6 @@
+<launch>
+	<param name="robot_description" textfile="$(find config_files)/urdf/h_skeleton.urdf"/>
+	<node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher"/>
+	<node name="rviz" pkg="rviz" type="rviz" args="-d $(find config_files)/rviz/config.rviz" required="true"/>
+	<node name="legs_node" pkg="legs" type="legs_simul_node" output="screen"/>
+</launch>
