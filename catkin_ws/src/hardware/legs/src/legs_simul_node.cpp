@@ -94,18 +94,18 @@ int clockwise_direction[12] = {
 void callback_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg)
 {
     for(int i=0; i < 12; i++)
-	goal_position[i] = uint16_t(msg->data[i] * 4096/(2*M_PI) * clockwise_direction[i] + position_zero_bits[i]);
+	goal_position[i] = uint16_t(msg->data[i] * SERVO_MX_RANGE_IN_BITS/SERVO_MX_RANGE_IN_RADS * clockwise_direction[i] + position_zero_bits[i]);
 }
 
 void callback_goal_pose_left(const std_msgs::Float32MultiArray::ConstPtr& msg)
 {
     for(int i=0; i < 6; i++)
-	goal_position[i] = uint16_t(msg->data[i] * 4096/(2*M_PI) * clockwise_direction[i] + position_zero_bits[i]);
+	goal_position[i] = uint16_t(msg->data[i] * SERVO_MX_RANGE_IN_BITS/SERVO_MX_RANGE_IN_RADS * clockwise_direction[i] + position_zero_bits[i]);
 }
 void callback_goal_pose_right(const std_msgs::Float32MultiArray::ConstPtr& msg)
 {
     for(int i=6; i < 12; i++)
-	goal_position[i] = uint16_t(msg->data[i - 6] * 4096/(2*M_PI) * clockwise_direction[i] + position_zero_bits[i]);
+	goal_position[i] = uint16_t(msg->data[i - 6] * SERVO_MX_RANGE_IN_BITS/SERVO_MX_RANGE_IN_RADS * clockwise_direction[i] + position_zero_bits[i]);
 }
 
 int main(int argc, char** argv)
@@ -163,7 +163,7 @@ int main(int argc, char** argv)
 		for(int i=0; i < 12; i++)
 		{
 	    	joint_state_legs.position[i] = ((int)(dxl_current_pos_sim[i]) - position_zero_bits[i]) * clockwise_direction[i] *
-			(2*M_PI/4096.0);
+			(SERVO_MX_RANGE_IN_RADS/SERVO_MX_RANGE_IN_BITS);
 		}
 	
 		//Send the joint state and transform
