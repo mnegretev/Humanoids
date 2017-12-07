@@ -209,6 +209,21 @@ int main(int argc, char** argv)
       	if(error [i] < -SERVO_MX_STEP_SIMUL) error [i] = -SERVO_MX_STEP_SIMUL;
       	dxl_current_pos_sim [i] += error [i];
   	  }
+
+      //This logic works but uses lots of lines of code
+/*
+      // 0      if((dxl_current_pos_sim_0 - goal_position_0) > SERVO_MX_STEP_SIMUL)
+        dxl_current_pos_sim_0 -= SERVO_MX_STEP_SIMUL;
+
+      if((dxl_current_pos_sim_0 - goal_position_0) < -SERVO_MX_STEP_SIMUL)
+        dxl_current_pos_sim_0 += SERVO_MX_STEP_SIMUL;
+
+      if(abs(dxl_current_pos_sim_0 - goal_position_0) <= SERVO_MX_STEP_SIMUL && (dxl_current_pos_sim_0 - goal_position_0) > 0)
+        dxl_current_pos_sim_0 -= abs(dxl_current_pos_sim_0 - goal_position_0);
+
+      if(abs(dxl_current_pos_sim_0 - goal_position_0) <= SERVO_MX_STEP_SIMUL && (dxl_current_pos_sim_0 - goal_position_0) < 0)
+        dxl_current_pos_sim_0 += abs(dxl_current_pos_sim_0 - goal_position_0);
+*/
       
       ros::spinOnce();
       loop.sleep();
