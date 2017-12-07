@@ -3,4 +3,6 @@
 	<node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher"/>
 	<node name="rviz" pkg="rviz" type="rviz" args="-d $(find config_files)/rviz/config.rviz" required="true"/>
 	<node name="legs_node" pkg="legs" type="legs_simul_node" output="screen"/>
+	<node name="arms_node" pkg="arms" type="arms_simul_node" output="screen"/>
+	<node name="head_node" pkg="head" type="head_simul_node" output="screen"/>
 </launch>
