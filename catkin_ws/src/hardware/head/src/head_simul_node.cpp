@@ -1,7 +1,4 @@
 #include "ros/ros.h" 
-#include "std_msgs/Float32.h"
-#include "dynamixel_sdk/dynamixel_sdk.h"
-#include "ros/ros.h" 
 #include "std_msgs/Float32MultiArray.h"
 #include "dynamixel_sdk/dynamixel_sdk.h"
 #include <sensor_msgs/JointState.h>
@@ -15,21 +12,21 @@
 #include <fcntl.h>
 #include <termios.h>
 
-#define DEVICE_NAME      "/dev/ttyUSB0"
-#define BAUDRATE         57600
-#define PROTOCOL_VERSION 1.0
+#define DEVICE_NAME      			"/dev/ttyUSB0"
+#define BAUDRATE         			57600
+#define PROTOCOL_VERSION 			1.0
 
-#define SERVO_MX_RANGE_IN_BITS 4096
-#define SERVO_MX_RANGE_IN_RADS 2*M_PI
-#define SERVO_MX_BITS_PER_RAD  SERVO_MX_RANGE_IN_BITS/SERVO_MX_RANGE_IN_RADS
+#define SERVO_MX_RANGE_IN_BITS 		4096
+#define SERVO_MX_RANGE_IN_RADS 		2*M_PI
+#define SERVO_MX_BITS_PER_RAD  		SERVO_MX_RANGE_IN_BITS/SERVO_MX_RANGE_IN_RADS
 
-#define HEAD_NECK_PITCH_ZERO     2048
-#define HEAD_NECK_PITCH_CW          1
+#define HEAD_NECK_PITCH_ZERO     	2048
+#define HEAD_NECK_PITCH_CW             1
 
-#define HEAD_NECK_JAW_ZERO     2048
-#define HEAD_NECK_JAW_CW          1
+#define HEAD_NECK_JAW_ZERO     		2048
+#define HEAD_NECK_JAW_CW               1
 
-#define SERVO_MX_STEP_SIMUL 30
+#define SERVO_MX_STEP_SIMUL 		  30
 
 uint16_t goal_position [2];
 
@@ -46,7 +43,7 @@ int clockwise_direction[2] = {
 void callback_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg)
 {
     for(int i=0; i < 2; i++)
-  	goal_position[i] = uint16_t(msg->data[i] * 4096/(2*M_PI) * clockwise_direction[i] + position_zero_bits[i]);
+  	goal_position[i] = uint16_t(msg->data[i] * SERVO_MX_RANGE_IN_BITS/SERVO_MX_RANGE_IN_RADS * clockwise_direction[i] + position_zero_bits[i]);
 }
 
 int main(int argc, char** argv)
@@ -89,7 +86,7 @@ int main(int argc, char** argv)
         for(int i=0; i < 2; i++)
         {
             joint_states_head.position[i] = ((int)(dxl_current_pos_sim[i]) - position_zero_bits[i]) * clockwise_direction[i] * 
-            (2*M_PI/4096.0);
+            (SERVO_MX_RANGE_IN_RADS/SERVO_MX_RANGE_IN_BITS);
         }
   
         //Send the joint state and transform
