@@ -6,46 +6,6 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
-        - /RobotModel1
-        - /RobotModel1/Links1/eye_11
-        - /RobotModel1/Links1/eye_21
-        - /RobotModel1/Links1/head1
-        - /RobotModel1/Links1/left_arm_elbow_link1
-        - /RobotModel1/Links1/left_arm_link_down1
-        - /RobotModel1/Links1/left_arm_link_up1
-        - /RobotModel1/Links1/left_foot1
-        - /RobotModel1/Links1/left_leg_link_down1
-        - /RobotModel1/Links1/left_leg_link_up1
-        - /RobotModel1/Links1/left_link_ankle_pitch1
-        - /RobotModel1/Links1/left_link_ankle_roll1
-        - /RobotModel1/Links1/left_link_elbow_pitch1
-        - /RobotModel1/Links1/left_link_knee_pitch1
-        - /RobotModel1/Links1/left_link_leg_pitch1
-        - /RobotModel1/Links1/left_link_leg_roll1
-        - /RobotModel1/Links1/left_link_leg_yaw1
-        - /RobotModel1/Links1/left_link_shoulder_pitch1
-        - /RobotModel1/Links1/left_link_shoulder_roll1
-        - /RobotModel1/Links1/mouth1
-        - /RobotModel1/Links1/neck_link_pitch1
-        - /RobotModel1/Links1/neck_link_yaw1
-        - /RobotModel1/Links1/right_arm_elbow_link1
-        - /RobotModel1/Links1/right_arm_link_down1
-        - /RobotModel1/Links1/right_arm_link_up1
-        - /RobotModel1/Links1/right_foot1
-        - /RobotModel1/Links1/right_leg_link_down1
-        - /RobotModel1/Links1/right_leg_link_up1
-        - /RobotModel1/Links1/right_link_ankle_pitch1
-        - /RobotModel1/Links1/right_link_ankle_roll1
-        - /RobotModel1/Links1/right_link_elbow_pitch1
-        - /RobotModel1/Links1/right_link_knee_pitch1
-        - /RobotModel1/Links1/right_link_leg_pitch1
-        - /RobotModel1/Links1/right_link_leg_roll1
-        - /RobotModel1/Links1/right_link_leg_yaw1
-        - /RobotModel1/Links1/right_link_shoulder_pitch1
-        - /RobotModel1/Links1/right_link_shoulder_roll1
-        - /RobotModel1/Links1/trunk1
-        - /TF1
-        - /TF1/Frames1
       Splitter Ratio: 0.5
     Tree Height: 348
   - Class: rviz/Selection
@@ -56,7 +16,7 @@ Panels:
       - /2D Nav Goal1
       - /Publish Point1
     Name: Tool Properties
-    Splitter Ratio: 0.588679
+    Splitter Ratio: 0.588679016
   - Class: rviz/Views
     Expanded:
       - /Current View1
@@ -76,49 +36,8 @@ Panels:
         - /Status1
         - /Grid1
         - /Grid1/Offset1
-        - /RobotModel1
-        - /RobotModel1/Links1/eye_11
-        - /RobotModel1/Links1/eye_21
-        - /RobotModel1/Links1/head1
-        - /RobotModel1/Links1/left_arm_elbow_link1
-        - /RobotModel1/Links1/left_arm_link_down1
-        - /RobotModel1/Links1/left_arm_link_up1
-        - /RobotModel1/Links1/left_foot1
-        - /RobotModel1/Links1/left_leg_link_down1
-        - /RobotModel1/Links1/left_leg_link_up1
-        - /RobotModel1/Links1/left_link_ankle_pitch1
-        - /RobotModel1/Links1/left_link_ankle_roll1
-        - /RobotModel1/Links1/left_link_elbow_pitch1
-        - /RobotModel1/Links1/left_link_knee_pitch1
-        - /RobotModel1/Links1/left_link_leg_pitch1
-        - /RobotModel1/Links1/left_link_leg_roll1
-        - /RobotModel1/Links1/left_link_leg_yaw1
-        - /RobotModel1/Links1/left_link_shoulder_pitch1
-        - /RobotModel1/Links1/left_link_shoulder_roll1
-        - /RobotModel1/Links1/mouth1
-        - /RobotModel1/Links1/neck_link_pitch1
-        - /RobotModel1/Links1/neck_link_yaw1
-        - /RobotModel1/Links1/right_arm_elbow_link1
-        - /RobotModel1/Links1/right_arm_link_down1
-        - /RobotModel1/Links1/right_arm_link_up1
-        - /RobotModel1/Links1/right_foot1
-        - /RobotModel1/Links1/right_leg_link_down1
-        - /RobotModel1/Links1/right_leg_link_up1
-        - /RobotModel1/Links1/right_link_ankle_pitch1
-        - /RobotModel1/Links1/right_link_ankle_roll1
-        - /RobotModel1/Links1/right_link_elbow_pitch1
-        - /RobotModel1/Links1/right_link_knee_pitch1
-        - /RobotModel1/Links1/right_link_leg_pitch1
-        - /RobotModel1/Links1/right_link_leg_roll1
-        - /RobotModel1/Links1/right_link_leg_yaw1
-        - /RobotModel1/Links1/right_link_shoulder_pitch1
-        - /RobotModel1/Links1/right_link_shoulder_roll1
-        - /RobotModel1/Links1/trunk1
-        - /TF1
-        - /TF1/Frames1
-        - /TF1/Tree1
       Splitter Ratio: 0.5
-    Tree Height: 736
+    Tree Height: 734
 Visualization Manager:
   Class: ""
   Displays:
@@ -128,14 +47,14 @@ Visualization Manager:
       Color: 211; 211; 216
       Enabled: true
       Line Style:
-        Line Width: 0.05
+        Line Width: 0.0500000007
         Value: Lines
       Name: Grid
       Normal Cell Count: 0
       Offset:
         X: 0
         Y: 0
-        Z: -0.52
+        Z: -0.600000024
       Plane: XY
       Plane Cell Count: 10
       Reference Frame: <Fixed Frame>
@@ -145,340 +64,138 @@ Visualization Manager:
       Collision Enabled: false
       Enabled: true
       Links:
-        All Links Enabled: false
+        All Links Enabled: true
         Expand Joint Details: false
-        Expand Link Details: true
+        Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
-        eye_1:
+        camera_optical:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: false
-        eye_2:
+        head_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: false
-        head:
+          Value: true
+        left_ankle_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: false
-        left_arm_elbow_link:
+          Value: true
+        left_foot_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: false
-        left_arm_link_down:
+          Value: true
+        left_foot_plane_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: false
-        left_arm_link_up:
+        left_hip_roll_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: false
-        left_foot:
+          Value: true
+        left_hip_yaw_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: false
-        left_leg_link_down:
+          Value: true
+        left_lower_arm_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: false
-        left_leg_link_up:
+          Value: true
+        left_shank_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: false
-        left_link_ankle_pitch:
+          Value: true
+        left_shoulder_pitch_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: false
-        left_link_ankle_roll:
+          Value: true
+        left_thigh_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: false
-        left_link_elbow_pitch:
+          Value: true
+        left_upper_arm_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: false
-        left_link_knee_pitch:
+          Value: true
+        neck_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: false
-        left_link_leg_pitch:
+          Value: true
+        right_ankle_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: false
-        left_link_leg_roll:
+          Value: true
+        right_foot_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: false
-        left_link_leg_yaw:
+          Value: true
+        right_foot_plane_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: false
-        left_link_shoulder_pitch:
+        right_hip_roll_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: false
-        left_link_shoulder_roll:
+          Value: true
+        right_hip_yaw_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: false
-        mouth:
+          Value: true
+        right_lower_arm_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: false
-        neck_link_pitch:
+          Value: true
+        right_shank_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: false
-        neck_link_yaw:
+          Value: true
+        right_shoulder_pitch_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: false
-        right_arm_elbow_link:
+          Value: true
+        right_thigh_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: false
-        right_arm_link_down:
+          Value: true
+        right_upper_arm_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: false
-        right_arm_link_up:
+          Value: true
+        trunk_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: false
-        right_foot:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: false
-        right_leg_link_down:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: false
-        right_leg_link_up:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: false
-        right_link_ankle_pitch:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: false
-        right_link_ankle_roll:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: false
-        right_link_elbow_pitch:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: false
-        right_link_knee_pitch:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: false
-        right_link_leg_pitch:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: false
-        right_link_leg_roll:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: false
-        right_link_leg_yaw:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: false
-        right_link_shoulder_pitch:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: false
-        right_link_shoulder_roll:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: false
-        trunk:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: false
+          Value: true
       Name: RobotModel
       Robot Description: robot_description
       TF Prefix: ""
       Update Interval: 0
       Value: true
       Visual Enabled: true
-    - Class: rviz/TF
-      Enabled: true
-      Frame Timeout: 15
-      Frames:
-        All Enabled: false
-        eye_1:
-          Value: false
-        eye_2:
-          Value: false
-        head:
-          Value: false
-        left_arm_elbow_link:
-          Value: false
-        left_arm_link_down:
-          Value: false
-        left_arm_link_up:
-          Value: false
-        left_foot:
-          Value: true
-        left_leg_link_down:
-          Value: true
-        left_leg_link_up:
-          Value: true
-        left_link_ankle_pitch:
-          Value: true
-        left_link_ankle_roll:
-          Value: true
-        left_link_elbow_pitch:
-          Value: false
-        left_link_knee_pitch:
-          Value: true
-        left_link_leg_pitch:
-          Value: true
-        left_link_leg_roll:
-          Value: true
-        left_link_leg_yaw:
-          Value: true
-        left_link_shoulder_pitch:
-          Value: true
-        left_link_shoulder_roll:
-          Value: false
-        mouth:
-          Value: false
-        neck_link_pitch:
-          Value: true
-        neck_link_yaw:
-          Value: true
-        odom:
-          Value: true
-        right_arm_elbow_link:
-          Value: false
-        right_arm_link_down:
-          Value: false
-        right_arm_link_up:
-          Value: false
-        right_foot:
-          Value: true
-        right_leg_link_down:
-          Value: true
-        right_leg_link_up:
-          Value: true
-        right_link_ankle_pitch:
-          Value: true
-        right_link_ankle_roll:
-          Value: true
-        right_link_elbow_pitch:
-          Value: false
-        right_link_knee_pitch:
-          Value: true
-        right_link_leg_pitch:
-          Value: true
-        right_link_leg_roll:
-          Value: true
-        right_link_leg_yaw:
-          Value: true
-        right_link_shoulder_pitch:
-          Value: true
-        right_link_shoulder_roll:
-          Value: false
-        trunk:
-          Value: true
-      Marker Scale: 0.1
-      Name: TF
-      Show Arrows: true
-      Show Axes: true
-      Show Names: false
-      Tree:
-        odom:
-          trunk:
-            left_link_leg_yaw:
-              left_link_leg_roll:
-                left_link_leg_pitch:
-                  left_leg_link_up:
-                    left_link_knee_pitch:
-                      left_leg_link_down:
-                        left_link_ankle_pitch:
-                          left_link_ankle_roll:
-                            left_foot:
-                              {}
-            left_link_shoulder_pitch:
-              left_link_shoulder_roll:
-                left_arm_link_up:
-                  left_arm_elbow_link:
-                    left_link_elbow_pitch:
-                      left_arm_link_down:
-                        {}
-            neck_link_yaw:
-              neck_link_pitch:
-                head:
-                  eye_1:
-                    {}
-                  eye_2:
-                    {}
-                  mouth:
-                    {}
-            right_link_leg_yaw:
-              right_link_leg_roll:
-                right_link_leg_pitch:
-                  right_leg_link_up:
-                    right_link_knee_pitch:
-                      right_leg_link_down:
-                        right_link_ankle_pitch:
-                          right_link_ankle_roll:
-                            right_foot:
-                              {}
-            right_link_shoulder_pitch:
-              right_link_shoulder_roll:
-                right_arm_link_up:
-                  right_arm_elbow_link:
-                    right_link_elbow_pitch:
-                      right_arm_link_down:
-                        {}
-      Update Interval: 0
-      Value: true
   Enabled: true
   Global Options:
     Background Color: 76; 76; 76
-    Fixed Frame: trunk
+    Fixed Frame: trunk_link
     Frame Rate: 30
   Name: root
   Tools:
@@ -499,22 +216,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 0.913301
+      Distance: 1.70108044
       Enable Stereo Rendering:
-        Stereo Eye Separation: 0.06
+        Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -0.0376158
-        Y: 0.0750163
-        Z: -0.222611
+        X: -0.0376157984
+        Y: 0.0750162974
+        Z: -0.222610995
+      Focal Shape Fixed Size: true
+      Focal Shape Size: 0.0500000007
+      Invert Z Axis: false
       Name: Current View
-      Near Clip Distance: 0.01
-      Pitch: 0.130398
+      Near Clip Distance: 0.00999999978
+      Pitch: -0.169601813
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 5.46175
+      Yaw: 5.50173473
     Saved: ~
 Window Geometry:
   Displays:
@@ -522,7 +242,7 @@ Window Geometry:
   Height: 1027
   Hide Left Dock: false
   Hide Right Dock: false
-  QMainWindow State: 000000ff00000000fd00000004000000000000016a0000037afc0200000009fb0000001200530065006c0065006300740069006f006e00000000280000006f0000006f00fffffffb0000001e0054006f006f006c002000500072006f0070006500720074006900650073020000014f0000013800000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c00610079007300000000280000037b000000f300fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb000000100044006900730070006c00610079007301000000280000037a000000f300ffffff000000010000010f0000037bfc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a0056006900650077007300000000280000037b000000bd00fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e100000197000000030000057e0000003ffc0100000002fb0000000800540069006d006501000000000000057e000002eb00fffffffb0000000800540069006d006501000000000000045000000000000000000000040e0000037a00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd00000004000000000000016a00000378fc0200000009fb0000001200530065006c0065006300740069006f006e00000000280000006f0000006400fffffffb0000001e0054006f006f006c002000500072006f0070006500720074006900650073020000014f0000034000000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c00610079007300000000280000037b000000dd00fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb000000100044006900730070006c006100790073010000002800000378000000dd00ffffff000000010000010f0000037bfc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a0056006900650077007300000000280000037b000000b000fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000004b00000003ffc0100000002fb0000000800540069006d00650100000000000004b00000030000fffffffb0000000800540069006d00650100000000000004500000000000000000000003400000037800000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   Time:
@@ -531,6 +251,6 @@ Window Geometry:
     collapsed: false
   Views:
     collapsed: false
-  Width: 1406
-  X: 443
-  Y: 14
+  Width: 1200
+  X: 1366
+  Y: 24

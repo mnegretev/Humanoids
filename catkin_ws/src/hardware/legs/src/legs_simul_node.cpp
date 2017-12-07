@@ -112,33 +112,32 @@ int main(int argc, char** argv)
  {     
     //Initilize joint_states_publisher
     std::cout << "INITIALIZING LEGS NODE..." << std::endl;
-    ros::init(argc, argv, "state_publisher"); 
     ros::init(argc, argv, "legs");
     ros::NodeHandle n;
     ros::Rate loop(30);
     ros::Subscriber subLegsGoalPose     = n.subscribe("legs_goal_pose", 1, callback_goal_pose);
     ros::Subscriber subLegLeftGoalPose  = n.subscribe("leg_left_goal_pose", 1, callback_goal_pose_left);
     ros::Subscriber subLegRightGoalPose = n.subscribe("leg_right_goal_pose", 1, callback_goal_pose_right);
-    ros::Publisher  joint_pub = n.advertise<sensor_msgs::JointState>("joint_states", 1);
+    ros::Publisher  joint_pub = n.advertise<sensor_msgs::JointState>("/joint_states", 1);
 
     sensor_msgs::JointState joint_state_legs;
   
     joint_state_legs.name.resize(12);
     joint_state_legs.position.resize(12);
   
-    joint_state_legs.name[0] ="left_joint_leg_yaw";
-    joint_state_legs.name[1] ="left_joint_leg_pitch";
-    joint_state_legs.name[2] ="left_joint_leg_roll";
-    joint_state_legs.name[3] ="left_joint_knee_pitch";
-    joint_state_legs.name[4] ="left_joint_ankle_pitch";
-    joint_state_legs.name[5] ="left_joint_ankle_roll";
+    joint_state_legs.name[0] ="left_hip_yaw";   
+    joint_state_legs.name[1] ="left_hip_roll";  
+    joint_state_legs.name[2] ="left_hip_pitch"; 
+    joint_state_legs.name[3] ="left_knee_pitch";
+    joint_state_legs.name[4] ="left_ankle_pitch";
+    joint_state_legs.name[5] ="left_ankle_roll";
   
-    joint_state_legs.name[6] ="right_joint_leg_yaw";
-    joint_state_legs.name[7] ="right_joint_leg_pitch";
-    joint_state_legs.name[8] ="right_joint_leg_roll";
-    joint_state_legs.name[9] ="right_joint_knee_pitch";
-    joint_state_legs.name[10] ="right_joint_ankle_pitch";
-    joint_state_legs.name[11] ="right_joint_ankle_roll";
+    joint_state_legs.name[6]  ="right_hip_yaw";
+    joint_state_legs.name[7]  ="right_hip_roll";
+    joint_state_legs.name[8]  ="right_hip_pitch";
+    joint_state_legs.name[9]  ="right_knee_pitch";
+    joint_state_legs.name[10] ="right_ankle_pitch";
+    joint_state_legs.name[11] ="right_ankle_roll";
 
     uint16_t dxl_current_pos_sim [12];
 

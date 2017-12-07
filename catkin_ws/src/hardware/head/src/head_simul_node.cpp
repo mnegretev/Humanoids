@@ -53,20 +53,19 @@ int main(int argc, char** argv)
  {     
     //Initilize joint_states_publisher
     std::cout << "INITIALIZING HEAD NODE..." << std::endl;
-    ros::init(argc, argv, "state_publisher"); 
     ros::init(argc, argv, "head");
     ros::NodeHandle n;
     ros::Rate loop(30);
     ros::Subscriber subHeadGoalPose = n.subscribe("head_goal_pose", 1, callback_goal_pose);
-    ros::Publisher  joint_pub = n.advertise<sensor_msgs::JointState>("joint_states", 1);
+    ros::Publisher  joint_pub = n.advertise<sensor_msgs::JointState>("/joint_states", 1);
 
     sensor_msgs::JointState joint_states_head;
   
     joint_states_head.name.resize(2);
     joint_states_head.position.resize(2);
  
-    joint_states_head.name[0] ="neck_joint_pitch";
-    joint_states_head.name[1] ="neck_joint_yaw";
+    joint_states_head.name[0] ="neck_yaw";
+    joint_states_head.name[1] ="head_pitch";
   
     uint16_t dxl_current_pos_sim [2];
     for(int i=0; i < 2; i++)

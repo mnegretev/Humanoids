@@ -84,27 +84,26 @@ int main(int argc, char** argv)
  {     
     //Initilize joint_states_publisher
     std::cout << "INITIALIZING ARMS NODE..." << std::endl;
-    ros::init(argc, argv, "state_publisher"); 
     ros::init(argc, argv, "arms");
     ros::NodeHandle n;
     ros::Rate loop(30);
     ros::Subscriber subArmsGoalPose     = n.subscribe("arms_goal_pose", 1, callback_goal_pose);
     ros::Subscriber subArmLeftGoalPose  = n.subscribe("arm_left_goal_pose", 1, callback_goal_pose_left);
     ros::Subscriber subArmRightGoalPose = n.subscribe("arm_right_goal_pose", 1, callback_goal_pose_right);
-    ros::Publisher  joint_pub = n.advertise<sensor_msgs::JointState>("joint_states", 1);
+    ros::Publisher  joint_pub = n.advertise<sensor_msgs::JointState>("/joint_states", 1);
 
     sensor_msgs::JointState joint_states_arms;
   
     joint_states_arms.name.resize(6);
     joint_states_arms.position.resize(6);
  
-    joint_states_arms.name[0] ="left_joint_shoulder_pitch";
-    joint_states_arms.name[1] ="left_joint_shoulder_roll";
-    joint_states_arms.name[2] ="left_joint_elbow_pitch";
+    joint_states_arms.name[0] ="left_shoulder_pitch";
+    joint_states_arms.name[1] ="left_shoulder_roll";
+    joint_states_arms.name[2] ="left_elbow_pitch";
  
-    joint_states_arms.name[3] ="right_joint_shoulder_pitch";
-    joint_states_arms.name[4] ="right_joint_shoulder_roll";
-    joint_states_arms.name[5] ="right_joint_elbow_pitch";
+    joint_states_arms.name[3] ="right_shoulder_pitch";
+    joint_states_arms.name[4] ="right_shoulder_roll";
+    joint_states_arms.name[5] ="right_elbow_pitch";
 
     uint16_t dxl_current_pos_sim [6];
     for(int i=0; i < 6; i++)

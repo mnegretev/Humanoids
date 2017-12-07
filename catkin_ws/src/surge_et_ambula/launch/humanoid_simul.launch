@@ -1,8 +1,18 @@
 <launch>
-	<param name="robot_description" textfile="$(find config_files)/urdf/h_skeleton.urdf"/>
-	<node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher"/>
-	<node name="rviz" pkg="rviz" type="rviz" args="-d $(find config_files)/rviz/config.rviz" required="true"/>
-	<node name="legs_node" pkg="legs" type="legs_simul_node" output="screen"/>
-	<node name="arms_node" pkg="arms" type="arms_simul_node" output="screen"/>
-	<node name="head_node" pkg="head" type="head_simul_node" output="screen"/>
+    <arg name="robot_variant" default="nimbro_op_hull" />
+    <param name="robot_variant" value="$(arg robot_variant)" type="str" />
+    <param name="robot_description" command="$(find xacro)/xacro --inorder 
+                     $(find nimbro_op_model)/robots/$(arg robot_variant).xacro" />
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher"/>
+
+    <group ns="hardware">
+        <node name="head" pkg="head" type="head_simul_node" output="screen"/>
+	<node name="arms" pkg="arms" type="arms_simul_node" output="screen"/>
+	<node name="legs" pkg="legs" type="legs_simul_node" output="screen"/>
+    </group>
+
+    <group ns="hri">
+        <node name="rviz" pkg="rviz" type="rviz" args="-d $(find config_files)/rviz/config.rviz" required="true"/>
+    </group>
+
 </launch>
