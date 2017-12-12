@@ -1,5 +1,5 @@
 #include "ros/ros.h" 
-#include "std_msgs/Float32.h"
+#include "std_msgs/Float32MultiArray.h"
 #include "dynamixel_sdk/dynamixel_sdk.h"
 #include <sensor_msgs/JointState.h>
 #include <tf/transform_broadcaster.h>
@@ -12,147 +12,220 @@
 #include <fcntl.h>
 #include <termios.h>
 
-#define DEVICE_NAME      "/dev/ttyUSB0"
-#define BAUDRATE         57600
-#define PROTOCOL_VERSION 1.0
+#define DEVICE_NAME                   "/dev/ttyUSB0"
+#define BAUDRATE         		          57600
+#define PROTOCOL_VERSION 			          1.0
 
-#define SERVO_MX_RANGE_IN_BITS 4096
-#define SERVO_MX_RANGE_IN_RADS 2*M_PI
-#define SERVO_MX_BITS_PER_RAD  SERVO_MX_RANGE_IN_BITS/SERVO_MX_RANGE_IN_RADS
+#define ADDR_MX_TORQUE_ENABLE            24
+#define TORQUE_ENABLE         	      	  1
+#define TORQUE_DISABLE         	          0
+#define ADDR_MX_TORQUE_MAX            	 14
+#define TORQUE_MAX                     1023	// Range 0-1023
+#define ADDR_MX_TORQUE_LIMIT             34
+#define TORQUE_LIMIT                   1023	// Range 0-1023
 
-#define LEG_LEFT_YAW_ZERO     2048
-#define LEG_LEFT_YAW_CW       1
+#define ADDR_MX_CURRENT_POSITION         36
+#define ADDR_MX_GOAL_POSITION            30
 
-uint16_t goal_position;
+#define LEG_LEFT_YAW_ID                   1
+#define LEG_LEFT_PITCH_ID                 2
+#define LEG_LEFT_ROLL_ID                  3
+#define LEG_LEFT_KNEE_PITCH_ID            4
+#define LEG_LEFT_ANKLE_PITCH_ID           5
+#define LEG_LEFT_ANKLE_ROLL_ID            6
+
+#define LEG_RIGHT_YAW_ID                  7
+#define LEG_RIGHT_PITCH_ID                8
+#define LEG_RIGHT_ROLL_ID                 9
+#define LEG_RIGHT_KNEE_PITCH_ID          10
+#define LEG_RIGHT_ANKLE_PITCH_ID         11
+#define LEG_RIGHT_ANKLE_ROLL_ID          12
+
+#define SERVO_MX_RANGE_IN_BITS 	   	   4096
+#define SERVO_MX_RANGE_IN_RADS 	    (2*M_PI)
+#define SERVO_MX_BITS_PER_RAD  	   	SERVO_MX_RANGE_IN_BITS/SERVO_MX_RANGE_IN_RADS
+
+#define LEG_LEFT_YAW_ZERO			         2048
+#define LEG_LEFT_YAW_CW  			            1
+
+#define LEG_LEFT_PITCH_ZERO        	   2048
+#define LEG_LEFT_PITCH_CW                 1
+
+#define LEG_LEFT_ROLL_ZERO     	   	   2048
+#define LEG_LEFT_ROLL_CW                  1
+
+#define LEG_LEFT_KNEE_PITCH_ZERO       2048
+#define LEG_LEFT_KNEE_PITCH_CW            1
+   
+#define LEG_LEFT_ANKLE_PITCH_ZERO      2048
+#define LEG_LEFT_ANKLE_PITCH_CW           1
+
+#define LEG_LEFT_ANKLE_ROLL_ZERO       2048
+#define LEG_LEFT_ANKLE_ROLL_CW            1
+
+
+#define LEG_RIGHT_YAW_ZERO			       2048
+#define LEG_RIGHT_YAW_CW       		        1
+
+#define LEG_RIGHT_PITCH_ZERO     	     2048
+#define LEG_RIGHT_PITCH_CW       	        1
+
+#define LEG_RIGHT_ROLL_ZERO     	     2048
+#define LEG_RIGHT_ROLL_CW       	        1
+
+#define LEG_RIGHT_KNEE_PITCH_ZERO      2048
+#define LEG_RIGHT_KNEE_PITCH_CW           1
+
+#define LEG_RIGHT_ANKLE_PITCH_ZERO     2048
+#define LEG_RIGHT_ANKLE_PITCH_CW          1
+
+#define LEG_RIGHT_ANKLE_ROLL_ZERO      2048
+#define LEG_RIGHT_ANKLE_ROLL_CW           1
+
+#define SERVO_MX_STEP_SIMUL              30
+
 bool new_goal_position = false;
 
-float conv2 (float b)
+uint16_t goal_position [12];
+
+int position_zero_bits[12] = {
+    LEG_LEFT_YAW_ZERO, 
+    LEG_LEFT_PITCH_ZERO, 
+    LEG_LEFT_ROLL_ZERO, 
+    LEG_LEFT_KNEE_PITCH_ZERO, 
+    LEG_LEFT_ANKLE_PITCH_ZERO,
+    LEG_LEFT_ANKLE_ROLL_ZERO, 
+    LEG_RIGHT_YAW_ZERO, 
+    LEG_RIGHT_PITCH_ZERO, 
+    LEG_RIGHT_ROLL_ZERO, 
+    LEG_RIGHT_KNEE_PITCH_ZERO, 
+    LEG_RIGHT_ANKLE_PITCH_ZERO, 
+    LEG_RIGHT_ANKLE_ROLL_ZERO 
+};
+
+int clockwise_direction[12] = {
+    LEG_LEFT_YAW_CW, 
+    LEG_LEFT_PITCH_CW, 
+    LEG_LEFT_ROLL_CW, 
+    LEG_LEFT_KNEE_PITCH_CW, 
+    LEG_LEFT_ANKLE_PITCH_CW,
+    LEG_LEFT_ANKLE_ROLL_CW, 
+    LEG_RIGHT_YAW_CW, 
+    LEG_RIGHT_PITCH_CW, 
+    LEG_RIGHT_ROLL_CW, 
+    LEG_RIGHT_KNEE_PITCH_CW, 
+    LEG_RIGHT_ANKLE_PITCH_CW, 
+    LEG_RIGHT_ANKLE_ROLL_CW 
+};
+
+void callback_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg)
 {
-  float radbit = 0.0; //Variable para conversión rad a bit
-  radbit = 651.739492*b+2047.5; //Conversión de rad a bit
-  radbit = round(radbit); //Redondea el valor de bit
-  uint16_t entero = 0; //Variable de la posición deseada
-  entero = int(radbit); //Convierte al flotante en entero
-  return entero;
+    for(int i=0; i < 12; i++)
+	  goal_position[i] = uint16_t(msg->data[i] * SERVO_MX_RANGE_IN_BITS/SERVO_MX_RANGE_IN_RADS * clockwise_direction[i] + position_zero_bits[i]);
+
+    new_goal_position = true;
 }
 
-void callback_goal_pose(const std_msgs::Float32::ConstPtr& msg)
+void callback_goal_pose_left(const std_msgs::Float32MultiArray::ConstPtr& msg)
 {
-    std::cout << "LegLeft.->New goal position: " << msg->data << std::endl;
-    goal_position = conv2(msg->data);
+    for(int i=0; i < 6; i++)
+	  goal_position[i] = uint16_t(msg->data[i] * SERVO_MX_RANGE_IN_BITS/SERVO_MX_RANGE_IN_RADS * clockwise_direction[i] + position_zero_bits[i]);
+
+    new_goal_position = true;
+}
+
+void callback_goal_pose_right(const std_msgs::Float32MultiArray::ConstPtr& msg)
+{
+    for(int i=6; i < 12; i++)
+	  goal_position[i] = uint16_t(msg->data[i - 6] * SERVO_MX_RANGE_IN_BITS/SERVO_MX_RANGE_IN_RADS * clockwise_direction[i] + position_zero_bits[i]);
+
     new_goal_position = true;
 }
 
 int main(int argc, char** argv)
  {     
-    //Inicializamos el publicador de simulación
-    ros::init(argc, argv, "state_publisher");
-    ros::NodeHandle n1;
-    ros::Publisher joint_pub = n1.advertise<sensor_msgs::JointState>("joint_states", 1);
-    tf::TransformBroadcaster broadcaster;
+    std::cout << "INITIALIZING LEGS NODE..." << std::endl;
+    ros::init(argc, argv, "legs");
+    ros::NodeHandle n;
+    ros::Rate loop(30);
+    ros::Subscriber subLegsGoalPose     = n.subscribe("legs_goal_pose", 1, callback_goal_pose);
+    ros::Subscriber subLegLeftGoalPose  = n.subscribe("leg_left_goal_pose", 1, callback_goal_pose_left);
+    ros::Subscriber subLegRightGoalPose = n.subscribe("leg_right_goal_pose", 1, callback_goal_pose_right);
+    ros::Publisher  joint_pub = n.advertise<sensor_msgs::JointState>("/joint_states", 1);
 
-    // message declarations
-    geometry_msgs::TransformStamped odom_trans;
     sensor_msgs::JointState joint_state_legs;
-   
-    odom_trans.header.frame_id = "odom";
-    odom_trans.child_frame_id = "trunk";
- 
-    //odom_trans.header.stamp = ros::Time::now();
-    odom_trans.transform.translation.x = 0.0;//cos(angle)*2;
-    odom_trans.transform.translation.y = 0.0;//sin(angle)*2;
-    odom_trans.transform.translation.z = 0.0;//.7;
-    odom_trans.transform.rotation = tf::createQuaternionMsgFromYaw(0);
   
     joint_state_legs.name.resize(12);
     joint_state_legs.position.resize(12);
   
-    joint_state_legs.name[0] ="left_joint_leg_yaw";
-    joint_state_legs.name[1] ="left_joint_leg_pitch";
-    joint_state_legs.name[2] ="left_joint_leg_roll";
-    joint_state_legs.name[3] ="left_joint_knee_pitch";
-    joint_state_legs.name[4] ="left_joint_ankle_pitch";
-    joint_state_legs.name[5] ="left_joint_ankle_roll";
+    joint_state_legs.name[0] ="left_hip_yaw";   
+    joint_state_legs.name[1] ="left_hip_roll";  
+    joint_state_legs.name[2] ="left_hip_pitch"; 
+    joint_state_legs.name[3] ="left_knee_pitch";
+    joint_state_legs.name[4] ="left_ankle_pitch";
+    joint_state_legs.name[5] ="left_ankle_roll";
   
-    joint_state_legs.name[6] ="right_joint_leg_yaw";
-    joint_state_legs.name[7] ="right_joint_leg_pitch";
-    joint_state_legs.name[8] ="right_joint_leg_roll";
-    joint_state_legs.name[9] ="right_joint_knee_pitch";
-    joint_state_legs.name[10] ="right_joint_ankle_pitch";
-    joint_state_legs.name[11] ="right_joint_ankle_roll";
- 
-
-    std::cout << "INITIALIZING LEFT LEG NODE BY MARCOSOFT..." << std::endl;
-    ros::init(argc, argv, "legs");
-    ros::NodeHandle n;
-    ros::Rate loop(10);
-    ros::Subscriber subGoalPose = n.subscribe("goal_pose", 1, callback_goal_pose);
+    joint_state_legs.name[6]  ="right_hip_yaw";
+    joint_state_legs.name[7]  ="right_hip_roll";
+    joint_state_legs.name[8]  ="right_hip_pitch";
+    joint_state_legs.name[9]  ="right_knee_pitch";
+    joint_state_legs.name[10] ="right_ankle_pitch";
+    joint_state_legs.name[11] ="right_ankle_roll";
 
     dynamixel::PortHandler   *portHandler   = dynamixel::PortHandler::getPortHandler(DEVICE_NAME);
     dynamixel::PacketHandler *packetHandler = dynamixel::PacketHandler::getPacketHandler(PROTOCOL_VERSION);
 
     if(portHandler->openPort())
-	std::cout << "LegLeft.->Serial port successfully openned" << std::endl;
+		    std::cout << "Legs.->Serial port successfully openned" << std::endl;
     else
-    {
-	std::cout << "LegLeft.->Cannot open serial port" << std::endl;
-	return -1;
-    }
+    	{
+			  std::cout << "Legs.->Cannot open serial port" << std::endl;
+			  return -1;
+    	}
+
     if(portHandler->setBaudRate(BAUDRATE))
-	std::cout << "LegLeft.->Baudrate successfully set to " << BAUDRATE << std::endl;
+		    std::cout << "Legs.->Baudrate successfully set to " << BAUDRATE << std::endl;
     else
+    	{
+			  std::cout << "Legs.->Cannot set baud rate" << std::endl;
+			  return -1;
+    	}
+
+    uint8_t dxl_error = 0;
+
+    for(int i=0; i < 12; i++)
     {
-	std::cout << "LegLeft.->Cannot set baud rate" << std::endl;
-	return -1;
+        packetHandler->write2ByteTxRx(portHandler, i, ADDR_MX_TORQUE_MAX, TORQUE_MAX, &dxl_error);
+        packetHandler->write2ByteTxRx(portHandler, i, ADDR_MX_TORQUE_LIMIT, TORQUE_LIMIT, &dxl_error);
     }
 
-    int problem_counter = 0;
-    int total_counter = 0;
+    uint16_t dxl_current_pos [12];
 
-    uint16_t dxl_current_pos;
-    uint8_t  dxl_error;
-    //packetHandler->write2ByteTxRx(portHandler, 1, 14, 1023, &dxl_error); //Máximo par
     while(ros::ok())
     {
-      int dxl_comm_result = packetHandler->read2ByteTxRx(portHandler, 1, 36, &dxl_current_pos, &dxl_error);
-      if(dxl_comm_result != COMM_SUCCESS)
-	packetHandler->printTxRxResult(dxl_comm_result);
-      //  problem_counter++;
-      else if (dxl_error != 0)
-	packetHandler->printRxPacketError(dxl_error);
-	//problem_counter++;
-      std::cout << "Current position: " << (int)dxl_current_pos << std::endl;
-      total_counter++;
-      //std::cout << "Problem rate: " << problem_counter << " out of " << total_counter << std::endl
+      for(int i=0; i < 12; i++)
+         packetHandler->read2ByteTxRx(portHandler, i, ADDR_MX_CURRENT_POSITION, &dxl_current_pos[i], &dxl_error);
 
       joint_state_legs.header.stamp = ros::Time::now();
-      joint_state_legs.position[0] = ((int)(dxl_current_pos) - LEG_LEFT_YAW_ZERO)*LEG_LEFT_YAW_CW * (2*M_PI / 4096.0);
-      joint_state_legs.position[1] = 0;
-      joint_state_legs.position[2] = 0;
-      joint_state_legs.position[3] = 0;
-      joint_state_legs.position[4] = 0;
-      joint_state_legs.position[5] = 0;
-      joint_state_legs.position[6] = 0;
-      joint_state_legs.position[7] = 0;
-      joint_state_legs.position[8] = 0;
-      joint_state_legs.position[9] = 0;
-      joint_state_legs.position[10] = 0;
-      joint_state_legs.position[11] = 0;
 
-      // (moving in a circle with radius=2)
-      odom_trans.header.stamp = ros::Time::now();
+      for(int i=0; i < 12; i++)
+      {
+         joint_state_legs.position[i] = ((int)(dxl_current_pos[i]) - position_zero_bits[i]) * clockwise_direction[i] *
+         (SERVO_MX_RANGE_IN_RADS/SERVO_MX_RANGE_IN_BITS);
+      }
 
-      // //send the joint state and transform
       joint_pub.publish(joint_state_legs);
-      broadcaster.sendTransform(odom_trans);
-
        
-      if(new_goal_position)
-	{
-	  new_goal_position = false;
-	  dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, 1, 24, 1, &dxl_error); //Habilita par
-	  packetHandler->write2ByteTxRx(portHandler, 1, 30, goal_position, &dxl_error); //Escribe la posición deseada
-	}
+      if(new_goal_position = true)
+	    {
+	        new_goal_position = false;
+
+          for(int i=0; i < 12; i++)
+          {
+	           packetHandler->write1ByteTxRx(portHandler, i, ADDR_MX_TORQUE_ENABLE, TORQUE_ENABLE, &dxl_error);
+	           packetHandler->write2ByteTxRx(portHandler, i, ADDR_MX_GOAL_POSITION, goal_position[i], &dxl_error);
+          }
+	    }
       ros::spinOnce();
       loop.sleep();
     }
