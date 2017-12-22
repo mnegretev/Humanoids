@@ -13,6 +13,7 @@
 
     <group ns="hri">
         <node name="rviz" pkg="rviz" type="rviz" args="-d $(find config_files)/rviz/config.rviz" required="true"/>
+	<node name="humanoid_gui" pkg="humanoid_gui" type="humanoid_gui" output="screen"/>
     </group>
 
 </launch>
