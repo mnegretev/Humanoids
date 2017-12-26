@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(inverse_kinematics)
+add_compile_options(-std=c++11)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -13,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   std_msgs
   tf
+  moveit_kinematics
 )
 
 ## System dependencies are found with CMake's conventions
@@ -135,9 +137,10 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
- add_executable(humanoid_motion_head_node src/humanoid_motion_head_node.cpp)
- add_executable(humanoid_motion_arms_node src/humanoid_motion_arms_node.cpp)
- add_executable(humanoid_motion_legs_node src/humanoid_motion_legs_node.cpp)
+add_executable(humanoid_motion_head_node src/humanoid_motion_head_node.cpp)
+add_executable(humanoid_motion_arms_node src/humanoid_motion_arms_node.cpp)
+add_executable(humanoid_motion_legs_node src/humanoid_motion_legs_node.cpp)
+add_executable(ik_moveit_node src/ik_moveit_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -150,19 +153,23 @@ include_directories(
 add_dependencies(humanoid_motion_head_node ${humanoid_motion_head_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(humanoid_motion_arms_node ${humanoid_motion_arms_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(humanoid_motion_legs_node ${humanoid_motion_legs_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(ik_moveit_node ${humanoid_motion_legs_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
- target_link_libraries(humanoid_motion_head_node
-   ${catkin_LIBRARIES}
- )
+target_link_libraries(humanoid_motion_head_node
+  ${catkin_LIBRARIES}
+)
 
- target_link_libraries(humanoid_motion_arms_node
-   ${catkin_LIBRARIES}
- )
+target_link_libraries(humanoid_motion_arms_node
+  ${catkin_LIBRARIES}
+)
 
- target_link_libraries(humanoid_motion_legs_node
-   ${catkin_LIBRARIES}
- )
+target_link_libraries(humanoid_motion_legs_node
+  ${catkin_LIBRARIES}
+)
+target_link_libraries(ik_moveit_node
+  ${catkin_LIBRARIES}
+)
 
 #############
 ## Install ##
