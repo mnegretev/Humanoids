@@ -45,7 +45,7 @@ QRadioButton::indicator{
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="tabGeneral">
      <attribute name="title">
@@ -470,6 +470,850 @@ QRadioButton::indicator{
       </property>
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_10">
+      <property name="geometry">
+       <rect>
+        <x>75</x>
+        <y>265</y>
+        <width>67</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;Left Leg&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="textFormat">
+       <enum>Qt::RichText</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_11">
+      <property name="geometry">
+       <rect>
+        <x>435</x>
+        <y>265</y>
+        <width>81</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;Right Leg&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="textFormat">
+       <enum>Qt::RichText</enum>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="tabIK">
+     <attribute name="title">
+      <string>Inverse Kinematics</string>
+     </attribute>
+     <widget class="QDoubleSpinBox" name="sbLegLeftX">
+      <property name="geometry">
+       <rect>
+        <x>90</x>
+        <y>270</y>
+        <width>69</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="keyboardTracking">
+       <bool>false</bool>
+      </property>
+      <property name="decimals">
+       <number>3</number>
+      </property>
+      <property name="minimum">
+       <double>-1.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>1.000000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.005000000000000</double>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>275</y>
+        <width>21</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>X:</string>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="sbLegLeft0">
+      <property name="geometry">
+       <rect>
+        <x>170</x>
+        <y>270</y>
+        <width>69</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="keyboardTracking">
+       <bool>true</bool>
+      </property>
+      <property name="decimals">
+       <number>3</number>
+      </property>
+      <property name="minimum">
+       <double>-1.570000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>1.570000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.050000000000000</double>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_2">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>305</y>
+        <width>21</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Y:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_3">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>335</y>
+        <width>21</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Z:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_4">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>365</y>
+        <width>21</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>R:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_5">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>395</y>
+        <width>21</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>P:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_6">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>425</y>
+        <width>21</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Y:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_7">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>250</y>
+        <width>67</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Cartesian:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_8">
+      <property name="geometry">
+       <rect>
+        <x>170</x>
+        <y>250</y>
+        <width>67</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Articular:</string>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="sbLegLeft2">
+      <property name="geometry">
+       <rect>
+        <x>170</x>
+        <y>330</y>
+        <width>69</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="decimals">
+       <number>3</number>
+      </property>
+      <property name="minimum">
+       <double>-1.570000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>1.570000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.050000000000000</double>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="sbLegLeft3">
+      <property name="geometry">
+       <rect>
+        <x>170</x>
+        <y>360</y>
+        <width>69</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="decimals">
+       <number>3</number>
+      </property>
+      <property name="minimum">
+       <double>-1.570000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>1.570000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.050000000000000</double>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="sbLegLeft4">
+      <property name="geometry">
+       <rect>
+        <x>170</x>
+        <y>390</y>
+        <width>69</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="decimals">
+       <number>3</number>
+      </property>
+      <property name="minimum">
+       <double>-1.570000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>1.570000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.050000000000000</double>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="sbLegLeft5">
+      <property name="geometry">
+       <rect>
+        <x>170</x>
+        <y>420</y>
+        <width>69</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="decimals">
+       <number>3</number>
+      </property>
+      <property name="minimum">
+       <double>-1.570000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>1.570000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.050000000000000</double>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="sbLegLeft1">
+      <property name="geometry">
+       <rect>
+        <x>170</x>
+        <y>300</y>
+        <width>69</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="decimals">
+       <number>3</number>
+      </property>
+      <property name="minimum">
+       <double>-1.570000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>1.570000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.050000000000000</double>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="sbLegLeftY">
+      <property name="geometry">
+       <rect>
+        <x>90</x>
+        <y>300</y>
+        <width>69</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="keyboardTracking">
+       <bool>false</bool>
+      </property>
+      <property name="decimals">
+       <number>3</number>
+      </property>
+      <property name="minimum">
+       <double>-1.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>1.000000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.005000000000000</double>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="sbLegLeftZ">
+      <property name="geometry">
+       <rect>
+        <x>90</x>
+        <y>330</y>
+        <width>69</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="keyboardTracking">
+       <bool>false</bool>
+      </property>
+      <property name="decimals">
+       <number>3</number>
+      </property>
+      <property name="minimum">
+       <double>-1.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>1.000000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.005000000000000</double>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="sbLegLeftRoll">
+      <property name="geometry">
+       <rect>
+        <x>90</x>
+        <y>360</y>
+        <width>69</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="keyboardTracking">
+       <bool>false</bool>
+      </property>
+      <property name="decimals">
+       <number>3</number>
+      </property>
+      <property name="minimum">
+       <double>-3.140000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>3.140000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.005000000000000</double>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="sbLegLeftPitch">
+      <property name="geometry">
+       <rect>
+        <x>90</x>
+        <y>390</y>
+        <width>69</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="keyboardTracking">
+       <bool>false</bool>
+      </property>
+      <property name="decimals">
+       <number>3</number>
+      </property>
+      <property name="minimum">
+       <double>-3.140000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>3.140000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.005000000000000</double>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="sbLegLeftYaw">
+      <property name="geometry">
+       <rect>
+        <x>90</x>
+        <y>420</y>
+        <width>69</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="keyboardTracking">
+       <bool>false</bool>
+      </property>
+      <property name="decimals">
+       <number>3</number>
+      </property>
+      <property name="minimum">
+       <double>-3.140000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>3.140000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.005000000000000</double>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_9">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>225</y>
+        <width>67</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;Left Leg&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="textFormat">
+       <enum>Qt::RichText</enum>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="sbLegRight1">
+      <property name="geometry">
+       <rect>
+        <x>425</x>
+        <y>300</y>
+        <width>69</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="decimals">
+       <number>3</number>
+      </property>
+      <property name="minimum">
+       <double>-1.570000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>1.570000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.050000000000000</double>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_12">
+      <property name="geometry">
+       <rect>
+        <x>325</x>
+        <y>250</y>
+        <width>67</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Cartesian:</string>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="sbLegRightY">
+      <property name="geometry">
+       <rect>
+        <x>345</x>
+        <y>300</y>
+        <width>69</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="keyboardTracking">
+       <bool>false</bool>
+      </property>
+      <property name="decimals">
+       <number>3</number>
+      </property>
+      <property name="minimum">
+       <double>-1.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>1.000000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.005000000000000</double>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="sbLegRight5">
+      <property name="geometry">
+       <rect>
+        <x>425</x>
+        <y>420</y>
+        <width>69</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="decimals">
+       <number>3</number>
+      </property>
+      <property name="minimum">
+       <double>-1.570000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>1.570000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.050000000000000</double>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_13">
+      <property name="geometry">
+       <rect>
+        <x>325</x>
+        <y>275</y>
+        <width>21</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>X:</string>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="sbLegRightPitch">
+      <property name="geometry">
+       <rect>
+        <x>345</x>
+        <y>390</y>
+        <width>69</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="keyboardTracking">
+       <bool>false</bool>
+      </property>
+      <property name="decimals">
+       <number>3</number>
+      </property>
+      <property name="minimum">
+       <double>-3.140000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>3.140000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.005000000000000</double>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_14">
+      <property name="geometry">
+       <rect>
+        <x>325</x>
+        <y>365</y>
+        <width>21</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>R:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_15">
+      <property name="geometry">
+       <rect>
+        <x>325</x>
+        <y>395</y>
+        <width>21</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>P:</string>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="sbLegRightYaw">
+      <property name="geometry">
+       <rect>
+        <x>345</x>
+        <y>420</y>
+        <width>69</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="keyboardTracking">
+       <bool>false</bool>
+      </property>
+      <property name="decimals">
+       <number>3</number>
+      </property>
+      <property name="minimum">
+       <double>-3.140000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>3.140000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.005000000000000</double>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="sbLegRightRoll">
+      <property name="geometry">
+       <rect>
+        <x>345</x>
+        <y>360</y>
+        <width>69</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="keyboardTracking">
+       <bool>false</bool>
+      </property>
+      <property name="decimals">
+       <number>3</number>
+      </property>
+      <property name="minimum">
+       <double>-3.140000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>3.140000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.005000000000000</double>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_16">
+      <property name="geometry">
+       <rect>
+        <x>425</x>
+        <y>250</y>
+        <width>67</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Articular:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_17">
+      <property name="geometry">
+       <rect>
+        <x>375</x>
+        <y>225</y>
+        <width>91</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;Right Leg&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="textFormat">
+       <enum>Qt::RichText</enum>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="sbLegRight4">
+      <property name="geometry">
+       <rect>
+        <x>425</x>
+        <y>390</y>
+        <width>69</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="decimals">
+       <number>3</number>
+      </property>
+      <property name="minimum">
+       <double>-1.570000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>1.570000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.050000000000000</double>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_18">
+      <property name="geometry">
+       <rect>
+        <x>325</x>
+        <y>305</y>
+        <width>21</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Y:</string>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="sbLegRight0">
+      <property name="geometry">
+       <rect>
+        <x>425</x>
+        <y>270</y>
+        <width>69</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="decimals">
+       <number>3</number>
+      </property>
+      <property name="minimum">
+       <double>-1.570000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>1.570000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.050000000000000</double>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="sbLegRightX">
+      <property name="geometry">
+       <rect>
+        <x>345</x>
+        <y>270</y>
+        <width>69</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="keyboardTracking">
+       <bool>false</bool>
+      </property>
+      <property name="decimals">
+       <number>3</number>
+      </property>
+      <property name="minimum">
+       <double>-1.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>1.000000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.005000000000000</double>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_19">
+      <property name="geometry">
+       <rect>
+        <x>325</x>
+        <y>425</y>
+        <width>21</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Y:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_20">
+      <property name="geometry">
+       <rect>
+        <x>325</x>
+        <y>335</y>
+        <width>21</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Z:</string>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="sbLegRight2">
+      <property name="geometry">
+       <rect>
+        <x>425</x>
+        <y>330</y>
+        <width>69</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="decimals">
+       <number>3</number>
+      </property>
+      <property name="minimum">
+       <double>-1.570000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>1.570000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.050000000000000</double>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="sbLegRightZ">
+      <property name="geometry">
+       <rect>
+        <x>345</x>
+        <y>330</y>
+        <width>69</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="keyboardTracking">
+       <bool>false</bool>
+      </property>
+      <property name="decimals">
+       <number>3</number>
+      </property>
+      <property name="minimum">
+       <double>-1.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>1.000000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.005000000000000</double>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="sbLegRight3">
+      <property name="geometry">
+       <rect>
+        <x>425</x>
+        <y>360</y>
+        <width>69</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="decimals">
+       <number>3</number>
+      </property>
+      <property name="minimum">
+       <double>-1.570000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>1.570000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.050000000000000</double>
       </property>
      </widget>
     </widget>

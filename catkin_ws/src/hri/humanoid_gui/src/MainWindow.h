@@ -26,6 +26,8 @@ public:
     QtRosNode* qtRosNode;
     std::vector<float> legLeftGoalPose;
     std::vector<float> legRightGoalPose;
+    bool legLeftIgnoreValueChanged;
+    bool legRightIgnoreValueChanged;
 
     void setRosNode(QtRosNode* qtRosNode);
     void closeEvent(QCloseEvent *event);
@@ -36,6 +38,11 @@ public slots:
     //Slots for signals emitted by the horizontal sliders
     void sliderLegLeftValueChanged(int val);
     void sliderLegRightValueChanged(int val);
+    //Slots for signals emitted by the IK controls
+    void txtLegLeftCartesianChanged(double);
+    void txtLegLeftArticularChanged(double);
+    void txtLegRightCartesianChanged(double);
+    void txtLegRightArticularChanged(double);
 
 private:
     Ui::MainWindow *ui;
