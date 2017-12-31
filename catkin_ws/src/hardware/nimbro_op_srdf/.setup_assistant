@@ -1,0 +1,10 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: nimbro_op_model
+    relative_path: robots/simple_nimbro_op_hull.xml
+  SRDF:
+    relative_path: config/nimbro.srdf
+  CONFIG:
+    author_name: Marco Negrete
+    author_email: mnegretev@gmail.com
+    generated_timestamp: 1514359563
