@@ -27,19 +27,19 @@
 #define ADDR_MX_CURRENT_POSITION         36
 #define ADDR_MX_GOAL_POSITION            30
 
-#define LEG_LEFT_YAW_ID                   1
-#define LEG_LEFT_PITCH_ID                 2
-#define LEG_LEFT_ROLL_ID                  3
-#define LEG_LEFT_KNEE_PITCH_ID            4
-#define LEG_LEFT_ANKLE_PITCH_ID           5
-#define LEG_LEFT_ANKLE_ROLL_ID            6
+#define LEG_LEFT_YAW_ID                   0
+#define LEG_LEFT_PITCH_ID                 1
+#define LEG_LEFT_ROLL_ID                  2
+#define LEG_LEFT_KNEE_PITCH_ID            3
+#define LEG_LEFT_ANKLE_PITCH_ID           4
+#define LEG_LEFT_ANKLE_ROLL_ID            5
 
-#define LEG_RIGHT_YAW_ID                  7
-#define LEG_RIGHT_PITCH_ID                8
-#define LEG_RIGHT_ROLL_ID                 9
-#define LEG_RIGHT_KNEE_PITCH_ID          10
-#define LEG_RIGHT_ANKLE_PITCH_ID         11
-#define LEG_RIGHT_ANKLE_ROLL_ID          12
+#define LEG_RIGHT_YAW_ID                  6
+#define LEG_RIGHT_PITCH_ID                7
+#define LEG_RIGHT_ROLL_ID                 8
+#define LEG_RIGHT_KNEE_PITCH_ID          9
+#define LEG_RIGHT_ANKLE_PITCH_ID         10
+#define LEG_RIGHT_ANKLE_ROLL_ID          11
 
 #define SERVO_MX_RANGE_IN_BITS 	   	   4096
 #define SERVO_MX_RANGE_IN_RADS 	    (2*M_PI)
@@ -176,22 +176,23 @@ int main(int argc, char** argv)
     dynamixel::PacketHandler *packetHandler = dynamixel::PacketHandler::getPacketHandler(PROTOCOL_VERSION);
 
     if(portHandler->openPort())
-		    std::cout << "Legs.->Serial port successfully openned" << std::endl;
+		 std::cout << "Legs.->Serial port successfully openned" << std::endl;
     else
     	{
-			  std::cout << "Legs.->Cannot open serial port" << std::endl;
-			  return -1;
+		 std::cout << "Legs.->Cannot open serial port" << std::endl;
+		 return -1;
     	}
 
     if(portHandler->setBaudRate(BAUDRATE))
-		    std::cout << "Legs.->Baudrate successfully set to " << BAUDRATE << std::endl;
+		 std::cout << "Legs.->Baudrate successfully set to " << BAUDRATE << std::endl;
     else
     	{
-			  std::cout << "Legs.->Cannot set baud rate" << std::endl;
-			  return -1;
+	     std::cout << "Legs.->Cannot set baud rate" << std::endl;
+		 return -1;
     	}
 
     uint8_t dxl_error = 0;
+    int dxl_comm_result = COMM_TX_FAIL;
 
     for(int i=0; i < 12; i++)
     {
@@ -204,7 +205,12 @@ int main(int argc, char** argv)
     while(ros::ok())
     {
       for(int i=0; i < 12; i++)
-         packetHandler->read2ByteTxRx(portHandler, i, ADDR_MX_CURRENT_POSITION, &dxl_current_pos[i], &dxl_error);
+      {
+         dxl_comm_result = packetHandler->read2ByteTxRx(portHandler, i, ADDR_MX_CURRENT_POSITION, &dxl_current_pos[i], &dxl_error);
+
+         if (dxl_comm_result != COMM_SUCCESS)
+            dxl_current_pos[i] = position_zero_bits[i];
+      }
 
       joint_state_legs.header.stamp = ros::Time::now();
 
@@ -220,7 +226,7 @@ int main(int argc, char** argv)
 	    {
 	        new_goal_position = false;
 
-          for(int i=0; i < 12; i++)
+          for(int i=0; i < 2; i++)
           {
 	           packetHandler->write1ByteTxRx(portHandler, i, ADDR_MX_TORQUE_ENABLE, TORQUE_ENABLE, &dxl_error);
 	           packetHandler->write2ByteTxRx(portHandler, i, ADDR_MX_GOAL_POSITION, goal_position[i], &dxl_error);
