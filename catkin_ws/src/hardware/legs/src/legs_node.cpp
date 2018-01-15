@@ -201,15 +201,33 @@ int main(int argc, char** argv)
     }
 
     uint16_t dxl_current_pos [12];
+    uint16_t dxl_current_pos_test [12];
+
+    for(int i=0; i < 12; i++)
+    {
+        dxl_current_pos [i] = position_zero_bits[i];
+        dxl_current_pos_test[i] = position_zero_bits[i];
+    }
 
     while(ros::ok())
     {
       for(int i=0; i < 12; i++)
       {
-         dxl_comm_result = packetHandler->read2ByteTxRx(portHandler, i, ADDR_MX_CURRENT_POSITION, &dxl_current_pos[i], &dxl_error);
+         dxl_comm_result = packetHandler->read2ByteTxRx(portHandler, i, ADDR_MX_CURRENT_POSITION, &dxl_current_pos_test[i], &dxl_error);
 
          if (dxl_comm_result != COMM_SUCCESS)
-            dxl_current_pos[i] = position_zero_bits[i];
+            {
+            //packetHandler->printTxRxResult(dxl_comm_result);
+            }
+        else if (dxl_error != 0)
+            {
+            //packetHandler->printRxPacketError(dxl_error);
+            }
+        else if (dxl_comm_result == COMM_SUCCESS)
+            {
+            //packetHandler->printTxRxResult(dxl_comm_result);
+            dxl_current_pos[i]=dxl_current_pos_test[i];
+            }
       }
 
       joint_state_legs.header.stamp = ros::Time::now();
@@ -226,7 +244,7 @@ int main(int argc, char** argv)
 	    {
 	        new_goal_position = false;
 
-          for(int i=0; i < 2; i++)
+          for(int i=0; i < 12; i++)
           {
 	           packetHandler->write1ByteTxRx(portHandler, i, ADDR_MX_TORQUE_ENABLE, TORQUE_ENABLE, &dxl_error);
 	           packetHandler->write2ByteTxRx(portHandler, i, ADDR_MX_GOAL_POSITION, goal_position[i], &dxl_error);

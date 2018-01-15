@@ -152,15 +152,33 @@ int main(int argc, char** argv)
     }
 
     uint16_t dxl_current_pos [6];
+    uint16_t dxl_current_pos_test [6];
+
+    for(int i=0; i < 6; i++)
+    {
+        dxl_current_pos [i] = position_zero_bits[i];
+        dxl_current_pos_test[i] = position_zero_bits[i];
+    }
 
     while(ros::ok())
     {
         for(int i=12; i < 18; i++)
-        {
-         dxl_comm_result = packetHandler->read2ByteTxRx(portHandler, i, ADDR_MX_CURRENT_POSITION, &dxl_current_pos[i - 12], &dxl_error);
+      	{
+         	dxl_comm_result = packetHandler->read2ByteTxRx(portHandler, i, ADDR_MX_CURRENT_POSITION, &dxl_current_pos_test[i - 12], &dxl_error);
 
-         if (dxl_comm_result != COMM_SUCCESS)
-            dxl_current_pos[i - 12] = position_zero_bits[i - 12];
+         	if (dxl_comm_result != COMM_SUCCESS)
+            	{
+            	//packetHandler->printTxRxResult(dxl_comm_result);
+            	}
+        	else if (dxl_error != 0)
+            	{
+            	//packetHandler->printRxPacketError(dxl_error);
+            	}
+        	else if (dxl_comm_result == COMM_SUCCESS)
+            	{
+            	//packetHandler->printTxRxResult(dxl_comm_result);
+            	dxl_current_pos[i - 12]=dxl_current_pos_test[i - 12];
+            	}
         }
 
       joint_state_arms.header.stamp = ros::Time::now();
