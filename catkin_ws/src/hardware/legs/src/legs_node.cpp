@@ -1,5 +1,6 @@
 #include "ros/ros.h" 
 #include "std_msgs/Float32MultiArray.h"
+#include "std_msgs/UInt16.h"
 #include "dynamixel_sdk/dynamixel_sdk.h"
 #include <sensor_msgs/JointState.h>
 #include <tf/transform_broadcaster.h>
@@ -12,8 +13,8 @@
 #include <fcntl.h>
 #include <termios.h>
 
-#define DEVICE_NAME                   "/dev/ttyUSB0"
-#define BAUDRATE         		          57600
+#define DEVICE_NAME                   "/dev/ttyUSB1"
+#define BAUDRATE         		          1000000
 #define PROTOCOL_VERSION 			          1.0
 
 #define ADDR_MX_TORQUE_ENABLE            24
@@ -23,6 +24,11 @@
 #define TORQUE_MAX                     1023	// Range 0-1023
 #define ADDR_MX_TORQUE_LIMIT             34
 #define TORQUE_LIMIT                   1023	// Range 0-1023
+
+#define ADDR_MX_TORQUE_MODE              70
+
+#define ADDR_MX_MOVING_SPEED             32 // Range 0-1023
+#define MX_MOVING_SPEED                  40 // The unit is about 0.114 rpm
 
 #define ADDR_MX_CURRENT_POSITION         36
 #define ADDR_MX_GOAL_POSITION            30
@@ -45,32 +51,32 @@
 #define SERVO_MX_RANGE_IN_RADS 	    (2*M_PI)
 #define SERVO_MX_BITS_PER_RAD  	   	SERVO_MX_RANGE_IN_BITS/SERVO_MX_RANGE_IN_RADS
 
-#define LEG_LEFT_YAW_ZERO			         2048
+#define LEG_LEFT_YAW_ZERO			         1543
 #define LEG_LEFT_YAW_CW  			            1
 
-#define LEG_LEFT_PITCH_ZERO        	   2048
+#define LEG_LEFT_PITCH_ZERO        	   1600
 #define LEG_LEFT_PITCH_CW                 1
 
-#define LEG_LEFT_ROLL_ZERO     	   	   2048
+#define LEG_LEFT_ROLL_ZERO     	   	   1800
 #define LEG_LEFT_ROLL_CW                  1
 
-#define LEG_LEFT_KNEE_PITCH_ZERO       2048
+#define LEG_LEFT_KNEE_PITCH_ZERO       2100
 #define LEG_LEFT_KNEE_PITCH_CW            1
    
 #define LEG_LEFT_ANKLE_PITCH_ZERO      2048
 #define LEG_LEFT_ANKLE_PITCH_CW           1
 
-#define LEG_LEFT_ANKLE_ROLL_ZERO       2048
+#define LEG_LEFT_ANKLE_ROLL_ZERO       1800
 #define LEG_LEFT_ANKLE_ROLL_CW            1
 
 
-#define LEG_RIGHT_YAW_ZERO			       2048
+#define LEG_RIGHT_YAW_ZERO			       1050
 #define LEG_RIGHT_YAW_CW       		        1
 
-#define LEG_RIGHT_PITCH_ZERO     	     2048
+#define LEG_RIGHT_PITCH_ZERO     	     2440
 #define LEG_RIGHT_PITCH_CW       	        1
 
-#define LEG_RIGHT_ROLL_ZERO     	     2048
+#define LEG_RIGHT_ROLL_ZERO     	     2680
 #define LEG_RIGHT_ROLL_CW       	        1
 
 #define LEG_RIGHT_KNEE_PITCH_ZERO      2048
@@ -85,8 +91,10 @@
 #define SERVO_MX_STEP_SIMUL              30
 
 bool new_goal_position = false;
+bool new_torque_mode= false;
 
 uint16_t goal_position [12];
+uint16_t torque_mode = 0;
 
 int position_zero_bits[12] = {
     LEG_LEFT_YAW_ZERO, 
@@ -118,6 +126,21 @@ int clockwise_direction[12] = {
     LEG_RIGHT_ANKLE_ROLL_CW 
 };
 
+int dxl_ID[12] = {
+    LEG_LEFT_YAW_ID,         
+    LEG_LEFT_PITCH_ID,       
+    LEG_LEFT_ROLL_ID,        
+    LEG_LEFT_KNEE_PITCH_ID,  
+    LEG_LEFT_ANKLE_PITCH_ID, 
+    LEG_LEFT_ANKLE_ROLL_ID,  
+    LEG_RIGHT_YAW_ID,        
+    LEG_RIGHT_PITCH_ID,      
+    LEG_RIGHT_ROLL_ID,       
+    LEG_RIGHT_KNEE_PITCH_ID, 
+    LEG_RIGHT_ANKLE_PITCH_ID,
+    LEG_RIGHT_ANKLE_ROLL_ID 
+};
+
 void callback_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg)
 {
     for(int i=0; i < 12; i++)
@@ -142,15 +165,23 @@ void callback_goal_pose_right(const std_msgs::Float32MultiArray::ConstPtr& msg)
     new_goal_position = true;
 }
 
+void callback_torque_mode(const std_msgs::UInt16::ConstPtr& msg)
+{
+    torque_mode = msg->data;
+    new_torque_mode = true;
+}
+
 int main(int argc, char** argv)
  {     
     std::cout << "INITIALIZING LEGS NODE..." << std::endl;
     ros::init(argc, argv, "legs");
     ros::NodeHandle n;
     ros::Rate loop(30);
+
     ros::Subscriber subLegsGoalPose     = n.subscribe("legs_goal_pose", 1, callback_goal_pose);
     ros::Subscriber subLegLeftGoalPose  = n.subscribe("leg_left_goal_pose", 1, callback_goal_pose_left);
     ros::Subscriber subLegRightGoalPose = n.subscribe("leg_right_goal_pose", 1, callback_goal_pose_right);
+    ros::Subscriber subLegsTorqueMode   = n.subscribe("legs_torque_mode", 1, callback_torque_mode);
     ros::Publisher  joint_pub = n.advertise<sensor_msgs::JointState>("/joint_states", 1);
 
     sensor_msgs::JointState joint_state_legs;
@@ -196,8 +227,35 @@ int main(int argc, char** argv)
 
     for(int i=0; i < 12; i++)
     {
-        packetHandler->write2ByteTxRx(portHandler, i, ADDR_MX_TORQUE_MAX, TORQUE_MAX, &dxl_error);
-        packetHandler->write2ByteTxRx(portHandler, i, ADDR_MX_TORQUE_LIMIT, TORQUE_LIMIT, &dxl_error);
+        dxl_comm_result = packetHandler->write2ByteTxRx(portHandler, dxl_ID[i], ADDR_MX_TORQUE_MAX, TORQUE_MAX, &dxl_error);
+            if (dxl_comm_result != COMM_SUCCESS)
+            {
+            //packetHandler->printTxRxResult(dxl_comm_result);
+            }
+        else if (dxl_error != 0)
+            {
+            //packetHandler->printRxPacketError(dxl_error);
+            }
+        else if (dxl_comm_result == COMM_SUCCESS)
+            {
+            //packetHandler->printTxRxResult(dxl_comm_result);
+            }
+    }
+
+    for(int i=0; i < 12; i++){
+        dxl_comm_result = packetHandler->write2ByteTxRx(portHandler, dxl_ID[i], ADDR_MX_MOVING_SPEED, MX_MOVING_SPEED, &dxl_error);
+            if (dxl_comm_result != COMM_SUCCESS)
+            {
+            //packetHandler->printTxRxResult(dxl_comm_result);
+            }
+        else if (dxl_error != 0)
+            {
+            //packetHandler->printRxPacketError(dxl_error);
+            }
+        else if (dxl_comm_result == COMM_SUCCESS)
+            {
+            //packetHandler->printTxRxResult(dxl_comm_result);
+            }
     }
 
     uint16_t dxl_current_pos [12];
@@ -213,7 +271,7 @@ int main(int argc, char** argv)
     {
       for(int i=0; i < 12; i++)
       {
-         dxl_comm_result = packetHandler->read2ByteTxRx(portHandler, i, ADDR_MX_CURRENT_POSITION, &dxl_current_pos_test[i], &dxl_error);
+         dxl_comm_result = packetHandler->read2ByteTxRx(portHandler, dxl_ID[i], ADDR_MX_CURRENT_POSITION, &dxl_current_pos_test[i], &dxl_error);
 
          if (dxl_comm_result != COMM_SUCCESS)
             {
@@ -240,16 +298,49 @@ int main(int argc, char** argv)
 
       joint_pub.publish(joint_state_legs);
        
-      if(new_goal_position = true)
+      if(new_goal_position == true)
 	    {
-	        new_goal_position = false;
+	      new_goal_position = false;
 
           for(int i=0; i < 12; i++)
           {
-	           packetHandler->write1ByteTxRx(portHandler, i, ADDR_MX_TORQUE_ENABLE, TORQUE_ENABLE, &dxl_error);
-	           packetHandler->write2ByteTxRx(portHandler, i, ADDR_MX_GOAL_POSITION, goal_position[i], &dxl_error);
+	          dxl_comm_result = packetHandler->write2ByteTxRx(portHandler, dxl_ID[i], ADDR_MX_GOAL_POSITION, goal_position[i], &dxl_error);
+            if (dxl_comm_result != COMM_SUCCESS)
+            {
+            //packetHandler->printTxRxResult(dxl_comm_result);
+            }
+        else if (dxl_error != 0)
+            {
+            //packetHandler->printRxPacketError(dxl_error);
+            }
+        else if (dxl_comm_result == COMM_SUCCESS)
+            {
+            //packetHandler->printTxRxResult(dxl_comm_result);
+            }
           }
 	    }
+
+      if(new_torque_mode == true)
+        {
+          new_torque_mode = false;
+
+          for(int i=0; i < 12; i++)
+          {
+              dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, dxl_ID[i], ADDR_MX_TORQUE_MODE, torque_mode, &dxl_error);
+            if (dxl_comm_result != COMM_SUCCESS)
+            {
+            //packetHandler->printTxRxResult(dxl_comm_result);
+            }
+        else if (dxl_error != 0)
+            {
+            //packetHandler->printRxPacketError(dxl_error);
+            }
+        else if (dxl_comm_result == COMM_SUCCESS)
+            {
+            //packetHandler->printTxRxResult(dxl_comm_result);
+            }
+          }
+        }
       ros::spinOnce();
       loop.sleep();
     }
