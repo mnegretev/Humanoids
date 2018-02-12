@@ -1,6 +1,7 @@
 #include "ros/ros.h" 
 #include "std_msgs/Float32MultiArray.h"
 #include "std_msgs/UInt16.h"
+#include "std_msgs/Int16MultiArray.h"
 #include "dynamixel_sdk/dynamixel_sdk.h"
 #include <sensor_msgs/JointState.h>
 #include <tf/transform_broadcaster.h>
@@ -26,12 +27,16 @@
 #define TORQUE_LIMIT                   1023	// Range 0-1023
 
 #define ADDR_MX_TORQUE_MODE              70
+#define TORQUE_MODE_ON                    1
+#define TORQUE_MODE_OFF                   0
 
 #define ADDR_MX_MOVING_SPEED             32 // Range 0-1023
 #define MX_MOVING_SPEED                  40 // The unit is about 0.114 rpm
 
 #define ADDR_MX_CURRENT_POSITION         36
 #define ADDR_MX_GOAL_POSITION            30
+
+#define ADDR_MX_GOAL_TORQUE              71
 
 #define LEG_LEFT_YAW_ID                   0
 #define LEG_LEFT_PITCH_ID                 1
@@ -91,10 +96,16 @@
 #define SERVO_MX_STEP_SIMUL              30
 
 bool new_goal_position = false;
-bool new_torque_mode= false;
+bool new_torque_mode = false;
 
 uint16_t goal_position [12];
-uint16_t torque_mode = 0;
+uint16_t goal_torque [12]; //If you use from 0~1023, torque is on toward CCW, and when you set it to 0, it stops.
+                             //If you use from 1024~2047, torque is on toward CW, and when you set it to 1024, it stops.
+
+dynamixel::PortHandler   *portHandler   = dynamixel::PortHandler::getPortHandler(DEVICE_NAME);
+dynamixel::PacketHandler *packetHandler = dynamixel::PacketHandler::getPacketHandler(PROTOCOL_VERSION);
+uint8_t dxl_error = 0;
+int dxl_comm_result = COMM_TX_FAIL;
 
 int position_zero_bits[12] = {
     LEG_LEFT_YAW_ZERO, 
@@ -144,15 +155,46 @@ int dxl_ID[12] = {
 void callback_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg)
 {
     for(int i=0; i < 12; i++)
+    {
 	  goal_position[i] = uint16_t(msg->data[i] * SERVO_MX_RANGE_IN_BITS/SERVO_MX_RANGE_IN_RADS * clockwise_direction[i] + position_zero_bits[i]);
 
+      dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, dxl_ID[i], ADDR_MX_TORQUE_MODE, TORQUE_MODE_OFF, &dxl_error);
+     if (dxl_comm_result != COMM_SUCCESS)
+        {
+        //packetHandler->printTxRxResult(dxl_comm_result);
+        }
+    else if (dxl_error != 0)
+        {
+        //packetHandler->printRxPacketError(dxl_error);
+        }
+    else if (dxl_comm_result == COMM_SUCCESS)
+        {
+        //packetHandler->printTxRxResult(dxl_comm_result);
+        }
+     }
     new_goal_position = true;
 }
 
 void callback_goal_pose_left(const std_msgs::Float32MultiArray::ConstPtr& msg)
 {
     for(int i=0; i < 6; i++)
+    {
 	  goal_position[i] = uint16_t(msg->data[i] * SERVO_MX_RANGE_IN_BITS/SERVO_MX_RANGE_IN_RADS * clockwise_direction[i] + position_zero_bits[i]);
+
+      dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, dxl_ID[i], ADDR_MX_TORQUE_MODE, TORQUE_MODE_OFF, &dxl_error);
+     if (dxl_comm_result != COMM_SUCCESS)
+        {
+        //packetHandler->printTxRxResult(dxl_comm_result);
+        }
+    else if (dxl_error != 0)
+        {
+        //packetHandler->printRxPacketError(dxl_error);
+        }
+    else if (dxl_comm_result == COMM_SUCCESS)
+        {
+        //packetHandler->printTxRxResult(dxl_comm_result);
+        }
+    }
 
     new_goal_position = true;
 }
@@ -160,14 +202,96 @@ void callback_goal_pose_left(const std_msgs::Float32MultiArray::ConstPtr& msg)
 void callback_goal_pose_right(const std_msgs::Float32MultiArray::ConstPtr& msg)
 {
     for(int i=6; i < 12; i++)
+    {
 	  goal_position[i] = uint16_t(msg->data[i - 6] * SERVO_MX_RANGE_IN_BITS/SERVO_MX_RANGE_IN_RADS * clockwise_direction[i] + position_zero_bits[i]);
+
+      dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, dxl_ID[i], ADDR_MX_TORQUE_MODE, TORQUE_MODE_OFF, &dxl_error);
+     if (dxl_comm_result != COMM_SUCCESS)
+        {
+        //packetHandler->printTxRxResult(dxl_comm_result);
+        }
+    else if (dxl_error != 0)
+        {
+        //packetHandler->printRxPacketError(dxl_error);
+        }
+    else if (dxl_comm_result == COMM_SUCCESS)
+        {
+        //packetHandler->printTxRxResult(dxl_comm_result);
+        }	  
+    }
 
     new_goal_position = true;
 }
 
-void callback_torque_mode(const std_msgs::UInt16::ConstPtr& msg)
+void callback_goal_torque(const std_msgs::Float32MultiArray::ConstPtr& msg)
 {
-    torque_mode = msg->data;
+    for(int i=0; i < 12; i++)
+    {
+      goal_torque[i] = uint16_t(1024 * msg->data[i] + 1024);
+
+      dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, dxl_ID[i], ADDR_MX_TORQUE_MODE, TORQUE_MODE_ON, &dxl_error);
+     if (dxl_comm_result != COMM_SUCCESS)
+        {
+        //packetHandler->printTxRxResult(dxl_comm_result);
+        }
+    else if (dxl_error != 0)
+        {
+        //packetHandler->printRxPacketError(dxl_error);
+        }
+    else if (dxl_comm_result == COMM_SUCCESS)
+        {
+        //packetHandler->printTxRxResult(dxl_comm_result);
+        }
+    }
+
+    new_torque_mode = true;
+}
+
+void callback_goal_torque_left(const std_msgs::Float32MultiArray::ConstPtr& msg)
+{
+    for(int i=0; i < 6; i++)
+    {
+      goal_torque[i] = uint16_t(1024 * msg->data[i] + 1024);
+
+      dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, dxl_ID[i], ADDR_MX_TORQUE_MODE, TORQUE_MODE_ON, &dxl_error);
+     if (dxl_comm_result != COMM_SUCCESS)
+        {
+        //packetHandler->printTxRxResult(dxl_comm_result);
+        }
+    else if (dxl_error != 0)
+        {
+        //packetHandler->printRxPacketError(dxl_error);
+        }
+    else if (dxl_comm_result == COMM_SUCCESS)
+        {
+        //packetHandler->printTxRxResult(dxl_comm_result);
+        }      
+    }
+
+    new_torque_mode = true;
+}
+
+void callback_goal_torque_right(const std_msgs::Float32MultiArray::ConstPtr& msg)
+{
+    for(int i=6; i < 12; i++)
+    {
+      goal_torque[i] = uint16_t(1024 * msg->data[i-6] + 1024);
+
+      dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, dxl_ID[i], ADDR_MX_TORQUE_MODE, TORQUE_MODE_ON, &dxl_error);
+     if (dxl_comm_result != COMM_SUCCESS)
+        {
+        //packetHandler->printTxRxResult(dxl_comm_result);
+        }
+    else if (dxl_error != 0)
+        {
+        //packetHandler->printRxPacketError(dxl_error);
+        }
+    else if (dxl_comm_result == COMM_SUCCESS)
+        {
+        //packetHandler->printTxRxResult(dxl_comm_result);
+        }      
+    }
+
     new_torque_mode = true;
 }
 
@@ -181,7 +305,9 @@ int main(int argc, char** argv)
     ros::Subscriber subLegsGoalPose     = n.subscribe("legs_goal_pose", 1, callback_goal_pose);
     ros::Subscriber subLegLeftGoalPose  = n.subscribe("leg_left_goal_pose", 1, callback_goal_pose_left);
     ros::Subscriber subLegRightGoalPose = n.subscribe("leg_right_goal_pose", 1, callback_goal_pose_right);
-    ros::Subscriber subLegsTorqueMode   = n.subscribe("legs_torque_mode", 1, callback_torque_mode);
+    ros::Subscriber subLegsGoalTorque   = n.subscribe("legs_goal_torque", 1, callback_goal_torque);
+    ros::Subscriber subLegLeftGoalTorque   = n.subscribe("legs_left_goal_torque", 1, callback_goal_torque_left);
+    ros::Subscriber subLegRightGoalTorque   = n.subscribe("legs_right_goal_torque", 1, callback_goal_torque_right);
     ros::Publisher  joint_pub = n.advertise<sensor_msgs::JointState>("/joint_states", 1);
 
     sensor_msgs::JointState joint_state_legs;
@@ -203,9 +329,6 @@ int main(int argc, char** argv)
     joint_state_legs.name[10] ="right_ankle_pitch";
     joint_state_legs.name[11] ="right_ankle_roll";
 
-    dynamixel::PortHandler   *portHandler   = dynamixel::PortHandler::getPortHandler(DEVICE_NAME);
-    dynamixel::PacketHandler *packetHandler = dynamixel::PacketHandler::getPacketHandler(PROTOCOL_VERSION);
-
     if(portHandler->openPort())
 		 std::cout << "Legs.->Serial port successfully openned" << std::endl;
     else
@@ -221,9 +344,6 @@ int main(int argc, char** argv)
 	     std::cout << "Legs.->Cannot set baud rate" << std::endl;
 		 return -1;
     	}
-
-    uint8_t dxl_error = 0;
-    int dxl_comm_result = COMM_TX_FAIL;
 
     for(int i=0; i < 12; i++)
     {
@@ -242,7 +362,8 @@ int main(int argc, char** argv)
             }
     }
 
-    for(int i=0; i < 12; i++){
+    for(int i=0; i < 12; i++)
+    {
         dxl_comm_result = packetHandler->write2ByteTxRx(portHandler, dxl_ID[i], ADDR_MX_MOVING_SPEED, MX_MOVING_SPEED, &dxl_error);
             if (dxl_comm_result != COMM_SUCCESS)
             {
@@ -320,13 +441,13 @@ int main(int argc, char** argv)
           }
 	    }
 
-      if(new_torque_mode == true)
+        if(new_torque_mode == true)
         {
           new_torque_mode = false;
 
           for(int i=0; i < 12; i++)
           {
-              dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, dxl_ID[i], ADDR_MX_TORQUE_MODE, torque_mode, &dxl_error);
+              dxl_comm_result = packetHandler->write2ByteTxRx(portHandler, dxl_ID[i], ADDR_MX_GOAL_TORQUE, goal_torque[i], &dxl_error);
             if (dxl_comm_result != COMM_SUCCESS)
             {
             //packetHandler->printTxRxResult(dxl_comm_result);
@@ -341,6 +462,7 @@ int main(int argc, char** argv)
             }
           }
         }
+
       ros::spinOnce();
       loop.sleep();
     }
