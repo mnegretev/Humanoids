@@ -18,5 +18,4 @@
         <rosparam command="load" file="$(find nimbro_op_srdf)/config/kinematics.yaml"/>
         <node name="inverse_kinematics" pkg="inverse_kinematics" type="ik_moveit_node" output="screen"/>
     </group>
-
 </launch>
