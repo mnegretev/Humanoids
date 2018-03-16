@@ -1,0 +1,19 @@
+<launch>
+    <param name="robot_description" command="cat $(find nimbro_op_model)/robots/simple_nimbro_op_hull.xml" />
+    <param name="robot_description_semantic" textfile="$(find nimbro_op_srdf)/config/nimbro_op_hull.srdf" />
+
+    <group ns="hri">
+	<node name="humanoid_gui" pkg="humanoid_gui_simul" type="humanoid_gui_simul" output="screen"/>
+    </group>
+
+    <group ns="control">
+        <rosparam command="load" file="$(find nimbro_op_srdf)/config/kinematics.yaml"/>
+        <node name="inverse_kinematics" pkg="inverse_kinematics" type="ik_moveit_node" output="screen"/>
+    </group>
+
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="world_name" value="$(find nimbro_op_gazebo)/worlds/nimbro_op.world"/>
+        <arg name="paused" value="true" />
+    </include>
+    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -model nimbro_op -x -1.0 -y 0.0 -z 0.6" />
+</launch>
