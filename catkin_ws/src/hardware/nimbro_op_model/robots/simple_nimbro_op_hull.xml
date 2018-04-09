@@ -51,6 +51,7 @@
     <parent link="trunk_link" />
     <child link="right_hip_yaw_link" />
     <axis xyz="0 0 1" />
+    <limit lower="-1.5" upper="1.5" effort="30" velocity="15"/>
   </joint>
 
   <link name="right_hip_roll_link">
@@ -239,6 +240,7 @@
     <parent link="trunk_link" />
     <child link="left_hip_yaw_link" />
     <axis xyz="0 0 1" />
+    <limit lower="-1.5" upper="1.5" effort="30" velocity="15"/>
   </joint>
 
 
