@@ -4,9 +4,7 @@
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher"/>
 
     <group ns="hardware">
-        <node name="head" pkg="head" type="head_simul_node" output="screen"/>
-	<node name="arms" pkg="arms" type="arms_simul_node" output="screen"/>
-	<node name="legs" pkg="legs" type="legs_node" output="screen"/>
+        <node name="cm730" pkg="cm730" type="cm730_node" output="screen"/>
     </group>
 
     <group ns="hri">
