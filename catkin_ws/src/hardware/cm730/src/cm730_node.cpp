@@ -26,7 +26,7 @@
 
 #define ID_ARM_RIGHT_SHOULDER_PITCH       1
 #define ID_ARM_RIGHT_SHOULDER_ROLL        3
-#define ID_ARM_RIGHT_ELBOW_PITCH          4
+#define ID_ARM_RIGHT_ELBOW_PITCH          5
 
 #define ID_NECK_YAW                       19
 #define ID_HEAD_PITCH                     20
@@ -367,4 +367,6 @@ int main(int argc, char** argv)
 	ros::spinOnce();
 	loop.sleep();
     }
+
+    portHandler->closePort();
 }
