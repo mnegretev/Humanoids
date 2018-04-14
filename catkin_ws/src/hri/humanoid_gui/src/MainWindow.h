@@ -26,8 +26,11 @@ public:
     QtRosNode* qtRosNode;
     std::vector<float> legLeftGoalPose;
     std::vector<float> legRightGoalPose;
-    bool legLeftIgnoreValueChanged;
-    bool legRightIgnoreValueChanged;
+    bool legLeftIgnoreValueChanged;   //These flags are needed to avoid an infinite loop because articular values change
+    bool legRightIgnoreValueChanged;  //cartesian values and a change in cartesian values will cause a change in articular values
+    bool armLeftIgnoreValueChanged;
+    bool armRightIgnoreValueChanged;
+    bool headIgnoreValueChanged;
 
     void setRosNode(QtRosNode* qtRosNode);
     void closeEvent(QCloseEvent *event);
@@ -43,6 +46,13 @@ public slots:
     void txtLegLeftArticularChanged(double);
     void txtLegRightCartesianChanged(double);
     void txtLegRightArticularChanged(double);
+    //Slots for signals emitted by the arm and head controls
+    void txtArmLeftArticularChanged(double);
+    void txtArmRightArticularChanged(double);
+    void txtHeadArticularChanged(double);
+    //Slots for buttons
+    void btnZeroPositionClicked();
+    void btnCurrentPositionClicked();
 
 private:
     Ui::MainWindow *ui;

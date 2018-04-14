@@ -13,6 +13,9 @@ void QtRosNode::run()
 {
     pubLegLeftGoalPose  = n->advertise<std_msgs::Float32MultiArray>("/hardware/leg_left_goal_pose", 1);
     pubLegRightGoalPose = n->advertise<std_msgs::Float32MultiArray>("/hardware/leg_right_goal_pose", 1);
+    pubArmLeftGoalPose  = n->advertise<std_msgs::Float32MultiArray>("/hardware/arm_left_goal_pose", 1);
+    pubArmRightGoalPose = n->advertise<std_msgs::Float32MultiArray>("/hardware/arm_right_goal_pose", 1);
+    pubHeadGoalPose     = n->advertise<std_msgs::Float32MultiArray>("/hardware/head_goal_pose", 1);
     cltCalculateIKLegLeft  = n->serviceClient<control_msgs::CalculateIK>("/control/ik_leg_left");
     cltCalculateIKLegRight = n->serviceClient<control_msgs::CalculateIK>("/control/ik_leg_right");
     cltCalculateDKLegLeft  = n->serviceClient<control_msgs::CalculateDK>("/control/dk_leg_left");
@@ -44,6 +47,24 @@ void QtRosNode::publishLegRightGoalPose(std::vector<float> legRightGoalPose)
 {
     msgLegRightGoalPose.data = legRightGoalPose;
     pubLegRightGoalPose.publish(msgLegRightGoalPose);
+}
+
+void QtRosNode::publishArmLeftGoalPose(std::vector<float> armLeftGoalPose)
+{
+    msgArmLeftGoalPose.data = armLeftGoalPose;
+    pubArmLeftGoalPose.publish(msgArmLeftGoalPose);
+}
+
+void QtRosNode::publishArmRightGoalPose(std::vector<float> armRightGoalPose)
+{
+    msgArmRightGoalPose.data = armRightGoalPose;
+    pubArmRightGoalPose.publish(msgArmRightGoalPose);
+}
+
+void QtRosNode::publishHeadGoalPose(std::vector<float> headGoalPose)
+{
+    msgHeadGoalPose.data = headGoalPose;
+    pubHeadGoalPose.publish(msgHeadGoalPose);
 }
 
 bool QtRosNode::callIKLegLeft(float x, float y, float z, float roll, float pitch, float yaw,
@@ -107,4 +128,27 @@ bool QtRosNode::callDKLegRight(std::vector<float>& joints, float& x, float& y, f
     roll = srv.response.roll;
     pitch = srv.response.pitch;
     yaw = srv.response.yaw;
+}
+
+
+bool QtRosNode::getAllJointCurrentAngles(std::vector<float>& angles)
+{
+    angles.resize(20);
+    try
+    {
+	std_msgs::Float32MultiArray::ConstPtr msg = ros::topic::waitForMessage<std_msgs::Float32MultiArray>(
+	    "/hardware/joint_current_angles", ros::Duration(10));
+	if(msg->data.size() != 20)
+	{
+	    std::cout << "QtRosNode.->current joint angles message should be 20 values long " << std::endl;
+	    return false;
+	}
+	for(int i=0; i < 20; i++)
+	    angles[i] = msg->data[i];
+    }
+    catch(...)
+    {
+	std::cout << "QtRosNode.->Cannot get current joint angles from topic :'(" << std::endl;
+    }
+    return true;
 }

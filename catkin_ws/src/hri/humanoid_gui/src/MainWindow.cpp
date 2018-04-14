@@ -8,6 +8,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     legLeftIgnoreValueChanged = false;
     legRightIgnoreValueChanged = false;
+    armLeftIgnoreValueChanged = false;
+    armRightIgnoreValueChanged = false;
+    headIgnoreValueChanged = false;
     ui->setupUi(this);
     ui->hsLegLeftHipYaw->setValue(50);
     ui->hsLegLeftHipPitch->setValue(50);  
@@ -77,6 +80,16 @@ void MainWindow::setRosNode(QtRosNode* qtRosNode)
     QObject::connect(ui->sbLegRight3, SIGNAL(valueChanged(double)), this, SLOT(txtLegRightArticularChanged(double)));
     QObject::connect(ui->sbLegRight4, SIGNAL(valueChanged(double)), this, SLOT(txtLegRightArticularChanged(double)));
     QObject::connect(ui->sbLegRight5, SIGNAL(valueChanged(double)), this, SLOT(txtLegRightArticularChanged(double)));
+    QObject::connect(ui->sbArmLeft0, SIGNAL(valueChanged(double)), this, SLOT(txtArmLeftArticularChanged(double)));
+    QObject::connect(ui->sbArmLeft1, SIGNAL(valueChanged(double)), this, SLOT(txtArmLeftArticularChanged(double)));
+    QObject::connect(ui->sbArmLeft2, SIGNAL(valueChanged(double)), this, SLOT(txtArmLeftArticularChanged(double)));
+    QObject::connect(ui->sbArmRight0, SIGNAL(valueChanged(double)), this, SLOT(txtArmRightArticularChanged(double)));
+    QObject::connect(ui->sbArmRight1, SIGNAL(valueChanged(double)), this, SLOT(txtArmRightArticularChanged(double)));
+    QObject::connect(ui->sbArmRight2, SIGNAL(valueChanged(double)), this, SLOT(txtArmRightArticularChanged(double)));
+    QObject::connect(ui->sbHead0, SIGNAL(valueChanged(double)), this, SLOT(txtHeadArticularChanged(double)));
+    QObject::connect(ui->sbHead1, SIGNAL(valueChanged(double)), this, SLOT(txtHeadArticularChanged(double)));
+    QObject::connect(ui->btnZeroPose, SIGNAL(clicked()), this, SLOT(btnZeroPositionClicked()));
+    QObject::connect(ui->btnCurrentPose, SIGNAL(clicked()), this, SLOT(btnCurrentPositionClicked()));
 
     txtLegLeftArticularChanged(0);
     txtLegRightArticularChanged(0);
@@ -245,4 +258,89 @@ void MainWindow::txtLegRightArticularChanged(double val)
     qtRosNode->publishLegRightGoalPose(joint_values);
     
     legRightIgnoreValueChanged = false;
+}
+
+void MainWindow::txtArmLeftArticularChanged(double)
+{
+    if(armLeftIgnoreValueChanged)
+	return;
+    
+    std::vector<float> joint_values;
+    joint_values.resize(3);
+    joint_values[0] = ui->sbArmLeft0->value();
+    joint_values[1] = ui->sbArmLeft1->value();
+    joint_values[2] = ui->sbArmLeft2->value();
+    qtRosNode->publishArmLeftGoalPose(joint_values);
+}
+
+void MainWindow::txtArmRightArticularChanged(double)
+{
+    if(armRightIgnoreValueChanged)
+	return;
+    
+    std::vector<float> joint_values;
+    joint_values.resize(3);
+    joint_values[0] = ui->sbArmRight0->value();
+    joint_values[1] = ui->sbArmRight1->value();
+    joint_values[2] = ui->sbArmRight2->value();
+    qtRosNode->publishArmRightGoalPose(joint_values);
+}
+
+void MainWindow::txtHeadArticularChanged(double)
+{
+    if(headIgnoreValueChanged)
+	return;
+    
+    std::vector<float> joint_values;
+    joint_values.resize(2);
+    joint_values[0] = ui->sbHead0->value();
+    joint_values[1] = ui->sbHead1->value();
+    qtRosNode->publishHeadGoalPose(joint_values);
+}
+
+void MainWindow::btnZeroPositionClicked()
+{
+}
+
+void MainWindow::btnCurrentPositionClicked()
+{
+    std::vector<float> joint_angles;
+    if(!qtRosNode->getAllJointCurrentAngles(joint_angles))
+    {
+	std::cout << "MainWindow.->Cannot get current joint angles" << std::endl;
+	return;
+    }
+
+    legLeftIgnoreValueChanged = true;
+    legRightIgnoreValueChanged = true;
+    armLeftIgnoreValueChanged = true;
+    armRightIgnoreValueChanged = true;
+    headIgnoreValueChanged = true;
+
+    ui->sbLegLeft0->setValue(joint_angles[0]);
+    ui->sbLegLeft1->setValue(joint_angles[1]);
+    ui->sbLegLeft2->setValue(joint_angles[2]);
+    ui->sbLegLeft3->setValue(joint_angles[3]);
+    ui->sbLegLeft4->setValue(joint_angles[4]);
+    ui->sbLegLeft5->setValue(joint_angles[5]);
+    ui->sbLegRight0->setValue(joint_angles[6]);
+    ui->sbLegRight1->setValue(joint_angles[7]);
+    ui->sbLegRight2->setValue(joint_angles[8]);
+    ui->sbLegRight3->setValue(joint_angles[9]);
+    ui->sbLegRight4->setValue(joint_angles[10]);
+    ui->sbLegRight5->setValue(joint_angles[11]);
+    ui->sbArmLeft0->setValue(joint_angles[12]);
+    ui->sbArmLeft1->setValue(joint_angles[13]);
+    ui->sbArmLeft2->setValue(joint_angles[14]);
+    ui->sbArmRight0->setValue(joint_angles[15]);
+    ui->sbArmRight1->setValue(joint_angles[16]);
+    ui->sbArmRight2->setValue(joint_angles[17]);
+    ui->sbHead0->setValue(joint_angles[18]);
+    ui->sbHead1->setValue(joint_angles[19]);
+
+    legLeftIgnoreValueChanged = false;
+    legRightIgnoreValueChanged = false;
+    armLeftIgnoreValueChanged = false;
+    armRightIgnoreValueChanged = false;
+    headIgnoreValueChanged = false;
 }
