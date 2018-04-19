@@ -3,7 +3,7 @@
 
     <group ns="hri">
         <node name="rviz" pkg="rviz" type="rviz" args="-d $(find config_files)/rviz/config.rviz" required="true"/>
-	<node name="humanoid_gui" pkg="humanoid_gui_simul" type="humanoid_gui_simul" output="screen"/>
+	<node name="humanoid_gui" pkg="humanoid_gui" type="humanoid_gui" output="screen"/>
     </group>
 
     <group ns="control">
@@ -34,11 +34,11 @@
                 
 		right_shoulder_pitch_position_controller
 		right_shoulder_roll_position_controller
-		right_elbow_pitch_position_controller
+		right_elbow_pitch_position_controller    
                 
 		left_shoulder_pitch_position_controller
 		left_shoulder_roll_position_controller
-		left_elbow_pitch_position_controller
+		left_elbow_pitch_position_controller    
                 
 		neck_yaw_position_controller
 		head_pitch_position_controller
