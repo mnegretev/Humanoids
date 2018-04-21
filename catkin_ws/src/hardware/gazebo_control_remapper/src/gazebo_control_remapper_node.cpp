@@ -2,26 +2,46 @@
 #include "std_msgs/Float64.h"
 #include "std_msgs/Float32MultiArray.h"
 
-std_msgs::Float64 msgLeftHipYaw     ;
-std_msgs::Float64 msgLeftHipRoll    ;
-std_msgs::Float64 msgLeftHipPitch   ;
-std_msgs::Float64 msgLeftKneePitch  ;
-std_msgs::Float64 msgLeftAnklePitch ;
-std_msgs::Float64 msgLeftAnkleRoll  ;
-std_msgs::Float64 msgRightHipYaw    ;
-std_msgs::Float64 msgRightHipRoll   ;
-std_msgs::Float64 msgRightHipPitch  ;
-std_msgs::Float64 msgRightKneePitch ;
-std_msgs::Float64 msgRightAnklePitch;
-std_msgs::Float64 msgRightAnkleRoll ;
-std_msgs::Float64 msgLeftShoulPitch ;
-std_msgs::Float64 msgLeftShoulRoll  ;
-std_msgs::Float64 msgLeftElbowPitch ;
-std_msgs::Float64 msgRightShoulPitch;
-std_msgs::Float64 msgRightShoulRoll ;
-std_msgs::Float64 msgRightElbowPitch;
-std_msgs::Float64 msgNeckYaw        ;
-std_msgs::Float64 msgNeckPitch      ;
+ros::Publisher pubLeftHipYaw        ;
+ros::Publisher pubLeftHipRoll       ;
+ros::Publisher pubLeftHipPitch      ;
+ros::Publisher pubLeftKneePitch     ;
+ros::Publisher pubLeftAnklePitch    ;
+ros::Publisher pubLeftAnkleRoll     ;
+ros::Publisher pubRightHipYaw       ;
+ros::Publisher pubRightHipRoll      ;
+ros::Publisher pubRightHipPitch     ;
+ros::Publisher pubRightKneePitch    ;
+ros::Publisher pubRightAnklePitch   ;
+ros::Publisher pubRightAnkleRoll    ;
+ros::Publisher pubLeftShoulderPitch ;
+ros::Publisher pubLeftShoulderRoll  ;
+ros::Publisher pubLeftElbowPitch    ;
+ros::Publisher pubRightShoulderPitch;
+ros::Publisher pubRightShoulderRoll ;
+ros::Publisher pubRightElbowPitch   ;
+ros::Publisher pubNeckYaw           ;
+ros::Publisher pubNeckPitch         ;
+std_msgs::Float64 msgLeftHipYaw        ;
+std_msgs::Float64 msgLeftHipRoll       ;
+std_msgs::Float64 msgLeftHipPitch      ;
+std_msgs::Float64 msgLeftKneePitch     ;
+std_msgs::Float64 msgLeftAnklePitch    ;
+std_msgs::Float64 msgLeftAnkleRoll     ;
+std_msgs::Float64 msgRightHipYaw       ;
+std_msgs::Float64 msgRightHipRoll      ;
+std_msgs::Float64 msgRightHipPitch     ;
+std_msgs::Float64 msgRightKneePitch    ;
+std_msgs::Float64 msgRightAnklePitch   ;
+std_msgs::Float64 msgRightAnkleRoll    ;
+std_msgs::Float64 msgLeftShoulderPitch ;
+std_msgs::Float64 msgLeftShoulderRoll  ;
+std_msgs::Float64 msgLeftElbowPitch    ;
+std_msgs::Float64 msgRightShoulderPitch;
+std_msgs::Float64 msgRightShoulderRoll ;
+std_msgs::Float64 msgRightElbowPitch   ;
+std_msgs::Float64 msgNeckYaw           ;
+std_msgs::Float64 msgNeckPitch         ;
 
 void callback_legs_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg)
 {
@@ -31,18 +51,30 @@ void callback_legs_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg)
 	return;
     }
 
-    msgLeftHipYaw     .data = msg->data[0];
-    msgLeftHipRoll    .data = msg->data[1];
-    msgLeftHipPitch   .data = msg->data[2];
-    msgLeftKneePitch  .data = msg->data[3];
-    msgLeftAnklePitch .data = msg->data[4];
-    msgLeftAnkleRoll  .data = msg->data[5];
-    msgRightHipYaw    .data = msg->data[6];
-    msgRightHipRoll   .data = msg->data[7];
-    msgRightHipPitch  .data = msg->data[8];
-    msgRightKneePitch .data = msg->data[9];
-    msgRightAnklePitch.data = msg->data[10];
-    msgRightAnkleRoll .data = msg->data[11];
+    msgLeftHipYaw       .data = msg->data[0];
+    msgLeftHipRoll      .data = msg->data[1];
+    msgLeftHipPitch     .data = msg->data[2];
+    msgLeftKneePitch    .data = msg->data[3];
+    msgLeftAnklePitch   .data = msg->data[4];
+    msgLeftAnkleRoll    .data = msg->data[5];
+    msgRightHipYaw      .data = msg->data[6];
+    msgRightHipRoll     .data = msg->data[7];
+    msgRightHipPitch    .data = msg->data[8];
+    msgRightKneePitch   .data = msg->data[9];
+    msgRightAnklePitch  .data = msg->data[10];
+    msgRightAnkleRoll   .data = msg->data[11];
+    pubLeftHipYaw        .publish(msgLeftHipYaw        );
+    pubLeftHipRoll       .publish(msgLeftHipRoll       );
+    pubLeftHipPitch      .publish(msgLeftHipPitch      );
+    pubLeftKneePitch     .publish(msgLeftKneePitch     );
+    pubLeftAnklePitch    .publish(msgLeftAnklePitch    );
+    pubLeftAnkleRoll     .publish(msgLeftAnkleRoll     );
+    pubRightHipYaw       .publish(msgRightHipYaw       );
+    pubRightHipRoll      .publish(msgRightHipRoll      );
+    pubRightHipPitch     .publish(msgRightHipPitch     );
+    pubRightKneePitch    .publish(msgRightKneePitch    );
+    pubRightAnklePitch   .publish(msgRightAnklePitch   );
+    pubRightAnkleRoll    .publish(msgRightAnkleRoll    );
 }
 
 void callback_leg_left_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg)
@@ -58,6 +90,12 @@ void callback_leg_left_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& ms
     msgLeftKneePitch  .data = msg->data[3];
     msgLeftAnklePitch .data = msg->data[4];
     msgLeftAnkleRoll  .data = msg->data[5];
+    pubLeftHipYaw        .publish(msgLeftHipYaw        );
+    pubLeftHipRoll       .publish(msgLeftHipRoll       );
+    pubLeftHipPitch      .publish(msgLeftHipPitch      );
+    pubLeftKneePitch     .publish(msgLeftKneePitch     );
+    pubLeftAnklePitch    .publish(msgLeftAnklePitch    );
+    pubLeftAnkleRoll     .publish(msgLeftAnkleRoll     );
 }
 
 void callback_leg_right_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg)
@@ -73,6 +111,12 @@ void callback_leg_right_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& m
     msgRightKneePitch .data = msg->data[3];
     msgRightAnklePitch.data = msg->data[4];
     msgRightAnkleRoll .data = msg->data[5];
+    pubRightHipYaw       .publish(msgRightHipYaw       );
+    pubRightHipRoll      .publish(msgRightHipRoll      );
+    pubRightHipPitch     .publish(msgRightHipPitch     );
+    pubRightKneePitch    .publish(msgRightKneePitch    );
+    pubRightAnklePitch   .publish(msgRightAnklePitch   );
+    pubRightAnkleRoll    .publish(msgRightAnkleRoll    );
 }
 
 void callback_arms_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg)
@@ -83,12 +127,18 @@ void callback_arms_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg)
 	return;
     }
 
-    msgLeftShoulPitch .data = msg->data[0];
-    msgLeftShoulRoll  .data = msg->data[1];
-    msgLeftElbowPitch .data = msg->data[2];
-    msgRightShoulPitch.data = msg->data[3];
-    msgRightShoulRoll .data = msg->data[4];
-    msgRightElbowPitch.data = msg->data[5];
+    msgLeftShoulderPitch .data = msg->data[0];
+    msgLeftShoulderRoll  .data = msg->data[1];
+    msgLeftElbowPitch    .data = msg->data[2];
+    msgRightShoulderPitch.data = msg->data[3];
+    msgRightShoulderRoll .data = msg->data[4];
+    msgRightElbowPitch   .data = msg->data[5];
+    pubLeftShoulderPitch .publish(msgLeftShoulderPitch );
+    pubLeftShoulderRoll  .publish(msgLeftShoulderRoll  );
+    pubLeftElbowPitch    .publish(msgLeftElbowPitch    );
+    pubRightShoulderPitch.publish(msgRightShoulderPitch);
+    pubRightShoulderRoll .publish(msgRightShoulderRoll );
+    pubRightElbowPitch   .publish(msgRightElbowPitch   );
 }
 
 void callback_arm_left_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg)
@@ -98,9 +148,12 @@ void callback_arm_left_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& ms
 	std::cout << "ControlRemapper.->Error!!: goal position for left arm must be a 3-value array." << std::endl;
 	return;
     }
-    msgLeftShoulPitch .data = msg->data[0];
-    msgLeftShoulRoll  .data = msg->data[1];
-    msgLeftElbowPitch .data = msg->data[2];
+    msgLeftShoulderPitch.data = msg->data[0];
+    msgLeftShoulderRoll .data = msg->data[1];
+    msgLeftElbowPitch   .data = msg->data[2];
+    pubLeftShoulderPitch .publish(msgLeftShoulderPitch );
+    pubLeftShoulderRoll  .publish(msgLeftShoulderRoll  );
+    pubLeftElbowPitch    .publish(msgLeftElbowPitch    );
 }
 
 void callback_arm_right_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg)
@@ -110,9 +163,12 @@ void callback_arm_right_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& m
 	std::cout << "ControlRemapper.->Error!!: goal position for right leg must be a 3-value array." << std::endl;
 	return;
     }
-    msgRightShoulPitch.data = msg->data[0];
-    msgRightShoulRoll .data = msg->data[1];
-    msgRightElbowPitch.data = msg->data[2];
+    msgRightShoulderPitch.data = msg->data[0];
+    msgRightShoulderRoll .data = msg->data[1];
+    msgRightElbowPitch   .data = msg->data[2];
+    pubRightShoulderPitch.publish(msgRightShoulderPitch);
+    pubRightShoulderRoll .publish(msgRightShoulderRoll );
+    pubRightElbowPitch   .publish(msgRightElbowPitch   );
 }
 
 void callback_head_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg)
@@ -124,6 +180,8 @@ void callback_head_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg)
     }
     msgNeckYaw  .data = msg->data[0];
     msgNeckPitch.data = msg->data[1];
+    pubNeckYaw           .publish(msgNeckYaw           );
+    pubNeckPitch         .publish(msgNeckPitch         );
 }
 
 
@@ -142,50 +200,30 @@ int main(int argc, char** argv)
     ros::Subscriber sub_arm_right_goal_pose = n.subscribe("arm_right_goal_pose", 1, callback_arm_right_goal_pose);
     ros::Subscriber sub_head_goal_pose      = n.subscribe("head_goal_pose", 1, callback_head_goal_pose);
 
-    ros::Publisher pubLeftHipYaw      = n.advertise<std_msgs::Float64>("/nimbro/left_hip_yaw_position_controller/command",1);
-    ros::Publisher pubLeftHipRoll     = n.advertise<std_msgs::Float64>("/nimbro/left_hip_roll_position_controller/command",1);
-    ros::Publisher pubLeftHipPitch    = n.advertise<std_msgs::Float64>("/nimbro/left_hip_pitch_position_controller/command",1);
-    ros::Publisher pubLeftKneePitch   = n.advertise<std_msgs::Float64>("/nimbro/left_knee_pitch_position_controller/command",1);
-    ros::Publisher pubLeftAnklePitch  = n.advertise<std_msgs::Float64>("/nimbro/left_ankle_pitch_position_controller/command",1);
-    ros::Publisher pubLeftAnkleRoll   = n.advertise<std_msgs::Float64>("/nimbro/left_ankle_roll_position_controller/command",1); 
-    ros::Publisher pubRightHipYaw     = n.advertise<std_msgs::Float64>("/nimbro/right_hip_yaw_position_controller/command",1);    
-    ros::Publisher pubRightHipRoll    = n.advertise<std_msgs::Float64>("/nimbro/right_hip_roll_position_controller/command",1);   
-    ros::Publisher pubRightHipPitch   = n.advertise<std_msgs::Float64>("/nimbro/right_hip_pitch_position_controller/command",1);  
-    ros::Publisher pubRightKneePitch  = n.advertise<std_msgs::Float64>("/nimbro/right_knee_pitch_position_controller/command",1); 
-    ros::Publisher pubRightAnklePitch = n.advertise<std_msgs::Float64>("/nimbro/right_ankle_pitch_position_controller/command",1);
-    ros::Publisher pubRightAnkleRoll  = n.advertise<std_msgs::Float64>("/nimbro/right_ankle_roll_position_controller/command",1);
-    ros::Publisher pubLeftShoulPitch  = n.advertise<std_msgs::Float64>("/nimbro/right_shoulder_pitch_position_controller", 1);
-    ros::Publisher pubLeftShoulRoll   = n.advertise<std_msgs::Float64>("/nimbro/right_shoulder_roll_position_controller",1);  
-    ros::Publisher pubLeftElbowPitch  = n.advertise<std_msgs::Float64>("/nimbro/right_elbow_pitch_position_controller", 1); 
-    ros::Publisher pubRightShoulPitch = n.advertise<std_msgs::Float64>("/nimbro/left_shoulder_pitch_position_controller", 1);
-    ros::Publisher pubRightShoulRoll  = n.advertise<std_msgs::Float64>("/nimbro/left_shoulder_roll_position_controller", 1);
-    ros::Publisher pubRightElbowPitch = n.advertise<std_msgs::Float64>("/nimbro/left_elbow_pitch_position_controller", 1);
-    ros::Publisher pubNeckYaw  	      = n.advertise<std_msgs::Float64>("/nimbro/neck_yaw_position_controller", 1);
-    ros::Publisher pubNeckPitch	      = n.advertise<std_msgs::Float64>("/nimbro/head_pitch_position_controller", 1);
+    pubLeftHipYaw         = n.advertise<std_msgs::Float64>("/nimbro/left_hip_yaw_position_controller/command",1);
+    pubLeftHipRoll        = n.advertise<std_msgs::Float64>("/nimbro/left_hip_roll_position_controller/command",1);
+    pubLeftHipPitch       = n.advertise<std_msgs::Float64>("/nimbro/left_hip_pitch_position_controller/command",1);
+    pubLeftKneePitch      = n.advertise<std_msgs::Float64>("/nimbro/left_knee_pitch_position_controller/command",1);
+    pubLeftAnklePitch     = n.advertise<std_msgs::Float64>("/nimbro/left_ankle_pitch_position_controller/command",1);
+    pubLeftAnkleRoll      = n.advertise<std_msgs::Float64>("/nimbro/left_ankle_roll_position_controller/command",1); 
+    pubRightHipYaw        = n.advertise<std_msgs::Float64>("/nimbro/right_hip_yaw_position_controller/command",1);    
+    pubRightHipRoll       = n.advertise<std_msgs::Float64>("/nimbro/right_hip_roll_position_controller/command",1);   
+    pubRightHipPitch      = n.advertise<std_msgs::Float64>("/nimbro/right_hip_pitch_position_controller/command",1);  
+    pubRightKneePitch     = n.advertise<std_msgs::Float64>("/nimbro/right_knee_pitch_position_controller/command",1); 
+    pubRightAnklePitch    = n.advertise<std_msgs::Float64>("/nimbro/right_ankle_pitch_position_controller/command",1);
+    pubRightAnkleRoll     = n.advertise<std_msgs::Float64>("/nimbro/right_ankle_roll_position_controller/command",1);
+    pubLeftShoulderPitch  = n.advertise<std_msgs::Float64>("/nimbro/right_shoulder_pitch_position_controller/command", 1);
+    pubLeftShoulderRoll   = n.advertise<std_msgs::Float64>("/nimbro/right_shoulder_roll_position_controller/command",1);  
+    pubLeftElbowPitch     = n.advertise<std_msgs::Float64>("/nimbro/right_elbow_pitch_position_controller/command", 1); 
+    pubRightShoulderPitch = n.advertise<std_msgs::Float64>("/nimbro/left_shoulder_pitch_position_controller/command", 1);
+    pubRightShoulderRoll  = n.advertise<std_msgs::Float64>("/nimbro/left_shoulder_roll_position_controller/command", 1);
+    pubRightElbowPitch    = n.advertise<std_msgs::Float64>("/nimbro/left_elbow_pitch_position_controller/command", 1);
+    pubNeckYaw            = n.advertise<std_msgs::Float64>("/nimbro/neck_yaw_position_controller/command", 1);
+    pubNeckPitch          = n.advertise<std_msgs::Float64>("/nimbro/head_pitch_position_controller/command", 1);
 
     while(ros::ok())
     {
-	pubLeftHipYaw     .publish(msgLeftHipYaw     );
-	pubLeftHipRoll    .publish(msgLeftHipRoll    );
-	pubLeftHipPitch   .publish(msgLeftHipPitch   );
-	pubLeftKneePitch  .publish(msgLeftKneePitch  );
-	pubLeftAnklePitch .publish(msgLeftAnklePitch );
-	pubLeftAnkleRoll  .publish(msgLeftAnkleRoll  );
-	pubRightHipYaw    .publish(msgRightHipYaw    );
-	pubRightHipRoll   .publish(msgRightHipRoll   );
-	pubRightHipPitch  .publish(msgRightHipPitch  );
-	pubRightKneePitch .publish(msgRightKneePitch );
-        pubRightAnklePitch.publish(msgRightAnklePitch);
-	pubRightAnkleRoll .publish(msgRightAnkleRoll );
-	pubLeftShoulPitch .publish(msgLeftShoulPitch );
-	pubLeftShoulRoll  .publish(msgLeftShoulRoll  );
-	pubLeftElbowPitch .publish(msgLeftElbowPitch );
-	pubRightShoulPitch.publish(msgRightShoulPitch);
-	pubRightShoulRoll .publish(msgRightShoulRoll );
-	pubRightElbowPitch.publish(msgRightElbowPitch);
-	pubNeckYaw        .publish(msgNeckYaw        );
-	pubNeckPitch      .publish(msgNeckPitch      );
-	
+	ros::spinOnce();
 	ros::spinOnce();
 	loop.sleep();
     }

@@ -90,6 +90,7 @@ void MainWindow::setRosNode(QtRosNode* qtRosNode)
     QObject::connect(ui->sbHead1, SIGNAL(valueChanged(double)), this, SLOT(txtHeadArticularChanged(double)));
     QObject::connect(ui->btnZeroPose, SIGNAL(clicked()), this, SLOT(btnZeroPositionClicked()));
     QObject::connect(ui->btnCurrentPose, SIGNAL(clicked()), this, SLOT(btnCurrentPositionClicked()));
+    QObject::connect(ui->btnStartPose, SIGNAL(clicked()), this, SLOT(btnStartPositionClicked()));
 
     txtLegLeftArticularChanged(0);
     txtLegRightArticularChanged(0);
@@ -300,6 +301,22 @@ void MainWindow::txtHeadArticularChanged(double)
 
 void MainWindow::btnZeroPositionClicked()
 {
+    std::vector<float> joint_angles;
+    joint_angles.resize(12);
+    joint_angles[0]  = 0;
+    joint_angles[1]  = 0;
+    joint_angles[2]  = 0;
+    joint_angles[3]  = 0;
+    joint_angles[4]  = 0;
+    joint_angles[5]  = 0;
+    
+    joint_angles[6]  = 0;
+    joint_angles[7]  = 0;
+    joint_angles[8]  = 0;
+    joint_angles[9]  = 0;
+    joint_angles[10] = 0;
+    joint_angles[11] = 0;
+    qtRosNode->publishLegsGoalPose(joint_angles);
 }
 
 void MainWindow::btnCurrentPositionClicked()
@@ -343,4 +360,24 @@ void MainWindow::btnCurrentPositionClicked()
     armLeftIgnoreValueChanged = false;
     armRightIgnoreValueChanged = false;
     headIgnoreValueChanged = false;
+}
+
+void MainWindow::btnStartPositionClicked()
+{
+    std::vector<float> joint_angles;
+    joint_angles.resize(12);
+    joint_angles[0]  = 0;
+    joint_angles[1]  = 0.012;
+    joint_angles[2]  = -0.261;
+    joint_angles[3]  = 0.668;
+    joint_angles[4]  = -0.408;
+    joint_angles[5]  = -0.012;
+    
+    joint_angles[6]  = 0;
+    joint_angles[7]  = -0.012;
+    joint_angles[8]  = -0.261;
+    joint_angles[9]  = 0.668;
+    joint_angles[10] = -0.408;
+    joint_angles[11] = 0.012;
+    qtRosNode->publishLegsGoalPose(joint_angles);
 }

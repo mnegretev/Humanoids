@@ -13,6 +13,7 @@ void QtRosNode::run()
 {
     pubLegLeftGoalPose  = n->advertise<std_msgs::Float32MultiArray>("/hardware/leg_left_goal_pose", 1);
     pubLegRightGoalPose = n->advertise<std_msgs::Float32MultiArray>("/hardware/leg_right_goal_pose", 1);
+    pubLegsGoalPose     = n->advertise<std_msgs::Float32MultiArray>("/hardware/legs_goal_pose", 1);
     pubArmLeftGoalPose  = n->advertise<std_msgs::Float32MultiArray>("/hardware/arm_left_goal_pose", 1);
     pubArmRightGoalPose = n->advertise<std_msgs::Float32MultiArray>("/hardware/arm_right_goal_pose", 1);
     pubHeadGoalPose     = n->advertise<std_msgs::Float32MultiArray>("/hardware/head_goal_pose", 1);
@@ -47,6 +48,12 @@ void QtRosNode::publishLegRightGoalPose(std::vector<float> legRightGoalPose)
 {
     msgLegRightGoalPose.data = legRightGoalPose;
     pubLegRightGoalPose.publish(msgLegRightGoalPose);
+}
+
+void QtRosNode::publishLegsGoalPose(std::vector<float> legsGoalPose)
+{
+    msgLegsGoalPose.data = legsGoalPose;
+    pubLegsGoalPose.publish(msgLegsGoalPose);
 }
 
 void QtRosNode::publishArmLeftGoalPose(std::vector<float> armLeftGoalPose)

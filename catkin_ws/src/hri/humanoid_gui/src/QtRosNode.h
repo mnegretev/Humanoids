@@ -23,11 +23,13 @@ public:
 
     ros::Publisher pubLegLeftGoalPose;
     ros::Publisher pubLegRightGoalPose;
+    ros::Publisher pubLegsGoalPose;
     ros::Publisher pubArmLeftGoalPose;
     ros::Publisher pubArmRightGoalPose;
     ros::Publisher pubHeadGoalPose;
     std_msgs::Float32MultiArray msgLegLeftGoalPose;
     std_msgs::Float32MultiArray msgLegRightGoalPose;
+    std_msgs::Float32MultiArray msgLegsGoalPose;
     std_msgs::Float32MultiArray msgArmLeftGoalPose;
     std_msgs::Float32MultiArray msgArmRightGoalPose;
     std_msgs::Float32MultiArray msgHeadGoalPose;
@@ -41,6 +43,7 @@ public:
 
     void publishLegLeftGoalPose(std::vector<float> legLeftGoalPose);
     void publishLegRightGoalPose(std::vector<float> legRightGoalPose);
+    void publishLegsGoalPose(std::vector<float> legsGoalPose);
     void publishArmLeftGoalPose(std::vector<float> armLeftGoalPose);
     void publishArmRightGoalPose(std::vector<float> armRightGoalPose);
     void publishHeadGoalPose(std::vector<float> headGoalPose);

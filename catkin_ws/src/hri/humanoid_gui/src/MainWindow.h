@@ -53,6 +53,7 @@ public slots:
     //Slots for buttons
     void btnZeroPositionClicked();
     void btnCurrentPositionClicked();
+    void btnStartPositionClicked();
 
 private:
     Ui::MainWindow *ui;
