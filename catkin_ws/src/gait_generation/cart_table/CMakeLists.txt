@@ -200,3 +200,28 @@ target_link_libraries(${PROJECT_NAME}_node
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+
+
+
+
+## Declare a C++ executable
+add_executable(foot_node src/foot_node.cpp)
+
+## Add cmake target dependencies of the executable
+## same as for the library above
+add_dependencies(foot_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+## Specify libraries to link a library or executable target against
+target_link_libraries(foot_node ${catkin_LIBRARIES}) 
+
+
+## Declare a C++ executable
+add_executable(splines_node src/splines_node.cpp)
+
+## Add cmake target dependencies of the executable
+## same as for the library above
+add_dependencies(splines_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+## Specify libraries to link a library or executable target against
+target_link_libraries(splines_node ${catkin_LIBRARIES}) 
