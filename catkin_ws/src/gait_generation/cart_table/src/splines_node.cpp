@@ -16,6 +16,8 @@
 #define hge 0
 #define xsd (0.49*Ds)
 #define xed (0.49*Ds)
+#define y_left_CoM  0 //0.08
+#define y_right_CoM  0 //(-y_left_CoM)
 
 int main(int argc, char** argv)
 {
@@ -115,7 +117,7 @@ int main(int argc, char** argv)
     leg_left_yaw   [i] = 0;
     
     leg_right_x    [i] = -(Ds - xsd) + right_start_x;
-    leg_right_y    [i] = right_start_y;
+    leg_right_y    [i] = y_right_CoM + right_start_y;
     leg_right_z    [i] = right_start_z;
     leg_right_roll [i] = 0;
     leg_right_pitch[i] = 0;
@@ -135,7 +137,7 @@ int main(int argc, char** argv)
     leg_left_yaw   [i] = 0;
     
     leg_right_x    [i] = -(Ds - xsd) + right_start_x;
-    leg_right_y    [i] = right_start_y;
+    leg_right_y    [i] = y_right_CoM + right_start_y;
     leg_right_z    [i] = right_start_z;
     leg_right_roll [i] = 0;
     leg_right_pitch[i] = 0;
@@ -156,7 +158,7 @@ int main(int argc, char** argv)
     leg_left_yaw   [i] = 0;
     
     leg_right_x    [i] = -(Ds + xed) + right_start_x;
-    leg_right_y    [i] = right_start_y;
+    leg_right_y    [i] = y_right_CoM + right_start_y;
     leg_right_z    [i] = right_start_z;
     leg_right_roll [i] = 0;
     leg_right_pitch[i] = 0;
@@ -177,7 +179,7 @@ int main(int argc, char** argv)
     leg_left_yaw   [i] = 0;
     
     leg_right_x    [i] = -(Ds + xed) + right_start_x;
-    leg_right_y    [i] = right_start_y;
+    leg_right_y    [i] = y_right_CoM + right_start_y;
     leg_right_z    [i] = right_start_z;
     leg_right_roll [i] = 0;
     leg_right_pitch[i] = 0;
@@ -220,7 +222,7 @@ int main(int argc, char** argv)
     leg_right_yaw   [i] = 0;
     
     leg_left_x    [i] = -(Ds - xsd) + left_start_x;
-    leg_left_y    [i] = left_start_y;
+    leg_left_y    [i] = y_left_CoM + left_start_y;
     leg_left_z    [i] = left_start_z;
     leg_left_roll [i] = 0;
     leg_left_pitch[i] = 0;
@@ -240,7 +242,7 @@ int main(int argc, char** argv)
     leg_right_yaw   [i] = 0;
     
     leg_left_x    [i] = -(Ds - xsd) + left_start_x;
-    leg_left_y    [i] = left_start_y;
+    leg_left_y    [i] = y_left_CoM + left_start_y;
     leg_left_z    [i] = left_start_z;
     leg_left_roll [i] = 0;
     leg_left_pitch[i] = 0;
@@ -261,7 +263,7 @@ int main(int argc, char** argv)
     leg_right_yaw   [i] = 0;
     
     leg_left_x    [i] = -(Ds + xed) + left_start_x;
-    leg_left_y    [i] = left_start_y;
+    leg_left_y    [i] = y_left_CoM + left_start_y;
     leg_left_z    [i] = left_start_z;
     leg_left_roll [i] = 0;
     leg_left_pitch[i] = 0;
@@ -282,7 +284,7 @@ int main(int argc, char** argv)
     leg_right_yaw   [i] = 0;
     
     leg_left_x    [i] = -(Ds + xed) + left_start_x;
-    leg_left_y    [i] = left_start_y;
+    leg_left_y    [i] = y_left_CoM + left_start_y;
     leg_left_z    [i] = left_start_z;
     leg_left_roll [i] = 0;
     leg_left_pitch[i] = 0;
