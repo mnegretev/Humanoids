@@ -10,14 +10,6 @@
         <rosparam command="load" file="$(find nimbro_op_srdf)/config/kinematics.yaml"/>
         <node name="inverse_kinematics" pkg="inverse_kinematics" type="ik_moveit_node" output="screen"/>
     </group>
-
-    <group ns="hardware">
-        <node name="legs_simul_node" pkg="legs" type="legs_node" output="screen"/>
-    </group>
-
-    <group ns="gait_generation">
-        <node name="foot_node" pkg="cart_table" type="foot_node" output="screen"/>
-    </group>
     
     <!-- Load joint controller configurations from YAML file to parameter server -->
     <rosparam file="$(find nimbro_op_gazebo)/config/controllers.yaml" command="load"/>

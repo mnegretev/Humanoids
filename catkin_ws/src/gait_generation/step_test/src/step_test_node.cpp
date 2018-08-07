@@ -1,7 +1,7 @@
 #include "ros/ros.h"
 #include "std_msgs/Float32MultiArray.h"
-#include "control_msgs/CalculateIK.h"
-#include "control_msgs/CalculateDK.h"
+#include "ctrl_msgs/CalculateIK.h"
+#include "ctrl_msgs/CalculateDK.h"
 
 int main(int argc, char** argv)
 {
@@ -15,16 +15,16 @@ int main(int argc, char** argv)
     ros::Publisher pubArmLeftGoalPose  = n.advertise<std_msgs::Float32MultiArray>("/hardware/arm_left_goal_pose", 1); 
     ros::Publisher pubArmRightGoalPose = n.advertise<std_msgs::Float32MultiArray>("/hardware/arm_right_goal_pose", 1);
     ros::Publisher pubHeadGoalPose     = n.advertise<std_msgs::Float32MultiArray>("/hardware/head_goal_pose", 1);
-    ros::ServiceClient cltCalculateIKLegLeft  = n.serviceClient<control_msgs::CalculateIK>("/control/ik_leg_left"); 
-    ros::ServiceClient cltCalculateIKLegRight = n.serviceClient<control_msgs::CalculateIK>("/control/ik_leg_right");
-    ros::ServiceClient cltCalculateDKLegLeft  = n.serviceClient<control_msgs::CalculateDK>("/control/dk_leg_left"); 
-    ros::ServiceClient cltCalculateDKLegRight = n.serviceClient<control_msgs::CalculateDK>("/control/dk_leg_right");
+    ros::ServiceClient cltCalculateIKLegLeft  = n.serviceClient<ctrl_msgs::CalculateIK>("/control/ik_leg_left"); 
+    ros::ServiceClient cltCalculateIKLegRight = n.serviceClient<ctrl_msgs::CalculateIK>("/control/ik_leg_right");
+    ros::ServiceClient cltCalculateDKLegLeft  = n.serviceClient<ctrl_msgs::CalculateDK>("/control/dk_leg_left"); 
+    ros::ServiceClient cltCalculateDKLegRight = n.serviceClient<ctrl_msgs::CalculateDK>("/control/dk_leg_right");
     std_msgs::Float32MultiArray msgLegLeftGoalPose;
     std_msgs::Float32MultiArray msgLegRightGoalPose;
     std_msgs::Float32MultiArray msgArmLeftGoalPose;
     std_msgs::Float32MultiArray msgArmRightGoalPose;
     std_msgs::Float32MultiArray msgHeadGoalPose;
-    control_msgs::CalculateIK srvIK;
+    ctrl_msgs::CalculateIK srvIK;
 
     //
     //Trajectory generation

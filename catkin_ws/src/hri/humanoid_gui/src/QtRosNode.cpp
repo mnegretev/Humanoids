@@ -17,10 +17,10 @@ void QtRosNode::run()
     pubArmLeftGoalPose  = n->advertise<std_msgs::Float32MultiArray>("/hardware/arm_left_goal_pose", 1);
     pubArmRightGoalPose = n->advertise<std_msgs::Float32MultiArray>("/hardware/arm_right_goal_pose", 1);
     pubHeadGoalPose     = n->advertise<std_msgs::Float32MultiArray>("/hardware/head_goal_pose", 1);
-    cltCalculateIKLegLeft  = n->serviceClient<control_msgs::CalculateIK>("/control/ik_leg_left");
-    cltCalculateIKLegRight = n->serviceClient<control_msgs::CalculateIK>("/control/ik_leg_right");
-    cltCalculateDKLegLeft  = n->serviceClient<control_msgs::CalculateDK>("/control/dk_leg_left");
-    cltCalculateDKLegRight = n->serviceClient<control_msgs::CalculateDK>("/control/dk_leg_right");
+    cltCalculateIKLegLeft  = n->serviceClient<ctrl_msgs::CalculateIK>("/control/ik_leg_left");
+    cltCalculateIKLegRight = n->serviceClient<ctrl_msgs::CalculateIK>("/control/ik_leg_right");
+    cltCalculateDKLegLeft  = n->serviceClient<ctrl_msgs::CalculateDK>("/control/dk_leg_left");
+    cltCalculateDKLegRight = n->serviceClient<ctrl_msgs::CalculateDK>("/control/dk_leg_right");
         
     ros::Rate loop(10);
     while(ros::ok() && !this->gui_closed)
@@ -78,7 +78,7 @@ bool QtRosNode::callIKLegLeft(float x, float y, float z, float roll, float pitch
                                        std::vector<float>& result)
 {
     result.resize(6);
-    control_msgs::CalculateIK srv;
+    ctrl_msgs::CalculateIK srv;
     srv.request.x = x;
     srv.request.y = y;
     srv.request.z = z;
@@ -97,7 +97,7 @@ bool QtRosNode::callIKLegRight(float x, float y, float z, float roll, float pitc
                                         std::vector<float>& result)
 {
     result.resize(6);
-    control_msgs::CalculateIK srv;
+    ctrl_msgs::CalculateIK srv;
     srv.request.x = x;
     srv.request.y = y;
     srv.request.z = z;
@@ -113,7 +113,7 @@ bool QtRosNode::callIKLegRight(float x, float y, float z, float roll, float pitc
 }
 bool QtRosNode::callDKLegLeft(std::vector<float>& joints, float& x, float& y, float& z, float& roll, float& pitch, float& yaw)
 {
-    control_msgs::CalculateDK srv;
+    ctrl_msgs::CalculateDK srv;
     srv.request.joint_values = joints;
     cltCalculateDKLegLeft.call(srv);
     x = srv.response.x;
@@ -126,7 +126,7 @@ bool QtRosNode::callDKLegLeft(std::vector<float>& joints, float& x, float& y, fl
 
 bool QtRosNode::callDKLegRight(std::vector<float>& joints, float& x, float& y, float& z, float& roll, float& pitch,float& yaw)
 {
-    control_msgs::CalculateDK srv;
+    ctrl_msgs::CalculateDK srv;
     srv.request.joint_values = joints;
     cltCalculateDKLegRight.call(srv);
     x = srv.response.x;

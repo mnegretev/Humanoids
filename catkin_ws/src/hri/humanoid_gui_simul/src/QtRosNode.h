@@ -9,8 +9,8 @@
 #include "std_msgs/Float32.h"
 #include "std_msgs/Float64.h"
 #include "std_msgs/Float32MultiArray.h"
-#include "control_msgs/CalculateIK.h"
-#include "control_msgs/CalculateDK.h"
+#include "ctrl_msgs/CalculateIK.h"
+#include "ctrl_msgs/CalculateDK.h"
 
 class QtRosNode : public QThread
 {

@@ -14,7 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   std_msgs
   tf
-  control_msgs
+  ctrl_msgs
 )
 
 find_package(Qt5Widgets REQUIRED)

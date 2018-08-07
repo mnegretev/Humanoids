@@ -8,7 +8,7 @@ project(step_test)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  control_msgs
+  ctrl_msgs
   roscpp
   rospy
   std_msgs
@@ -72,7 +72,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate added messages and services with any dependencies listed here
 # generate_messages(
 #   DEPENDENCIES
-#   control_msgs#   std_msgs
+#   ctrl_msgs#   std_msgs
 # )
 
 ################################################

@@ -1,6 +1,6 @@
 #include "ros/ros.h" 
 #include "std_msgs/Float32MultiArray.h"
-#include "control_msgs/CalculateIK.h"
+#include "ctrl_msgs/CalculateIK.h"
 
 int main(int argc, char** argv)
  {     
@@ -11,8 +11,8 @@ int main(int argc, char** argv)
     ros::Rate loop(30);
     
     ros::service::waitForService("/control/ik_leg_left", 15);
-    ros::ServiceClient clt_link_props = n.serviceClient<control_msgs::CalculateIK>("/control/ik_leg_left");
-    control_msgs::CalculateIK srv_props;
+    ros::ServiceClient clt_link_props = n.serviceClient<ctrl_msgs::CalculateIK>("/control/ik_leg_left");
+    ctrl_msgs::CalculateIK srv_props;
     ros::Publisher  joint_pub = n.advertise<std_msgs::Float32MultiArray>("/hardware/leg_left_goal_pose", 1);
 
     float i = 0;

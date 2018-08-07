@@ -2,8 +2,8 @@
 #include "moveit/robot_model_loader/robot_model_loader.h"
 #include "moveit/robot_model/robot_model.h"
 #include "moveit/robot_state/robot_state.h"
-#include "control_msgs/CalculateIK.h"
-#include "control_msgs/CalculateDK.h"
+#include "ctrl_msgs/CalculateIK.h"
+#include "ctrl_msgs/CalculateDK.h"
 
 robot_state::RobotStatePtr kinematic_state;
 robot_state::JointModelGroup* joint_group_leg_left;
@@ -11,7 +11,7 @@ robot_state::JointModelGroup* joint_group_leg_right;
 std::vector<std::string> joint_names_leg_left;
 std::vector<std::string> joint_names_leg_right;
 
-bool ik_leg_left(control_msgs::CalculateIK::Request &req, control_msgs::CalculateIK::Response &res)
+bool ik_leg_left(ctrl_msgs::CalculateIK::Request &req, ctrl_msgs::CalculateIK::Response &res)
 {
     std::cout << "IK.->Calculating inverse kinematics for left leg..." << std::endl;
     Eigen::Affine3d desired_pose = Eigen::Affine3d::Identity();
@@ -41,7 +41,7 @@ bool ik_leg_left(control_msgs::CalculateIK::Request &req, control_msgs::Calculat
     return found_ik;
 }
 
-bool ik_leg_right(control_msgs::CalculateIK::Request &req, control_msgs::CalculateIK::Response &res)
+bool ik_leg_right(ctrl_msgs::CalculateIK::Request &req, ctrl_msgs::CalculateIK::Response &res)
 {
     std::cout << "IK.->Calculating inverse kinematics for right leg..." << std::endl;
     Eigen::Affine3d desired_pose = Eigen::Affine3d::Identity();
@@ -71,7 +71,7 @@ bool ik_leg_right(control_msgs::CalculateIK::Request &req, control_msgs::Calcula
     return found_ik;
 }
 
-bool dk_leg_left(control_msgs::CalculateDK::Request &req, control_msgs::CalculateDK::Response &res)
+bool dk_leg_left(ctrl_msgs::CalculateDK::Request &req, ctrl_msgs::CalculateDK::Response &res)
 {
     if(req.joint_values.size() != 6)
         return false;
@@ -91,7 +91,7 @@ bool dk_leg_left(control_msgs::CalculateDK::Request &req, control_msgs::Calculat
     return true;
 }
 
-bool dk_leg_right(control_msgs::CalculateDK::Request &req, control_msgs::CalculateDK::Response &res)
+bool dk_leg_right(ctrl_msgs::CalculateDK::Request &req, ctrl_msgs::CalculateDK::Response &res)
 {
     if(req.joint_values.size() != 6)
         return false;
