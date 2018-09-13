@@ -37,7 +37,7 @@
 #define ZERO_LEG_LEFT_HIP_YAW           2070
 #define ZERO_LEG_LEFT_HIP_ROLL          2070
 #define ZERO_LEG_LEFT_HIP_PITCH         2048
-#define ZERO_LEG_LEFT_KNEE_PITCH        1180
+#define ZERO_LEG_LEFT_KNEE_PITCH        2400
 #define ZERO_LEG_LEFT_ANKLE_PITCH       2016
 #define ZERO_LEG_LEFT_ANKLE_ROLL        2048
 
@@ -368,6 +368,8 @@ int main(int argc, char** argv)
     {
 	for(int i = 0; i < 20; i++)
 	{
+		if(servos_ids[i]==ID_ARM_RIGHT_SHOULDER_PITCH)
+			continue;
 	    dxl_comm_result = packetHandler->read2ByteTxRx(portHandler, servos_ids[i], ADDR_MX_CURRENT_POSITION,
 							   &dxl_current_pos, &dxl_error);
 	    if(dxl_comm_result == COMM_SUCCESS && dxl_error == 0)
@@ -383,12 +385,17 @@ int main(int argc, char** argv)
 	}
 	for(int i=0; i < 20; i++)
 	{
+		if(servos_ids[i]==ID_ARM_RIGHT_SHOULDER_PITCH)
+			continue;		
 	    dxl_comm_result = packetHandler->write2ByteTxRx(portHandler, servos_ids[i], ADDR_MX_GOAL_POSITION,
 							    servos_goal_position[i], &dxl_error);
 	    if(dxl_comm_result != COMM_SUCCESS)
 		std::cout << "CM730.->Commnunication problem while writing goal pose to servo "<< int(servos_ids[i])  << std::endl;
 	    if(dxl_error != 0)
-		std::cout << "CM730.->Status error while writing goal pose to servo "<< int(servos_ids[i])  << std::endl;
+        {
+		  std::cout << "CM730.->Status error while writing goal pose "<< (int)servos_goal_position[i];
+            std::cout << " to servo "<< int(servos_ids[i]) << "\tError code:" << int(dxl_error) << std::endl;
+    }   
 	}
 
 	msg_joint_states.header.stamp = ros::Time::now();
