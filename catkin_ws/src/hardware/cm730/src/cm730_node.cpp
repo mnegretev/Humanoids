@@ -383,6 +383,7 @@ int main(int argc, char** argv)
 	    else
 		std::cout << "CM730.->Warning! Error in servo id "<< servos_ids[i] << " with code "<< int(dxl_error) << std::endl;
 	}
+	/*
 	for(int i=0; i < 20; i++)
 	{
 		if(servos_ids[i]==ID_ARM_RIGHT_SHOULDER_PITCH)
@@ -397,6 +398,7 @@ int main(int argc, char** argv)
             std::cout << " to servo "<< int(servos_ids[i]) << "\tError code:" << int(dxl_error) << std::endl;
     }   
 	}
+	*/
 
 	msg_joint_states.header.stamp = ros::Time::now();
 	pub_joint_states.publish(msg_joint_states);

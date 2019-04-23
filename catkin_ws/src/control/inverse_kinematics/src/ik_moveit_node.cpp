@@ -122,7 +122,9 @@ int main(int argc, char** argv)
     ros::ServiceServer srvDKLegRight = n.advertiseService("/control/dk_leg_right", dk_leg_right);
     ros::Rate loop(10);
 
-    robot_model_loader::RobotModelLoader robot_model_loader("robot_description");
+    std::cout << "control.... loading model" << std::endl;
+    robot_model_loader::RobotModelLoader robot_model_loader("/robot_description");
+    std::cout << "control.... loading kinematic model" << std::endl;
     robot_model::RobotModelPtr kinematic_model = robot_model_loader.getModel();
     std::cout << "Kinematic model frame: " << kinematic_model->getModelFrame() << std::endl;
 
