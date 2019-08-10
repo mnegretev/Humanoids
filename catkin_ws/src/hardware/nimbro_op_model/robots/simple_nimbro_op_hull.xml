@@ -657,10 +657,12 @@
   </joint>
   <link name="camera_optical" />
   <joint name="camera_joint" type="fixed">
-    <origin xyz="0.0735836299363487 -0.0320999963345818 0.070595781755363"
-	    rpy="-1.60399263964928 1.80630901483938E-16 -1.57079632679489" />
+    <!--origin xyz="0.0735836299363487 -0.0320999963345818 0.070595781755363"
+	    rpy="-1.60399263964928 1.80630901483938E-16 -1.57079632679489" /-->
+    <origin xyz="0.0735836299363487     0.0       0.070595781755363"
+      rpy="      0                   0                  0     "      />
     <parent link="head_link" />
-    <child link="camera_optical" />
+    <child link="camera_optical" />|
     <axis xyz="0 0 0" />
   </joint>
 
