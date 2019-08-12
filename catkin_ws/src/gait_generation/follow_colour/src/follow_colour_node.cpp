@@ -1,7 +1,12 @@
 #include<ros/ros.h>
 #include<std_msgs/Float64.h>
 #include<std_msgs/Float32MultiArray.h>
+#include<sensor_msgs/JointState.h>
 
+#define vertical_threshold     0.15
+#define horizontal_threshold   0.20
+
+#define angle_view   0.680678
 
 using namespace std;
 
@@ -11,6 +16,10 @@ ros::Publisher yaw_pub;
 ros::Publisher pitch_pub;
 
 
+float  goal_pan;
+float goal_tilt;
+
+
 
 void angles_callback(const std_msgs::Float32MultiArray::ConstPtr& msg)
 {
@@ -18,12 +27,14 @@ void angles_callback(const std_msgs::Float32MultiArray::ConstPtr& msg)
 
     std_msgs::Float64 yaw_msg, pitch_msg;
 
-    yaw_msg.data   = -msg->data[0];
-    pitch_msg.data = msg->data[1];
+    
+    yaw_msg.data   += 0.5 * (msg->data[0]);
+    pitch_msg.data += 0.5 * (msg->data[1]);
     
     yaw_pub.publish(yaw_msg);
     pitch_pub.publish(pitch_msg);
 }
+
 
 int main(int argc, char **argv)
 {
