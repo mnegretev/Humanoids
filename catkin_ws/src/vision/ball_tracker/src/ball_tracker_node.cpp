@@ -12,18 +12,32 @@ int h_max = 179;;
 int s_max = 255;;
 int v_max = 255;;
 
+bool log_out;
 
 void set_hsv_values( int event, int x, int y, int, void* param )
 {
+    cv::Mat hsv_min = cv::Mat_<int>::zeros(1, 3);
+    cv::Mat hsv_max = cv::Mat_<int>::zeros(1, 3);
+    
     if(event == CV_EVENT_LBUTTONDOWN){
-        cout<<"hsv_min: ["<<h_min<<", "<<s_min<<", "<<v_min<<"]     hsv_max: ["<<h_max<<", "<<s_max<<", "<<v_max<<"]"<<endl;
-        ros::param::set("h_min", h_min);
-        ros::param::set("s_min", s_min);
-        ros::param::set("v_min", v_min);
-        ros::param::set("h_max", h_max);
-        ros::param::set("s_max", s_max);
-        ros::param::set("v_max", v_max);
+        cv::FileStorage fs("src/config_files/vision/hsv_values.xml", cv::FileStorage::WRITE);
+        hsv_min.at<int>(0,0) = h_min; 
+        hsv_min.at<int>(0,1) = s_min; 
+        hsv_min.at<int>(0,2) = v_min; 
+ 
+        hsv_max.at<int>(0,0) = h_max; 
+        hsv_max.at<int>(0,1) = s_max; 
+        hsv_max.at<int>(0,2) = v_max; 
+        
+        fs << "hsv_min" << hsv_min;
+        fs << "hsv_max" << hsv_max;
+        fs.release();
+
+        cout<<"hsv_min: ["<<h_min<<", "<<s_min<<", "<<v_min<<"]   hsv_max: ["<<h_max<<", "<<s_max
+                                              <<", "<<v_max<<"]---> Added to hsv_values.xml"<<endl;
+        log_out = true;
     }
+
 }
 
 void hsv_values(int, void*)
@@ -42,7 +56,7 @@ int main(int argc, char **argv)
     cv::Mat     hsv_frame;
     cv::Mat    mask_frame;
     cv::Mat  eroded_frame;
-    cv::Mat dilated_frame;
+    cv::Mat tracked_frame;
 
     cv::Mat kernel=cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5,5));
 
@@ -65,11 +79,14 @@ int main(int argc, char **argv)
         cv::cvtColor( video_frame , hsv_frame, CV_BGR2HSV);
         cv::inRange(  hsv_frame   , cv::Scalar(h_min, s_min  , v_min), cv::Scalar(h_max, s_max, v_max), mask_frame);
         cv::erode(    mask_frame  , eroded_frame    , kernel , cv::Point(-1,-1), 1);
-        cv::dilate(   eroded_frame, dilated_frame   , kernel , cv::Point(-1,-1), 1);
+        cv::dilate(   eroded_frame, tracked_frame   , kernel , cv::Point(-1,-1), 1);
 
         putText(video_frame, "click to set values", cv::Point(5,50), cv::FONT_HERSHEY_DUPLEX, 1, cv::Scalar( 143, 30, 90), 2);
-        cv::imshow("dilated_frame", dilated_frame);
+        cv::imshow("tracked_frame", tracked_frame);
         cv::imshow("video_frame", video_frame);
+        
+        if(log_out)
+            break;
     }
 
 
