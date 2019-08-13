@@ -119,7 +119,7 @@ int main(int argc, char **argv)
         //cv::imshow("tracked_frame", tracked_frame);
         //cv::imshow("video_frame", video_frame);
         
-        if( centroid[0] != 1.36136 && centroid[1] != -1.36136 )    
+        if( centroid[0] != 0.680678  && centroid[1] != -0.680678 )    
             pub_angles.publish(msg);
         ros::spinOnce();
         
