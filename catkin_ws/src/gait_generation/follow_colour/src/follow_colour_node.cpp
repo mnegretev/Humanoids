@@ -42,6 +42,8 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "follow_colour_node");
     ros::NodeHandle nh;
 
+    system("echo 1 | sudo tee /sys/bus/usb-serial/devices/ttyUSB0/latency_timer");
+
     ros::Subscriber angles_sub = nh.subscribe("/vision/get_ball_position/vision_angles", 1000 , angles_callback);
                      pitch_pub = nh.advertise<std_msgs::Float64>("/nimbro/head_pitch_position_controller/command", 1);
                        yaw_pub = nh.advertise<std_msgs::Float64>("/nimbro/neck_yaw_position_controller/command"  , 1);
