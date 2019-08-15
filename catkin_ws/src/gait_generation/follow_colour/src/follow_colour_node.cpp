@@ -11,28 +11,24 @@
 using namespace std;
 
 
-
-ros::Publisher yaw_pub;
-ros::Publisher pitch_pub;
-
-
 float  goal_pan;
 float goal_tilt;
 
-
+ros::Publisher head_pub;
 
 void angles_callback(const std_msgs::Float32MultiArray::ConstPtr& msg)
 {
     cout<<"["<<msg->data[0]<<","<<msg->data[1]<<"]"<<endl;
 
-    std_msgs::Float64 yaw_msg, pitch_msg;
+    std_msgs::Float32MultiArray head_msg;
 
+    goal_pan  += 0.5 * (msg->data[0]);
+    goal_tilt += 0.5 * (msg->data[1]); 
     
-    yaw_msg.data   += 0.5 * (msg->data[0]);
-    pitch_msg.data += 0.5 * (msg->data[1]);
+    head_msg.data[0] = goal_pan ;
+    head_msg.data[1] = goal_tilt;
     
-    yaw_pub.publish(yaw_msg);
-    pitch_pub.publish(pitch_msg);
+    head_pub.publish(head_msg);    
 }
 
 
@@ -45,9 +41,7 @@ int main(int argc, char **argv)
     system("echo 1 | sudo tee /sys/bus/usb-serial/devices/ttyUSB0/latency_timer");
 
     ros::Subscriber angles_sub = nh.subscribe("/vision/get_ball_position/vision_angles", 1000 , angles_callback);
-                     pitch_pub = nh.advertise<std_msgs::Float64>("/nimbro/head_pitch_position_controller/command", 1);
-                       yaw_pub = nh.advertise<std_msgs::Float64>("/nimbro/neck_yaw_position_controller/command"  , 1);
-
+                    head_pub   = nh.advertise<std_msgs::Float32MultiArray>("/Hardware/head_goal_pose", 1);
 
 
 
