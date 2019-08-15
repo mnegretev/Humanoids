@@ -3,7 +3,8 @@
 #include<opencv2/opencv.hpp>
 #include<std_msgs/Float32MultiArray.h>
 
-#define angle_of_view  0.680678
+#define vertical_view    0.680678
+#define horizontal_view  0.680678
 
 using namespace std;
 
@@ -61,16 +62,16 @@ int main(int argc, char **argv)
     file_pkg = ros::package::getPath("config_files");
     ros::Publisher pub_angles = nh.advertise<std_msgs::Float32MultiArray>("/vision/get_ball_position/vision_angles", 1000);
 
-    ros::Rate loop(50);
-
-    std_msgs::Float32MultiArray msg;
-    msg.data.resize(2);
-
     cv::Mat       video_frame;
     cv::Mat     tracked_frame;
     cv::Mat    target_located;
     cv::Mat video_undistorted;
     cv::Mat kernel = cv::getStructuringElement( cv::MORPH_ELLIPSE, cv::Size(5,5) );
+
+    std_msgs::Float32MultiArray msg;
+    msg.data.resize(2);
+    ros::Rate loop(50);
+
 
     cv::VideoCapture capture;
     capture.open(1);
@@ -109,8 +110,8 @@ int main(int argc, char **argv)
         
         cv::findNonZero(tracked_frame, position);
         cv::Scalar centroid = cv::mean( position);
-        centroid[0] =  -angle_of_view * ( centroid[0] - 320 ) / 320;
-        centroid[1] =   angle_of_view * ( centroid[1] - 240 ) / 240;
+        centroid[0] =  - horizontal_view * ( centroid[0] - 320 ) / 320;
+        centroid[1] =    vertical_view   * ( centroid[1] - 240 ) / 240;
         
         msg.data[0] = centroid[0];
         msg.data[1] = centroid[1];
@@ -119,7 +120,7 @@ int main(int argc, char **argv)
         cv::imshow("video_undistorted", video_undistorted);
         cv::imshow("target_located"   ,  target_located  );
         
-        if( centroid[0] != angle_of_view   && centroid[1] != - angle_of_view )    
+        if( centroid[0] != horizontal_view   && centroid[1] != - vertical_view )    
             pub_angles.publish(msg);
        
        

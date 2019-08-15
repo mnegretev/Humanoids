@@ -5,6 +5,14 @@
 using namespace std;
 
 
+cv::Mat   video_frame;
+cv::Mat     hsv_frame;
+cv::Mat    mask_frame;
+cv::Mat  eroded_frame;
+cv::Mat tracked_frame;
+cv::Mat kernel=cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5,5));
+
+
 int h_min = 0;;
 int s_min = 0;;
 int v_min = 0;;
@@ -12,14 +20,48 @@ int h_max = 179;;
 int s_max = 255;;
 int v_max = 255;;
 
+vector<int> H,S,V;
+
 bool log_out;
 
 void set_hsv_values( int event, int x, int y, int, void* param )
 {
     cv::Mat hsv_min = cv::Mat_<int>::zeros(1, 3);
     cv::Mat hsv_max = cv::Mat_<int>::zeros(1, 3);
-    
-    if(event == CV_EVENT_LBUTTONDOWN){
+   
+   
+    if (event == CV_EVENT_LBUTTONDOWN){
+        H.push_back((int)(hsv_frame).at<cv::Vec3b>(y, x)[0]);
+        S.push_back((int)(hsv_frame).at<cv::Vec3b>(y, x)[1]);
+        V.push_back((int)(hsv_frame).at<cv::Vec3b>(y, x)[2]);
+
+        h_min = H[0];
+        s_min = S[0];
+        v_min = V[0];
+        h_max = H[0];
+        s_max = S[0];
+        v_max = V[0];
+        if(H.size() > 1)
+            for(int i=0; i< H.size(); i++){
+                //cout<<"H:"<<H[i]<<" S:"<<S[i]<<" V:"<<V[i]<<endl;
+                if(H[i] < h_min)
+                    h_min = H[i];
+                if(S[i] < s_min)
+                    s_min = S[i];
+                if(V[i] < v_min)
+                    v_min = V[i];
+                if(H[i] > h_max)
+                    h_max = H[i];
+                if(S[i] > s_max)
+                    s_max = S[i];
+                if(V[i] > v_max)
+                    v_max = V[i];
+            }
+    }
+
+
+
+    if(event == CV_EVENT_MBUTTONDOWN){
         cv::FileStorage fs("src/config_files/vision/hsv_values.xml", cv::FileStorage::WRITE);
         hsv_min.at<int>(0,0) = h_min; 
         hsv_min.at<int>(0,1) = s_min; 
@@ -52,14 +94,6 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "ball_tracker_node");
 
 
-    cv::Mat   video_frame;
-    cv::Mat     hsv_frame;
-    cv::Mat    mask_frame;
-    cv::Mat  eroded_frame;
-    cv::Mat tracked_frame;
-
-    cv::Mat kernel=cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5,5));
-
     cv::VideoCapture capture;
     capture.open(1);
     cv::namedWindow("video_frame",1);
@@ -81,7 +115,7 @@ int main(int argc, char **argv)
         cv::erode(    mask_frame  , eroded_frame    , kernel , cv::Point(-1,-1), 1);
         cv::dilate(   eroded_frame, tracked_frame   , kernel , cv::Point(-1,-1), 1);
 
-        putText(video_frame, "click to set values", cv::Point(5,50), cv::FONT_HERSHEY_DUPLEX, 1, cv::Scalar( 143, 30, 90), 2);
+        putText(video_frame, "click on scroll to set values", cv::Point(5,50), cv::FONT_HERSHEY_DUPLEX, 1, cv::Scalar( 143, 30, 90), 2);
         cv::imshow("tracked_frame", tracked_frame);
         cv::imshow("video_frame", video_frame);
         

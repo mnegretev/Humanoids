@@ -20,7 +20,7 @@ void angles_callback(const std_msgs::Float32MultiArray::ConstPtr& msg)
     psi   =  msg->data[1];
     theta =  msg->data[0];
    
-    
+//    cout<<"P[x,y,z]: ["<<px<<", "<<py<<", "<<pz<<"]"<<endl;
 //    x = px - pz * tan(1.5708 + pitch) * cos(yaw);
 //    y = py - pz * tan(1.5708 + pitch) * sin(yaw);
     x = px - pz * tan(1.5708 + pitch + psi) * cos(yaw + theta);
@@ -52,6 +52,7 @@ int main(int argc, char **argv)
         tf::StampedTransform transform;
         
         try{   
+            listener.waitForTransform("/right_foot_plane_link", "/camera_optical", ros::Time(0), ros::Duration(10.0));
             listener.lookupTransform("/right_foot_plane_link", "/camera_optical", ros::Time(0), transform);
             transform.getBasis().getRPY(roll, pitch, yaw);
 
@@ -59,7 +60,7 @@ int main(int argc, char **argv)
             py = transform.getOrigin().y();
             pz = transform.getOrigin().z();
 
-            cout<<"RPY = ["<<roll<<", "<<pitch<<", "<<yaw<<"]"<<endl;
+//            cout<<"RPY = ["<<roll<<", "<<pitch<<", "<<yaw<<"]"<<endl;
         }
         catch (tf::TransformException ex){
               ROS_ERROR("%s",ex.what());
