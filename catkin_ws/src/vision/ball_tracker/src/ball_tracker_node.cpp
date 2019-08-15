@@ -60,7 +60,7 @@ int main(int argc, char **argv)
 
     cv::Mat kernel=cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5,5));
 
-    cv::VideoCapture capture(1);
+    cv::VideoCapture capture;
     capture.open(1);
     cv::namedWindow("video_frame",1);
 

@@ -60,7 +60,9 @@ int main(int argc, char **argv)
 
     file_pkg = ros::package::getPath("config_files");
     ros::Publisher pub_angles = nh.advertise<std_msgs::Float32MultiArray>("/vision/get_ball_position/vision_angles", 1000);
-    
+
+    ros::Rate loop(50);
+
     std_msgs::Float32MultiArray msg;
     msg.data.resize(2);
 
@@ -70,7 +72,7 @@ int main(int argc, char **argv)
     cv::Mat video_undistorted;
     cv::Mat kernel = cv::getStructuringElement( cv::MORPH_ELLIPSE, cv::Size(5,5) );
 
-    cv::VideoCapture capture(1);
+    cv::VideoCapture capture;
     capture.open(1);
 
     if(!get_camera_parameters())
@@ -116,13 +118,13 @@ int main(int argc, char **argv)
 
         cv::imshow("video_undistorted", video_undistorted);
         cv::imshow("target_located"   ,  target_located  );
-        //cv::imshow("tracked_frame", tracked_frame);
-        //cv::imshow("video_frame", video_frame);
         
         if( centroid[0] != angle_of_view   && centroid[1] != - angle_of_view )    
             pub_angles.publish(msg);
+       
+       
         ros::spinOnce();
-        
+        loop.sleep();        
     }
 
 
