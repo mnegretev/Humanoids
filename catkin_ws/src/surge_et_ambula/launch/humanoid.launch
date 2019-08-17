@@ -17,4 +17,6 @@
         <node name="inverse_kinematics" pkg="inverse_kinematics" type="ik_moveit_node" output="screen"/>
     </group>
 
+	<node name="get_ball_position_node" pkg="get_ball_position" type="get_ball_position_node"/>
+	<node name="find_ball_node"         pkg="get_ball_position" type="find_ball_node"        />
 </launch>

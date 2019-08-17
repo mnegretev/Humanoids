@@ -10,6 +10,7 @@ ros::Publisher position_pub;
 double px, py,  pz;
 double roll, pitch, yaw;
 double x, y, theta, psi;
+double x_corr, y_corr;
 
 void angles_callback(const std_msgs::Float32MultiArray::ConstPtr& msg)
 {
@@ -19,12 +20,15 @@ void angles_callback(const std_msgs::Float32MultiArray::ConstPtr& msg)
 
     psi   =  msg->data[1];
     theta =  msg->data[0];
-   
-//    cout<<"P[x,y,z]: ["<<px<<", "<<py<<", "<<pz<<"]"<<endl;
-//    x = px - pz * tan(1.5708 + pitch) * cos(yaw);
-//    y = py - pz * tan(1.5708 + pitch) * sin(yaw);
-    x = px - pz * tan(1.5708 + pitch + psi) * cos(yaw + theta);
-    y = py - pz * tan(1.5708 + pitch + psi) * sin(yaw + theta);
+     
+    x_corr = -204.2593 * pow(pitch,3) + 613.5807 * pow(pitch,2) - 626.538 * pitch + 231.0308; 
+    cout<<"x_corr: "<<x_corr<<endl;
+    //cout<<"RPY = ["<<roll<<", "<<pitch<<", "<<yaw<<"]"<<endl;
+    //    cout<<"P[x,y,z]: ["<<px<<", "<<py<<", "<<pz<<"]"<<endl;
+   // x = px - pz * tan(1.5708 + pitch) * cos(yaw);// +x_corr/100;
+    y = py - pz * tan(1.5708 + pitch) * sin(yaw);
+    x = px - pz * tan(1.5708 + pitch + psi) * cos(yaw + theta) - x_corr/100;
+//    y = py - pz * tan(1.5708 + pitch + psi) * sin(yaw + theta);
 
     position_msg.data[0] = x;
     position_msg.data[1] = y;

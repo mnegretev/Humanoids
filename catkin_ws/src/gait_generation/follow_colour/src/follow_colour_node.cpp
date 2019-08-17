@@ -19,8 +19,8 @@ ros::Publisher head_pub;
 void angles_callback(const std_msgs::Float32MultiArray::ConstPtr& msg)
 {
 
-    goal_pan  += 0.06 * (msg->data[0]);
-    goal_tilt += 0.06 * (msg->data[1]); 
+    goal_pan  += 0.08 * (msg->data[0]);
+    goal_tilt += 0.08 * (msg->data[1]); 
     
 }
 

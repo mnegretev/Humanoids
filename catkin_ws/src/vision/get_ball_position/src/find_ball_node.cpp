@@ -3,8 +3,8 @@
 #include<opencv2/opencv.hpp>
 #include<std_msgs/Float32MultiArray.h>
 
-#define vertical_view    0.680678
-#define horizontal_view  0.680678
+#define vertical_view    0.280000
+#define horizontal_view  0.460000
 
 using namespace std;
 
