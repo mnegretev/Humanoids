@@ -2,6 +2,7 @@
 #include<tf/transform_listener.h>
 #include<std_msgs/Float32MultiArray.h>
 
+#define ball_radius  0.03156
 
 using namespace std;
 
@@ -10,7 +11,7 @@ ros::Publisher position_pub;
 double px, py,  pz;
 double roll, pitch, yaw;
 double x, y, theta, psi;
-double x_corr, y_corr;
+double e_x , e_y;
 
 void angles_callback(const std_msgs::Float32MultiArray::ConstPtr& msg)
 {
@@ -18,17 +19,21 @@ void angles_callback(const std_msgs::Float32MultiArray::ConstPtr& msg)
     std_msgs::Float32MultiArray position_msg;
     position_msg.data.resize(2);
 
-    psi   =  msg->data[1];
-    theta =  msg->data[0];
-     
-    x_corr = -204.2593 * pow(pitch,3) + 613.5807 * pow(pitch,2) - 626.538 * pitch + 231.0308; 
-    cout<<"x_corr: "<<x_corr<<endl;
-    //cout<<"RPY = ["<<roll<<", "<<pitch<<", "<<yaw<<"]"<<endl;
-    //    cout<<"P[x,y,z]: ["<<px<<", "<<py<<", "<<pz<<"]"<<endl;
-   // x = px - pz * tan(1.5708 + pitch) * cos(yaw);// +x_corr/100;
-    y = py - pz * tan(1.5708 + pitch) * sin(yaw);
-    x = px - pz * tan(1.5708 + pitch + psi) * cos(yaw + theta) - x_corr/100;
-//    y = py - pz * tan(1.5708 + pitch + psi) * sin(yaw + theta);
+    psi   =  msg->data[1] + pitch;
+    theta =  msg->data[0] +  yaw ;
+       
+
+    e_x =  -1.3848*pow(pitch, 4) + 4.63*pow(pitch,3) - 5.691*pow(pitch,2) + 3.055*pitch - 0.6504;
+
+      
+    x = px - pz * tan(1.5708 + pitch) * cos(yaw) - ball_radius * cos(yaw) / tan(pitch) + e_x;
+    y = py - pz * tan(1.5708 + pitch) * sin(yaw) - ball_radius * sin(yaw) / tan(pitch);
+//    x = px - pz * tan(1.5708 + psi) * cos(theta) - ball_radius * cos(theta) / tan(psi) + e_x;
+//    y = py - pz * tan(1.5708 + psi) * sin(theta) - ball_radius * sin(theta) / tan(psi);
+
+
+
+    cout<<"Pitch: "<<pitch<<endl;
 
     position_msg.data[0] = x;
     position_msg.data[1] = y;
@@ -64,12 +69,10 @@ int main(int argc, char **argv)
             py = transform.getOrigin().y();
             pz = transform.getOrigin().z();
 
-//            cout<<"RPY = ["<<roll<<", "<<pitch<<", "<<yaw<<"]"<<endl;
         }
-        catch (tf::TransformException ex){
-              ROS_ERROR("%s",ex.what());
-        }
-        
+        catch (tf::TransformException ex) {ROS_ERROR("%s",ex.what());}
+       
+
         ros::spinOnce();    
     }
 
