@@ -3,8 +3,10 @@
 #include<opencv2/opencv.hpp>
 #include<std_msgs/Float32MultiArray.h>
 
-#define vertical_view    0.280000
-#define horizontal_view  0.460000
+//#define vertical_view    0.280000
+//#define horizontal_view  0.460000
+float vertical_view   = 0.39;
+float horizontal_view = 0.46;
 
 using namespace std;
 
@@ -58,6 +60,14 @@ int main(int argc, char **argv)
     cout<<"Starting find_ball_node by Luis Näva..."<<endl;
     ros::init(argc, argv, "find_ball_node");
     ros::NodeHandle nh;
+ 
+    if(argc == 2 || argc == 3)
+        vertical_view = atof(argv[1]);
+    if(argc == 3)
+        horizontal_view = atof(argv[2]);
+
+    cout<<"vertical_view: "<<vertical_view<<endl;
+    cout<<"horizontal_view: "<<horizontal_view<<endl;
 
     file_pkg = ros::package::getPath("config_files");
     ros::Publisher pub_angles = nh.advertise<std_msgs::Float32MultiArray>("/vision/get_ball_position/vision_angles", 1000);

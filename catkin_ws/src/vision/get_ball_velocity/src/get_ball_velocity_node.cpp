@@ -31,13 +31,14 @@ void position_callback(const std_msgs::Float32MultiArray::ConstPtr msg)
     vel_msg.data[0] = vx ;
     vel_msg.data[1] = vy ;
 
-    cout<<"Velocity: ["<<vx<<", "<<vy<<"]"<<endl;
-    
+//    cout<<"Velocity: ["<<vx<<", "<<vy<<"]"<<endl;
+    cout<<"t0: "<<t0<<endl;
+    cout<<"tf: "<<tf<<endl;
 
     x = msg->data[0];
     y = msg->data[1];
 
-    ros::Time t0 = ros::Time::now();
+  //  ros::Time t0 = ros::Time::now();
 }
 
 
@@ -49,11 +50,15 @@ int main(int argc, char ** argv)
 
     ros::Subscriber sub_position = nh.subscribe("/vision/get_ball_position/ball_position", 1000, position_callback);
                     pub_vel      = nh.advertise<std_msgs::Float32MultiArray>("/vision/get_ball_velocity/ball_velocity", 1);    
+    
+    ros::Rate loop(20);
+    
     while(ros::ok())
     {
 
         ros::Time tf = ros::Time::now();
         ros::spinOnce();
+        ros::Time t0 = ros::Time::now(); 
     }
     
 

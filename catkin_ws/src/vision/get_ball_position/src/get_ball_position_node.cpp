@@ -11,10 +11,11 @@ ros::Publisher position_pub;
 double px, py,  pz;
 double roll, pitch, yaw;
 double x, y, theta, psi;
-double e_x , e_y;
+double e_x , e_y, v;
 
 void angles_callback(const std_msgs::Float32MultiArray::ConstPtr& msg)
 {
+    ros::Rate loop(20);
 
     std_msgs::Float32MultiArray position_msg;
     position_msg.data.resize(2);
@@ -24,14 +25,10 @@ void angles_callback(const std_msgs::Float32MultiArray::ConstPtr& msg)
        
 
     e_x =  -1.3848*pow(pitch, 4) + 4.63*pow(pitch,3) - 5.691*pow(pitch,2) + 3.055*pitch - 0.6504;
-
-      
-    x = px - pz * tan(1.5708 + pitch) * cos(yaw) - ball_radius * cos(yaw) / tan(pitch) + e_x;
-    y = py - pz * tan(1.5708 + pitch) * sin(yaw) - ball_radius * sin(yaw) / tan(pitch);
-//    x = px - pz * tan(1.5708 + psi) * cos(theta) - ball_radius * cos(theta) / tan(psi) + e_x;
-//    y = py - pz * tan(1.5708 + psi) * sin(theta) - ball_radius * sin(theta) / tan(psi);
-
-
+    
+    x = px - pz * tan(1.5708 + psi) * cos(theta) - ball_radius * cos(theta) / tan(psi) + e_x;
+    v = sqrt( pow(x,2) + pow(pz,2) );    
+    y = v * tan(theta) + e_y;
 
     cout<<"Pitch: "<<pitch<<endl;
 
@@ -40,6 +37,7 @@ void angles_callback(const std_msgs::Float32MultiArray::ConstPtr& msg)
 
 
     position_pub.publish(position_msg);
+    loop.sleep();
 }
 
 
