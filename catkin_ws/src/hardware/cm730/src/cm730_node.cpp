@@ -386,13 +386,11 @@ int main(int argc, char** argv)
 	
 	for(int i=0; i < 20; i++)
 	{
-        //26/08/19 comenté las líneas 371, 372, 390 y 391 porque parecen ser las que evitan que se energizen los motores del brazo derecho 
+        
 		//if(servos_ids[i]==ID_ARM_RIGHT_SHOULDER_PITCH)
 		//	continue;	
         //if(servos_ids[i]==ID_LEG_LEFT_ANKLE_PITCH)
-        //  continue;    //Comenté las líenas 392 y 393 para probar el motor del tobillo izquierdo;
-        //estaba descompuesto y lo cambié, revisé individualemente los motores, todos funcionaban de la forma en que se supone que lo hicieran.
-        //
+        //  continue;
 	    dxl_comm_result = packetHandler->write2ByteTxRx(portHandler, servos_ids[i], ADDR_MX_GOAL_POSITION,
 							    servos_goal_position[i], &dxl_error);
 	    if(dxl_comm_result != COMM_SUCCESS)
