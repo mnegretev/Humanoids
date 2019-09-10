@@ -92,10 +92,14 @@ int main(int argc, char **argv)
 {   
     cout<<"Starting ball_tracker_node by Luis Näva..."<<endl;
     ros::init(argc, argv, "ball_tracker_node");
+   
+    int camera = 1;
 
+    if(argc==2)
+        camera = atoi(argv[1]);
 
     cv::VideoCapture capture;
-    capture.open(1);
+    capture.open(camera);
     cv::namedWindow("video_frame",1);
 
     cv::setMouseCallback("video_frame", set_hsv_values, &video_frame); 

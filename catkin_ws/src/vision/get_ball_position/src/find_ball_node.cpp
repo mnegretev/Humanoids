@@ -60,11 +60,14 @@ int main(int argc, char **argv)
     cout<<"Starting find_ball_node by Luis Näva..."<<endl;
     ros::init(argc, argv, "find_ball_node");
     ros::NodeHandle nh;
- 
-    if(argc == 2 || argc == 3)
-        vertical_view = atof(argv[1]);
-    if(argc == 3)
-        horizontal_view = atof(argv[2]);
+    
+    int camera = 1;
+    if(argc == 2)
+        camera = atoi(argv[1]);
+    if(argc == 3 || argc == 4)
+        vertical_view = atof(argv[2]);
+    if(argc == 4)
+        horizontal_view = atof(argv[3]);
 
     cout<<"vertical_view: "<<vertical_view<<endl;
     cout<<"horizontal_view: "<<horizontal_view<<endl;
@@ -84,7 +87,7 @@ int main(int argc, char **argv)
 
 
     cv::VideoCapture capture;
-    capture.open(1);
+    capture.open(camera);
 
     if(!get_camera_parameters())
     {   
@@ -103,20 +106,20 @@ int main(int argc, char **argv)
         capture.read(video_frame);
         undistort(video_frame, video_undistorted, intrinsic, dist_coeffs);
 
-        video_undistorted.copyTo(target_located);
+//        video_undistorted.copyTo(target_located);
         cv::cvtColor(video_undistorted,  tracked_frame   , CV_BGR2HSV);
         cv::inRange(  tracked_frame   ,  hsv_min         , hsv_max, tracked_frame); 
         cv::erode(    tracked_frame   ,  tracked_frame   , kernel , cv::Point(-1,-1), 1);
-        cv::dilate(   tracked_frame   ,  tracked_frame   , kernel , cv::Point(-1,-1), 1);
+        cv::dilate(   tracked_frame   ,  target_located  , kernel , cv::Point(-1,-1), 1);
 
-        for(int j=0; j<tracked_frame.cols; j++)
+/*        for(int j=0; j<tracked_frame.cols; j++)
             for(int i=0; i<tracked_frame.rows; i++)
                 if((int)(tracked_frame).at<uchar>(i, j) == 0)
                 {
                     target_located.at<cv::Vec3b>(i, j)[0] = 0;
                     target_located.at<cv::Vec3b>(i, j)[1] = 0;
                     target_located.at<cv::Vec3b>(i, j)[2] = 0;
-                }
+                }//*/
         
         cv::findNonZero(tracked_frame, position);
         cv::Scalar centroid = cv::mean( position);
