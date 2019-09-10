@@ -368,8 +368,8 @@ int main(int argc, char** argv)
     {
 	for(int i = 0; i < 20; i++)
 	{
-		if(servos_ids[i]==ID_ARM_RIGHT_SHOULDER_PITCH)
-			continue;
+		//if(servos_ids[i]==ID_ARM_RIGHT_SHOULDER_PITCH)
+		//	continue;
 	    dxl_comm_result = packetHandler->read2ByteTxRx(portHandler, servos_ids[i], ADDR_MX_CURRENT_POSITION,
 							   &dxl_current_pos, &dxl_error);
 	    if(dxl_comm_result == COMM_SUCCESS && dxl_error == 0)
@@ -386,10 +386,11 @@ int main(int argc, char** argv)
 	
 	for(int i=0; i < 20; i++)
 	{
-		if(servos_ids[i]==ID_ARM_RIGHT_SHOULDER_PITCH)
-			continue;	
-        if(servos_ids[i]==ID_LEG_LEFT_ANKLE_PITCH)
-            continue;    
+        
+		//if(servos_ids[i]==ID_ARM_RIGHT_SHOULDER_PITCH)
+		//	continue;	
+        //if(servos_ids[i]==ID_LEG_LEFT_ANKLE_PITCH)
+        //  continue;
 	    dxl_comm_result = packetHandler->write2ByteTxRx(portHandler, servos_ids[i], ADDR_MX_GOAL_POSITION,
 							    servos_goal_position[i], &dxl_error);
 	    if(dxl_comm_result != COMM_SUCCESS)
