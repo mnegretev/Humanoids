@@ -46,7 +46,8 @@
 		joint_state_controller
 		"
           />
-    <!-- Nodes for vision-->
+  
+	  <!-- Nodes for vision-->
 	<node name="get_ball_position_node" pkg="get_ball_position" type="get_ball_position_node"/>
 	<node name="get_ball_velocity_node" pkg="get_ball_velocity" type="get_ball_velocity_node"/>
 </launch>
