@@ -5,6 +5,8 @@
 #include "dynamixel_sdk/dynamixel_sdk.h"
 #include "sensor_msgs/JointState.h"
 #include "tf/transform_broadcaster.h"
+#include "std_msgs/String.h"
+#include <sstream>
 
 #define ID_LEG_LEFT_HIP_YAW               8
 #define ID_LEG_LEFT_HIP_ROLL             10
@@ -259,9 +261,17 @@ int main(int argc, char** argv)
     std::cout << "INITIALIZING CM730 NODE BY MARCOSOFT..." << std::endl;
     ros::init(argc, argv, "cm730");
     ros::NodeHandle n;
-    ros::Rate loop(30);
 
-    system("echo 1 | sudo tee /sys/bus/usb-serial/devices/ttyUSB0/latency_timer");
+    std::string usbport;
+    n.getParam("usbport", usbport);
+    std::string lat1, pto, lat2, latencia;
+    lat1 = "echo 1 | sudo tee /sys/bus/usb-serial/devices/";
+    lat2="/latency_timer";
+    latencia= lat1+usbport+lat2;
+    char const *late = latencia.data();
+    ros::Rate loop(30);
+    system(late);
+    //system("echo 1 | sudo tee /sys/bus/usb-serial/devices/ttyUSB0/latency_timer");
 
     ros::Subscriber sub_legs_goal_pose      = n.subscribe("legs_goal_pose", 1, callback_legs_goal_pose);
     ros::Subscriber sub_leg_left_goal_pose  = n.subscribe("leg_left_goal_pose", 1, callback_leg_left_goal_pose);
@@ -313,7 +323,11 @@ int main(int argc, char** argv)
     msg_joint_states.name[18] ="neck_yaw";   
     msg_joint_states.name[19] ="head_pitch";
     
-    dynamixel::PortHandler   *portHandler   = dynamixel::PortHandler::getPortHandler("/dev/ttyUSB0");
+    std::string dev="/dev/";
+    std::string puerto = dev+usbport;
+    char const *puertochar = puerto.data();
+    //dynamixel::PortHandler   *portHandler   = dynamixel::PortHandler::getPortHandler("/dev/ttyUSB0");
+    dynamixel::PortHandler   *portHandler   = dynamixel::PortHandler::getPortHandler(puertochar);
     dynamixel::PacketHandler *packetHandler = dynamixel::PacketHandler::getPacketHandler(SERVO_PROTOCOL_VERSION);
 
     if(portHandler->openPort())
@@ -368,9 +382,7 @@ int main(int argc, char** argv)
     {
 	for(int i = 0; i < 20; i++)
 	{
-		//if(servos_ids[i]==ID_ARM_RIGHT_SHOULDER_PITCH)
-		//	continue;
-	    dxl_comm_result = packetHandler->read2ByteTxRx(portHandler, servos_ids[i], ADDR_MX_CURRENT_POSITION,
+		dxl_comm_result = packetHandler->read2ByteTxRx(portHandler, servos_ids[i], ADDR_MX_CURRENT_POSITION,
 							   &dxl_current_pos, &dxl_error);
 	    if(dxl_comm_result == COMM_SUCCESS && dxl_error == 0)
 	    {
@@ -386,12 +398,7 @@ int main(int argc, char** argv)
 	
 	for(int i=0; i < 20; i++)
 	{
-        
-		//if(servos_ids[i]==ID_ARM_RIGHT_SHOULDER_PITCH)
-		//	continue;	
-        //if(servos_ids[i]==ID_LEG_LEFT_ANKLE_PITCH)
-        //  continue;
-	    dxl_comm_result = packetHandler->write2ByteTxRx(portHandler, servos_ids[i], ADDR_MX_GOAL_POSITION,
+        dxl_comm_result = packetHandler->write2ByteTxRx(portHandler, servos_ids[i], ADDR_MX_GOAL_POSITION,
 							    servos_goal_position[i], &dxl_error);
 	    if(dxl_comm_result != COMM_SUCCESS)
 		std::cout << "CM730.->Commnunication problem while writing goal pose to servo "<< int(servos_ids[i])  << std::endl;

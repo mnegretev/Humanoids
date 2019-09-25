@@ -1,15 +1,17 @@
 <launch>
     <param name="robot_description" command="cat $(find nimbro_op_model)/robots/simple_nimbro_op_hull.xml" />
     <param name="robot_description_semantic" textfile="$(find nimbro_op_srdf)/config/nimbro_op_hull.srdf" />
+    <arg name="usbport" default="ttyUSB0"/>
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher"/>
 
     <group ns="hardware">
         <node name="cm730" pkg="cm730" type="cm730_node" output="screen"/>
+        <param name="usbport" value="$(arg usbport)"/>
     </group>
 
     <group ns="hri">
         <node name="rviz" pkg="rviz" type="rviz" args="-d $(find config_files)/rviz/config.rviz" required="true"/>
-	<node name="humanoid_gui" pkg="humanoid_gui" type="humanoid_gui" output="screen"/>
+        <node name="humanoid_gui" pkg="humanoid_gui" type="humanoid_gui" output="screen"/>
     </group>
 
     <group ns="control">
