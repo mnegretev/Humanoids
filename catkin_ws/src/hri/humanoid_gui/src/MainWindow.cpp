@@ -24,7 +24,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->hsLegRightKnee->setValue(50);
     ui->hsLegRightAnklePitch->setValue(50);
     ui->hsLegRightAnkleRoll->setValue(50);
-	
+    
     legLeftGoalPose.resize(6);
     legRightGoalPose.resize(6);
 }
@@ -91,7 +91,9 @@ void MainWindow::setRosNode(QtRosNode* qtRosNode)
     QObject::connect(ui->btnZeroPose, SIGNAL(clicked()), this, SLOT(btnZeroPositionClicked()));
     QObject::connect(ui->btnCurrentPose, SIGNAL(clicked()), this, SLOT(btnCurrentPositionClicked()));
     QObject::connect(ui->btnStartPose, SIGNAL(clicked()), this, SLOT(btnStartPositionClicked()));
+    QObject::connect(ui->btnMotorsON, SIGNAL(clicked()), this, SLOT(btnMotorsONClicked()));
 
+    
     txtLegLeftArticularChanged(0);
     txtLegRightArticularChanged(0);
     
@@ -264,7 +266,7 @@ void MainWindow::txtLegRightArticularChanged(double val)
 void MainWindow::txtArmLeftArticularChanged(double)
 {
     if(armLeftIgnoreValueChanged)
-	return;
+    return;
     
     std::vector<float> joint_values;
     joint_values.resize(3);
@@ -277,7 +279,7 @@ void MainWindow::txtArmLeftArticularChanged(double)
 void MainWindow::txtArmRightArticularChanged(double)
 {
     if(armRightIgnoreValueChanged)
-	return;
+    return;
     
     std::vector<float> joint_values;
     joint_values.resize(3);
@@ -290,7 +292,7 @@ void MainWindow::txtArmRightArticularChanged(double)
 void MainWindow::txtHeadArticularChanged(double)
 {
     if(headIgnoreValueChanged)
-	return;
+    return;
     
     std::vector<float> joint_values;
     joint_values.resize(2);
@@ -324,8 +326,8 @@ void MainWindow::btnCurrentPositionClicked()
     std::vector<float> joint_angles;
     if(!qtRosNode->getAllJointCurrentAngles(joint_angles))
     {
-	std::cout << "MainWindow.->Cannot get current joint angles" << std::endl;
-	return;
+    std::cout << "MainWindow.->Cannot get current joint angles" << std::endl;
+    return;
     }
 
     legLeftIgnoreValueChanged = true;
@@ -380,4 +382,12 @@ void MainWindow::btnStartPositionClicked()
     joint_angles[10] = -0.408;
     joint_angles[11] = 0.012;
     qtRosNode->publishLegsGoalPose(joint_angles);
+}
+
+void MainWindow::btnMotorsONClicked()
+{
+    std::vector<float> motors;
+    motors.resize(1);
+    motors[0]  = 1;
+    qtRosNode->publishMotorsState(motors);
 }

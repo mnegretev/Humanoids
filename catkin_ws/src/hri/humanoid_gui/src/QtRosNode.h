@@ -27,12 +27,14 @@ public:
     ros::Publisher pubArmLeftGoalPose;
     ros::Publisher pubArmRightGoalPose;
     ros::Publisher pubHeadGoalPose;
+    ros::Publisher pubMotorsState;
     std_msgs::Float32MultiArray msgLegLeftGoalPose;
     std_msgs::Float32MultiArray msgLegRightGoalPose;
     std_msgs::Float32MultiArray msgLegsGoalPose;
     std_msgs::Float32MultiArray msgArmLeftGoalPose;
     std_msgs::Float32MultiArray msgArmRightGoalPose;
     std_msgs::Float32MultiArray msgHeadGoalPose;
+    std_msgs::Float32MultiArray msgMotorsState;
     ros::ServiceClient cltCalculateIKLegLeft;
     ros::ServiceClient cltCalculateIKLegRight;
     ros::ServiceClient cltCalculateDKLegLeft;
@@ -47,6 +49,7 @@ public:
     void publishArmLeftGoalPose(std::vector<float> armLeftGoalPose);
     void publishArmRightGoalPose(std::vector<float> armRightGoalPose);
     void publishHeadGoalPose(std::vector<float> headGoalPose);
+    void publishMotorsState(std::vector<float> motors);
     bool callIKLegLeft(float x, float y, float z, float roll, float pitch, float yaw,std::vector<float>& result);
     bool callIKLegRight(float x, float y, float z, float roll, float pitch,float yaw,std::vector<float>& result);
     bool callDKLegLeft(std::vector<float>& joints, float& x, float& y, float& z, float& roll, float& pitch, float& yaw);

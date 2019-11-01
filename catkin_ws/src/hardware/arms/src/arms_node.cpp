@@ -63,43 +63,45 @@ bool new_goal_position = false;
 
 uint16_t goal_position [6];
 
-int position_zero_bits[6] = {
-    ARM_LEFT_SHOULDER_PITCH_ZERO,
-    ARM_LEFT_SHOULDER_ROLL_ZERO,
-    ARM_LEFT_ELBOW_PITCH_ZERO,
-    ARM_RIGHT_SHOULDER_PITCH_ZERO,
-    ARM_RIGHT_SHOULDER_ROLL_ZERO,
-    ARM_RIGHT_ELBOW_PITCH_ZERO 
+int position_zero_bits[6] = 
+{
+  ARM_LEFT_SHOULDER_PITCH_ZERO,
+  ARM_LEFT_SHOULDER_ROLL_ZERO,
+  ARM_LEFT_ELBOW_PITCH_ZERO,
+  ARM_RIGHT_SHOULDER_PITCH_ZERO,
+  ARM_RIGHT_SHOULDER_ROLL_ZERO,
+  ARM_RIGHT_ELBOW_PITCH_ZERO 
 };
 
-int clockwise_direction[6] = {
-    ARM_LEFT_SHOULDER_PITCH_CW,
-    ARM_LEFT_SHOULDER_ROLL_CW,
-    ARM_LEFT_ELBOW_PITCH_CW,
-    ARM_RIGHT_SHOULDER_PITCH_CW,
-    ARM_RIGHT_SHOULDER_ROLL_CW,
-    ARM_RIGHT_ELBOW_PITCH_CW
+int clockwise_direction[6] = 
+{
+  ARM_LEFT_SHOULDER_PITCH_CW,
+  ARM_LEFT_SHOULDER_ROLL_CW,
+  ARM_LEFT_ELBOW_PITCH_CW,
+  ARM_RIGHT_SHOULDER_PITCH_CW,
+  ARM_RIGHT_SHOULDER_ROLL_CW,
+  ARM_RIGHT_ELBOW_PITCH_CW
 };
 
 void callback_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg)
 {
-    for(int i=0; i < 6; i++)
+  for(int i=0; i < 6; i++)
     goal_position[i] = uint16_t(msg->data[i] * SERVO_MX_RANGE_IN_BITS/SERVO_MX_RANGE_IN_RADS * clockwise_direction[i] + position_zero_bits[i]);
 }
 
 void callback_goal_pose_left(const std_msgs::Float32MultiArray::ConstPtr& msg)
 {
-    for(int i=0; i < 6; i++)
+  for(int i=0; i < 6; i++)
     goal_position[i] = uint16_t(msg->data[i] * SERVO_MX_RANGE_IN_BITS/SERVO_MX_RANGE_IN_RADS * clockwise_direction[i] + position_zero_bits[i]);
 }
 void callback_goal_pose_right(const std_msgs::Float32MultiArray::ConstPtr& msg)
 {
-    for(int i=3; i < 6; i++)
+  for(int i=3; i < 6; i++)
     goal_position[i] = uint16_t(msg->data[i - 3] * SERVO_MX_RANGE_IN_BITS/SERVO_MX_RANGE_IN_RADS * clockwise_direction[i] + position_zero_bits[i]);
 }
 
 int main(int argc, char** argv)
- {     
+{     
     //Initilize joint_state_publisher
     std::cout << "INITIALIZING ARMS NODE..." << std::endl;
     ros::init(argc, argv, "arms");
@@ -127,20 +129,20 @@ int main(int argc, char** argv)
     dynamixel::PacketHandler *packetHandler = dynamixel::PacketHandler::getPacketHandler(PROTOCOL_VERSION);
 
     if(portHandler->openPort())
-            std::cout << "Arms.->Serial port successfully openned" << std::endl;
+        std::cout << "Arms.->Serial port successfully openned" << std::endl;
     else
-        {
-              std::cout << "Arms.->Cannot open serial port" << std::endl;
-              return -1;
-        }
+    {
+        std::cout << "Arms.->Cannot open serial port" << std::endl;
+        return -1;
+    }
 
     if(portHandler->setBaudRate(BAUDRATE))
-            std::cout << "Arms.->Baudrate successfully set to " << BAUDRATE << std::endl;
+        std::cout << "Arms.->Baudrate successfully set to " << BAUDRATE << std::endl;
     else
-        {
-              std::cout << "Arms.->Cannot set baud rate" << std::endl;
-              return -1;
-        }
+    {
+        std::cout << "Arms.->Cannot set baud rate" << std::endl;
+        return -1;
+    }
 
     uint8_t dxl_error = 0;
     int dxl_comm_result = COMM_TX_FAIL;
@@ -163,45 +165,44 @@ int main(int argc, char** argv)
     while(ros::ok())
     {
         for(int i=12; i < 18; i++)
-      	{
-         	dxl_comm_result = packetHandler->read2ByteTxRx(portHandler, i, ADDR_MX_CURRENT_POSITION, &dxl_current_pos_test[i - 12], &dxl_error);
-
-         	if (dxl_comm_result != COMM_SUCCESS)
-            	{
-            	//packetHandler->printTxRxResult(dxl_comm_result);
-            	}
-        	else if (dxl_error != 0)
-            	{
-            	//packetHandler->printRxPacketError(dxl_error);
-            	}
-        	else if (dxl_comm_result == COMM_SUCCESS)
-            	{
-            	//packetHandler->printTxRxResult(dxl_comm_result);
-            	dxl_current_pos[i - 12]=dxl_current_pos_test[i - 12];
-            	}
-        }
-
-      joint_state_arms.header.stamp = ros::Time::now();
-
-      for(int i=0; i < 6; i++)
-      {
-         joint_state_arms.position[i] = ((int)(dxl_current_pos[i]) - position_zero_bits[i]) * clockwise_direction[i] *
-         (SERVO_MX_RANGE_IN_RADS/SERVO_MX_RANGE_IN_BITS);
-      }
-
-      joint_pub.publish(joint_state_arms);
-       
-      if(new_goal_position = true)
         {
-          new_goal_position = false;
-
-          for(int i=12; i <18; i++)
-          {
-               packetHandler->write1ByteTxRx(portHandler, i, ADDR_MX_TORQUE_ENABLE, TORQUE_ENABLE, &dxl_error);
-               packetHandler->write2ByteTxRx(portHandler, i, ADDR_MX_GOAL_POSITION, goal_position[i - 12], &dxl_error);
-          }
+            dxl_comm_result = packetHandler->read2ByteTxRx(portHandler, i, ADDR_MX_CURRENT_POSITION, &dxl_current_pos_test[i - 12], &dxl_error);
+            if (dxl_comm_result != COMM_SUCCESS)
+            {
+                //packetHandler->printTxRxResult(dxl_comm_result);
+            }
+            else
+                if (dxl_error != 0)
+                {
+                    //packetHandler->printRxPacketError(dxl_error);
+                }
+            else if (dxl_comm_result == COMM_SUCCESS)
+            {
+                //packetHandler->printTxRxResult(dxl_comm_result);
+                dxl_current_pos[i - 12]=dxl_current_pos_test[i - 12];
+            }
         }
-      ros::spinOnce();
-      loop.sleep();
+
+        joint_state_arms.header.stamp = ros::Time::now();
+
+        for(int i=0; i < 6; i++)
+        {
+            joint_state_arms.position[i] = ((int)(dxl_current_pos[i]) - position_zero_bits[i]) * clockwise_direction[i] *
+            (SERVO_MX_RANGE_IN_RADS/SERVO_MX_RANGE_IN_BITS);
+        }
+
+        joint_pub.publish(joint_state_arms);
+       
+        if(new_goal_position = true)
+        {
+            new_goal_position = false;
+            for(int i=12; i <18; i++)
+            {
+                packetHandler->write1ByteTxRx(portHandler, i, ADDR_MX_TORQUE_ENABLE, TORQUE_ENABLE, &dxl_error);
+                packetHandler->write2ByteTxRx(portHandler, i, ADDR_MX_GOAL_POSITION, goal_position[i - 12], &dxl_error);
+            }
+        }
+        ros::spinOnce();
+        loop.sleep();
     }
-  } 
+} 

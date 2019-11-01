@@ -69,22 +69,22 @@
 #define CW_LEG_LEFT_KNEE_PITCH             1
 #define CW_LEG_LEFT_ANKLE_PITCH           -1
 #define CW_LEG_LEFT_ANKLE_ROLL            -1
-				            	 
+                                 
 #define CW_LEG_RIGHT_HIP_YAW              -1
 #define CW_LEG_RIGHT_HIP_ROLL              1
 #define CW_LEG_RIGHT_HIP_PITCH            -1
 #define CW_LEG_RIGHT_KNEE_PITCH           -1
 #define CW_LEG_RIGHT_ANKLE_PITCH           1
 #define CW_LEG_RIGHT_ANKLE_ROLL           -1
-				            	 
+                                 
 #define CW_ARM_LEFT_SHOULDER_PITCH         1
 #define CW_ARM_LEFT_SHOULDER_ROLL         -1
 #define CW_ARM_LEFT_ELBOW_PITCH           -1
-				            	 
+                                 
 #define CW_ARM_RIGHT_SHOULDER_PITCH       -1
 #define CW_ARM_RIGHT_SHOULDER_ROLL        -1
 #define CW_ARM_RIGHT_ELBOW_PITCH           1
-				      
+                      
 #define CW_NECK_YAW                        1
 #define CW_HEAD_PITCH                     -1
 
@@ -170,90 +170,100 @@ int servos_is_clockwise[20] =
 };
 
 uint16_t servos_goal_position[20];
-
+uint16_t motors_state1[1];
 
 void callback_legs_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg)
 {
     if(msg->data.size() != 12)
     {
-	std::cout << "CM730.->Error!!: goal position for both legs must be a 12-value array." << std::endl;
-	return;
+       std::cout << "CM730.->Error!!: goal position for both legs must be a 12-value array." << std::endl;
+       return;
     }
     for(int i=0, j=0; i < 12; i++, j++)
-	servos_goal_position[j] = uint16_t(msg->data[i] * SERVO_MX_BITS_PER_RAD * servos_is_clockwise[j] +
-					   servos_position_zero[j]);
+        servos_goal_position[j] = uint16_t(msg->data[i] * SERVO_MX_BITS_PER_RAD * servos_is_clockwise[j] +
+            servos_position_zero[j]);
 }
 
 void callback_leg_left_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg)
 {
     if(msg->data.size() != 6)
     {
-	std::cout << "CM730.->Error!!: goal position for left leg must be a 6-value array." << std::endl;
-	return;
+       std::cout << "CM730.->Error!!: goal position for left leg must be a 6-value array." << std::endl;
+       return;
     }
     for(int i=0, j=0; i < 6; i++, j++)
-	servos_goal_position[j] = uint16_t(msg->data[i] * SERVO_MX_BITS_PER_RAD * servos_is_clockwise[j] +
-					   servos_position_zero[j]);
+        servos_goal_position[j] = uint16_t(msg->data[i] * SERVO_MX_BITS_PER_RAD * servos_is_clockwise[j] + 
+            servos_position_zero[j]);
 }
 
 void callback_leg_right_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg)
 {
     if(msg->data.size() != 6)
     {
-	std::cout << "CM730.->Error!!: goal position for right leg must be a 6-value array." << std::endl;
-	return;
+        std::cout << "CM730.->Error!!: goal position for right leg must be a 6-value array." << std::endl;
+        return;
     }
     for(int i=0, j=6; i < 6; i++, j++)
-	servos_goal_position[j] = uint16_t(msg->data[i] * SERVO_MX_BITS_PER_RAD * servos_is_clockwise[j] +
-					   servos_position_zero[j]);
+        servos_goal_position[j] = uint16_t(msg->data[i] * SERVO_MX_BITS_PER_RAD * servos_is_clockwise[j] +
+            servos_position_zero[j]);
 }
 
 void callback_arms_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg)
 {
     if(msg->data.size() != 6)
     {
-	std::cout << "CM730.->Error!!: goal position for both arms must be a 6-value array." << std::endl;
-	return;
+        std::cout << "CM730.->Error!!: goal position for both arms must be a 6-value array." << std::endl;
+        return;
     }
     for(int i=0, j=12; i < 6; i++, j++)
-	servos_goal_position[j] = uint16_t(msg->data[i] * SERVO_MX_BITS_PER_RAD * servos_is_clockwise[j] +
-					   servos_position_zero[j]);
+        servos_goal_position[j] = uint16_t(msg->data[i] * SERVO_MX_BITS_PER_RAD * servos_is_clockwise[j] +
+            servos_position_zero[j]);
 }
 
 void callback_arm_left_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg)
 {
     if(msg->data.size() != 3)
     {
-	std::cout << "CM730.->Error!!: goal position for left arm must be a 3-value array." << std::endl;
-	return;
+        std::cout << "CM730.->Error!!: goal position for left arm must be a 3-value array." << std::endl;
+        return;
     }
     for(int i=0, j=12; i < 3; i++, j++)
-	servos_goal_position[j] = uint16_t(msg->data[i] * SERVO_MX_BITS_PER_RAD * servos_is_clockwise[j] +
-					   servos_position_zero[j]);
+        servos_goal_position[j] = uint16_t(msg->data[i] * SERVO_MX_BITS_PER_RAD * servos_is_clockwise[j] +
+            servos_position_zero[j]);
 }
 
 void callback_arm_right_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg)
 {
     if(msg->data.size() != 3)
     {
-	std::cout << "CM730.->Error!!: goal position for right leg must be a 3-value array." << std::endl;
-	return;
+        std::cout << "CM730.->Error!!: goal position for right leg must be a 3-value array." << std::endl;
+        return;
     }
     for(int i=0, j=15; i < 3; i++, j++)
-	servos_goal_position[j] = uint16_t(msg->data[i] * SERVO_MX_BITS_PER_RAD * servos_is_clockwise[j] +
-					   servos_position_zero[j]);
+        servos_goal_position[j] = uint16_t(msg->data[i] * SERVO_MX_BITS_PER_RAD * servos_is_clockwise[j] +
+            servos_position_zero[j]);
 }
 
 void callback_head_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg)
 {
     if(msg->data.size() != 2)
     {
-	std::cout << "CM730.->Error!! goal position for head must be a 2-value array" << std::endl;
-	return;
+        std::cout << "CM730.->Error!! goal position for head must be a 2-value array" << std::endl;
+        return;
     }
     for(int i=0, j=18; i < 2; i++, j++)
-	servos_goal_position[j] = uint16_t(msg->data[i] * SERVO_MX_BITS_PER_RAD * servos_is_clockwise[j] +
-					   servos_position_zero[j]);
+        servos_goal_position[j] = uint16_t(msg->data[i] * SERVO_MX_BITS_PER_RAD * servos_is_clockwise[j] +
+            servos_position_zero[j]);
+}
+
+void callback_motors_state(const std_msgs::Float32MultiArray::ConstPtr& msg)
+{
+    if(msg->data.size() != 1)
+    {
+        std::cout << "CM730.-> botón Motores Error!!" << std::endl;
+        return;
+    }
+    motors_state1[0] = msg->data[0];
 }
 
 int main(int argc, char** argv)
@@ -280,7 +290,8 @@ int main(int argc, char** argv)
     ros::Subscriber sub_arm_left_goal_pose  = n.subscribe("arm_left_goal_pose", 1, callback_arm_left_goal_pose);
     ros::Subscriber sub_arm_right_goal_pose = n.subscribe("arm_right_goal_pose", 1, callback_arm_right_goal_pose);
     ros::Subscriber sub_head_goal_pose      = n.subscribe("head_goal_pose", 1, callback_head_goal_pose);
-
+    ros::Subscriber sub_motors_state        = n.subscribe("motors_state", 1, callback_motors_state);
+        
     ros::Publisher pub_legs_current_pose      = n.advertise<std_msgs::Float32MultiArray>("legs_current_pose", 1);
     ros::Publisher pub_leg_left_current_pose  = n.advertise<std_msgs::Float32MultiArray>("leg_left_current_pose", 1);
     ros::Publisher pub_leg_right_current_pose = n.advertise<std_msgs::Float32MultiArray>("leg_right_current_pose", 1);
@@ -315,7 +326,7 @@ int main(int argc, char** argv)
     msg_joint_states.name[12] ="left_shoulder_pitch";  
     msg_joint_states.name[13] ="left_shoulder_roll";   
     msg_joint_states.name[14] ="left_elbow_pitch";    
-    			                              
+                                              
     msg_joint_states.name[15] ="right_shoulder_pitch"; 
     msg_joint_states.name[16] ="right_shoulder_roll";  
     msg_joint_states.name[17] ="right_elbow_pitch";   
@@ -331,19 +342,19 @@ int main(int argc, char** argv)
     dynamixel::PacketHandler *packetHandler = dynamixel::PacketHandler::getPacketHandler(SERVO_PROTOCOL_VERSION);
 
     if(portHandler->openPort())
-	std::cout << "CM730.->Serial port successfully openned on port " << std::endl;
+        std::cout << "CM730.->Serial port successfully openned on port " << std::endl;
     else
     {
-	std::cout << "CM730.->Cannot open serial port" << std::endl;
-	return -1;
+        std::cout << "CM730.->Cannot open serial port" << std::endl;
+        return -1;
     }
     
     if(portHandler->setBaudRate(1000000))
-	std::cout << "CM730.->Baudrate successfully set to " << std::endl;
+        std::cout << "CM730.->Baudrate successfully set to " << std::endl;
     else
     {
-	std::cout << "CM730.->Cannot set baud rate" << std::endl;
-	return -1;
+        std::cout << "CM730.->Cannot set baud rate" << std::endl;
+        return -1;
     }
 
     uint8_t  dxl_error       = 0;
@@ -354,68 +365,85 @@ int main(int argc, char** argv)
     std::cout << "CM730.->Turning on dynamixel power..." << std::endl;
     dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, ID_CM730, ADDR_CM730_DYNAMIXEL_POWER, 1, &dxl_error);
     if(dxl_comm_result != COMM_SUCCESS)
-	std::cout << "CM730.->Commnunication problem while turning on dynamixel power." << std::endl;
+        std::cout << "CM730.->Commnunication problem while turning on dynamixel power." << std::endl;
     if(dxl_error != 0)
-	std::cout << "CM730.->Status error after turning on dynamixel power: " << int(dxl_error) << std::endl;
+        std::cout << "CM730.->Status error after turning on dynamixel power: " << int(dxl_error) << std::endl;
 
     ros::Duration(1.0).sleep();
     //Read current position to start goal position with the current position.
     for(int i = 0; i < 20; i++)
     {
-	dxl_comm_result = packetHandler->read2ByteTxRx(portHandler, servos_ids[i], ADDR_MX_CURRENT_POSITION,
-						       &dxl_current_pos, &dxl_error);
-	if(dxl_comm_result == COMM_SUCCESS && dxl_error == 0)
-	{
-	    servos_goal_position[i] = dxl_current_pos;
-	    msg_joint_states.position[i] = (int(dxl_current_pos) - int(servos_position_zero[i]))*SERVO_MX_RADS_PER_BIT *
-		servos_is_clockwise[i];
-	    std::cout << "CM730.->Initial position servo " << servos_ids[i] << ": " << int(dxl_current_pos) << std::endl;
-	}
-	else if(dxl_comm_result != COMM_SUCCESS)
-	    std::cout << "CM730.->Communication error while trying to read servo id " << servos_ids[i] << std::endl;
-	else
-	    std::cout << "CM730.->Warning! Error in servo id "<< servos_ids[i] << " with code "<< int(dxl_error) << std::endl;
+        dxl_comm_result = packetHandler->read2ByteTxRx(portHandler, servos_ids[i], ADDR_MX_CURRENT_POSITION,
+            &dxl_current_pos, &dxl_error);
+        if(dxl_comm_result == COMM_SUCCESS && dxl_error == 0)
+        {
+            servos_goal_position[i] = dxl_current_pos;
+            msg_joint_states.position[i] = (int(dxl_current_pos) - int(servos_position_zero[i]))*SERVO_MX_RADS_PER_BIT *
+                servos_is_clockwise[i];
+            std::cout << "CM730.->Initial position servo " << servos_ids[i] << ": " << int(dxl_current_pos) << std::endl;
+        }
+        else 
+            if(dxl_comm_result != COMM_SUCCESS)
+                std::cout << "CM730.->Communication error while trying to read servo id " << servos_ids[i] << std::endl;
+            else
+                std::cout << "CM730.->Warning! Error in servo id "<< servos_ids[i] << " with code "<< int(dxl_error) << std::endl;
     }
+    //Wait the order for turn on the motors.
+    /*for(int i=0; i < 20; i++)
+    {
+        dxl_comm_result = packetHandler->write2ByteTxRx(portHandler, servos_ids[i], ADDR_MX_GOAL_POSITION,
+            servos_goal_position[i], &dxl_error);
+        if(dxl_comm_result != COMM_SUCCESS)
+            std::cout << "CM730.->Commnunication problem while writing goal pose to servo "<< int(servos_ids[i])  << std::endl;
+        if(dxl_error != 0)
+        {
+            std::cout << "CM730.->Status error while writing goal pose "<< (int)servos_goal_position[i];
+            std::cout << " to servo "<< int(servos_ids[i]) << "\tError code:" << int(dxl_error) << std::endl;
+        }
+    }*/
 
     ros::Duration(1.0).sleep();
     while(ros::ok())
     {
-	for(int i = 0; i < 20; i++)
-	{
-		dxl_comm_result = packetHandler->read2ByteTxRx(portHandler, servos_ids[i], ADDR_MX_CURRENT_POSITION,
-							   &dxl_current_pos, &dxl_error);
-	    if(dxl_comm_result == COMM_SUCCESS && dxl_error == 0)
-	    {
-		msg_joint_states.position[i] = (int(dxl_current_pos) - int(servos_position_zero[i]))*SERVO_MX_RADS_PER_BIT *
-		    servos_is_clockwise[i];
-		msg_joint_current_angles.data[i] = msg_joint_states.position[i];
-	    }
-	    else if(dxl_comm_result != COMM_SUCCESS)
-		std::cout << "CM730.->Communication error while trying to read servo id " << servos_ids[i] << std::endl;
-	    else
-		std::cout << "CM730.->Warning! Error in servo id "<< servos_ids[i] << " with code "<< int(dxl_error) << std::endl;
-	}
-	
-	for(int i=0; i < 20; i++)
-	{
-        dxl_comm_result = packetHandler->write2ByteTxRx(portHandler, servos_ids[i], ADDR_MX_GOAL_POSITION,
-							    servos_goal_position[i], &dxl_error);
-	    if(dxl_comm_result != COMM_SUCCESS)
-		std::cout << "CM730.->Commnunication problem while writing goal pose to servo "<< int(servos_ids[i])  << std::endl;
-	    if(dxl_error != 0)
+        for(int i = 0; i < 20; i++)
         {
-		  std::cout << "CM730.->Status error while writing goal pose "<< (int)servos_goal_position[i];
-            std::cout << " to servo "<< int(servos_ids[i]) << "\tError code:" << int(dxl_error) << std::endl;
-    }   
-	}
-
-
-	msg_joint_states.header.stamp = ros::Time::now();
-	pub_joint_states.publish(msg_joint_states);
-	pub_joint_current_angles.publish(msg_joint_current_angles);
-	ros::spinOnce();
-	loop.sleep();
+            dxl_comm_result = packetHandler->read2ByteTxRx(portHandler, servos_ids[i], ADDR_MX_CURRENT_POSITION,
+                &dxl_current_pos, &dxl_error);
+            if(dxl_comm_result == COMM_SUCCESS && dxl_error == 0)
+            {
+                msg_joint_states.position[i] = (int(dxl_current_pos) - int(servos_position_zero[i]))*SERVO_MX_RADS_PER_BIT *
+                    servos_is_clockwise[i];
+                msg_joint_current_angles.data[i] = msg_joint_states.position[i];
+            }
+            else 
+                if(dxl_comm_result != COMM_SUCCESS)
+                    std::cout << "CM730.->Communication error while trying to read servo id " << servos_ids[i] << std::endl;
+                else
+                    std::cout << "CM730.->Warning! Error in servo id "<< servos_ids[i] << " with code "<< int(dxl_error) << std::endl;    
+        }
+        //Wait the order for turn on the motors.
+        for(int i=0; i < 20; i++)
+        {
+            if(motors_state1[0] == 1)
+            {
+                std::cout << "MOTORS_ON" << std::endl;      
+                dxl_comm_result = packetHandler->write2ByteTxRx(portHandler, servos_ids[i], ADDR_MX_GOAL_POSITION,
+                    servos_goal_position[i], &dxl_error);
+            }
+            if(dxl_comm_result != COMM_SUCCESS)
+                std::cout << "CM730.->Commnunication problem while writing goal pose to servo "<< int(servos_ids[i])  << std::endl;
+            if(dxl_error != 0)
+            {
+                std::cout << "CM730.->Status error while writing goal pose "<< (int)servos_goal_position[i];
+                std::cout << " to servo "<< int(servos_ids[i]) << "\tError code:" << int(dxl_error) << std::endl;
+            }
+        }
+        
+       msg_joint_states.header.stamp = ros::Time::now();
+       pub_joint_states.publish(msg_joint_states);
+       pub_joint_current_angles.publish(msg_joint_current_angles);
+       ros::spinOnce();
+       loop.sleep();
     }
-
     portHandler->closePort();
 }

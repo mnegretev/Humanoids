@@ -17,6 +17,7 @@ void QtRosNode::run()
     pubArmLeftGoalPose  = n->advertise<std_msgs::Float32MultiArray>("/hardware/arm_left_goal_pose", 1);
     pubArmRightGoalPose = n->advertise<std_msgs::Float32MultiArray>("/hardware/arm_right_goal_pose", 1);
     pubHeadGoalPose     = n->advertise<std_msgs::Float32MultiArray>("/hardware/head_goal_pose", 1);
+    pubMotorsState      = n->advertise<std_msgs::Float32MultiArray>("/hardware/motors_state", 1);
     cltCalculateIKLegLeft  = n->serviceClient<ctrl_msgs::CalculateIK>("/control/ik_leg_left");
     cltCalculateIKLegRight = n->serviceClient<ctrl_msgs::CalculateIK>("/control/ik_leg_right");
     cltCalculateDKLegLeft  = n->serviceClient<ctrl_msgs::CalculateDK>("/control/dk_leg_left");
@@ -72,6 +73,12 @@ void QtRosNode::publishHeadGoalPose(std::vector<float> headGoalPose)
 {
     msgHeadGoalPose.data = headGoalPose;
     pubHeadGoalPose.publish(msgHeadGoalPose);
+}
+
+void QtRosNode::publishMotorsState(std::vector<float> motorsState)
+{
+    msgMotorsState.data = motorsState;
+    pubMotorsState.publish(msgMotorsState);
 }
 
 bool QtRosNode::callIKLegLeft(float x, float y, float z, float roll, float pitch, float yaw,

@@ -39,7 +39,7 @@ QRadioButton::indicator{
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>0</y>
+      <y>10</y>
       <width>641</width>
       <height>531</height>
      </rect>
@@ -1591,7 +1591,7 @@ QRadioButton::indicator{
      <widget class="QPushButton" name="btnZeroPose">
       <property name="geometry">
        <rect>
-        <x>230</x>
+        <x>240</x>
         <y>110</y>
         <width>99</width>
         <height>41</height>
@@ -1604,7 +1604,7 @@ QRadioButton::indicator{
      <widget class="QPushButton" name="btnCurrentPose">
       <property name="geometry">
        <rect>
-        <x>230</x>
+        <x>240</x>
         <y>150</y>
         <width>99</width>
         <height>41</height>
@@ -1617,7 +1617,7 @@ QRadioButton::indicator{
      <widget class="QPushButton" name="btnStartPose">
       <property name="geometry">
        <rect>
-        <x>230</x>
+        <x>240</x>
         <y>190</y>
         <width>99</width>
         <height>41</height>
@@ -1625,6 +1625,19 @@ QRadioButton::indicator{
       </property>
       <property name="text">
        <string>Start Pose</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnMotorsON">
+      <property name="geometry">
+       <rect>
+        <x>490</x>
+        <y>50</y>
+        <width>121</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>MotorsON</string>
       </property>
      </widget>
     </widget>
