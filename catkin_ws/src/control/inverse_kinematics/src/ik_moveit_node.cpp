@@ -14,7 +14,7 @@ std::vector<std::string> joint_names_leg_right;
 bool ik_leg_left(ctrl_msgs::CalculateIK::Request &req, ctrl_msgs::CalculateIK::Response &res)
 {
     std::cout << "IK.->Calculating inverse kinematics for left leg..." << std::endl;
-    Eigen::Affine3d desired_pose = Eigen::Affine3d::Identity();
+    Eigen::Isometry3d desired_pose = Eigen::Isometry3d::Identity();
     desired_pose.translate(Eigen::Vector3d(req.x, req.y, req.z));
     desired_pose.rotate(Eigen::AngleAxisd(req.yaw,   Eigen::Vector3d(0,0,1)));
     desired_pose.rotate(Eigen::AngleAxisd(req.pitch, Eigen::Vector3d(0,1,0)));
@@ -44,7 +44,7 @@ bool ik_leg_left(ctrl_msgs::CalculateIK::Request &req, ctrl_msgs::CalculateIK::R
 bool ik_leg_right(ctrl_msgs::CalculateIK::Request &req, ctrl_msgs::CalculateIK::Response &res)
 {
     std::cout << "IK.->Calculating inverse kinematics for right leg..." << std::endl;
-    Eigen::Affine3d desired_pose = Eigen::Affine3d::Identity();
+    Eigen::Isometry3d desired_pose = Eigen::Isometry3d::Identity();
     desired_pose.translate(Eigen::Vector3d(req.x, req.y, req.z));
     desired_pose.rotate(Eigen::AngleAxisd(req.yaw,   Eigen::Vector3d(0,0,1)));
     desired_pose.rotate(Eigen::AngleAxisd(req.pitch, Eigen::Vector3d(0,1,0)));
@@ -80,7 +80,7 @@ bool dk_leg_left(ctrl_msgs::CalculateDK::Request &req, ctrl_msgs::CalculateDK::R
     for(int i=0; i < joints.size(); i++) joints[i] = req.joint_values[i];
 
     kinematic_state->setJointGroupPositions("leg_left", joints);
-    Eigen::Affine3d pose = kinematic_state->getGlobalLinkTransform("left_foot_link");
+    Eigen::Isometry3d pose = kinematic_state->getGlobalLinkTransform("left_foot_link");
     res.x = pose.translation()[0];
     res.y = pose.translation()[1];
     res.z = pose.translation()[2];
@@ -100,7 +100,7 @@ bool dk_leg_right(ctrl_msgs::CalculateDK::Request &req, ctrl_msgs::CalculateDK::
     for(int i=0; i < joints.size(); i++) joints[i] = req.joint_values[i];
     
     kinematic_state->setJointGroupPositions("leg_right", joints);
-    Eigen::Affine3d pose = kinematic_state->getGlobalLinkTransform("right_foot_link");
+    Eigen::Isometry3d pose = kinematic_state->getGlobalLinkTransform("right_foot_link");
     res.x = pose.translation()[0];
     res.y = pose.translation()[1];
     res.z = pose.translation()[2];

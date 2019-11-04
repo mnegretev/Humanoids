@@ -16,6 +16,8 @@ find_package(catkin REQUIRED COMPONENTS
   tf
   moveit_kinematics
   ctrl_msgs
+  moveit_core
+  moveit_ros_planning_interface
 )
 
 ## System dependencies are found with CMake's conventions
@@ -110,7 +112,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES inverse_kinematics
-#  CATKIN_DEPENDS roscpp rospy sensor_msgs std_msgs
+ CATKIN_DEPENDS roscpp rospy sensor_msgs std_msgs moveit_core moveit_ros_planning_interface
 #  DEPENDS system_lib
 )
 

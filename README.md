@@ -7,8 +7,8 @@ This repository contains the software developed for the humanoid robot of the Bi
 
 ### Prerrequisites
 
-* Ubuntu 16.04
-* ROS Kinectic
+* Ubuntu 18.04
+* ROS Melodic
 * Gazebo
 * A lot of patience
 
