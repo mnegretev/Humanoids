@@ -1,0 +1,6 @@
+float32 dt # Sampling step
+float32 tf # Final time
+float32 p0 # Initial angle [rad]
+float32 pf # Final angle [rad]
+---
+std_msgs/Float32MultiArray profiled_positions

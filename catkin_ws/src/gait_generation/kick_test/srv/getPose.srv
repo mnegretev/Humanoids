@@ -1,0 +1,9 @@
+string kick_mode
+int64 robot_pose
+---
+float32 delay
+int32 number_poses
+std_msgs/Float32MultiArray head_position
+std_msgs/Float32MultiArray legs_position
+std_msgs/Float32MultiArray left_arm_position
+std_msgs/Float32MultiArray right_arm_position

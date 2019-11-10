@@ -3,6 +3,7 @@ project(kick_test)
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
+  nav_msgs
   rospy
   std_msgs
   sensor_msgs
@@ -11,13 +12,13 @@ find_package(catkin REQUIRED COMPONENTS
 
 add_service_files(
   FILES
-  kick.srv
+  getPose.srv
+  speedProfile.srv
 )
 
-## Generate added messages and services with any dependencies listed here
 generate_messages(
   DEPENDENCIES
-  std_msgs sensor_msgs
+  std_msgs sensor_msgs nav_msgs
 )
 
 include_directories(

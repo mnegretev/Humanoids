@@ -1,7 +1,0 @@
-string kick_mode
-int64 robot_state
----
-string[] name
-int32 states
-float32[] position
-float32 delay
