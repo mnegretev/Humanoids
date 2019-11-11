@@ -10,13 +10,13 @@ from kick_test.srv import *
 
 
 def read_config_files():
-    global left_poses, right_poses, joint_name
+    global left_poses, right_poses, name
     rospack = rospkg.RosPack()
     rospack.list()
     
     left_poses = yaml.load(open(rospack.get_path('config_files') + '/predef_poses/LEFT_KICK.yaml', 'r'))
     right_poses = yaml.load(open(rospack.get_path('config_files') + '/predef_poses/RIGHT_KICK.yaml', 'r'))
-    joint_name = left_poses['motion'][0]['joints'].keys()
+    name = left_poses['motion'][0]['joints'].keys()
 
 
 def main():
@@ -29,27 +29,21 @@ def main():
 def allocate_positions(req):
     res = getPoseResponse()
 
-    joint_position = []
+    position = []
 
-    head_position = Float32MultiArray()
-    legs_position = Float32MultiArray()
-    left_arm_position = Float32MultiArray()
-    right_arm_position = Float32MultiArray()
-
-    head_position = numpy.zeros(2)
-    legs_position = numpy.zeros(12)
-    left_arm_position = numpy.zeros(3)
-    right_arm_position = numpy.zeros(3)
+    joint_name          = [""]*20
+    joint_goal_position = Float32MultiArray()
+    joint_goal_position = numpy.zeros(20)
 
     if req.kick_mode == 'left': 
         for i in range(0, 20):
-            joint_position.append(left_poses['motion'][req.robot_pose]['joints'][joint_name[i]]['position'])
+            position.append(left_poses['motion'][req.robot_pose]['joints'][name[i]]['position'])
         res.number_poses = len(left_poses['motion'])        
         res.delay = left_poses['motion'][req.robot_pose]['duration']
 
     elif req.kick_mode == 'right':
         for i in range(0, 20):
-            joint_position.append(right_poses['motion'][req.robot_pose]['joints'][joint_name[i]]['position'])
+            position.append(right_poses['motion'][req.robot_pose]['joints'][name[i]]['position'])
         res.number_poses = len(right_poses['motion'])       
         res.delay = right_poses['motion'][req.robot_pose]['duration']
 
@@ -57,49 +51,72 @@ def allocate_positions(req):
         print "Invalid kick mode"
 
     for id in range(0, 20):
-        if joint_name[id] == 'neck_yaw':
-            head_position[0] = joint_position[id]
-        if joint_name[id] == 'head_pitch':
-            head_position[1] = joint_position[id]
+        #Legs positions
+        if name[id] == 'left_hip_yaw':
+            joint_name[0] = name[id]
+            joint_goal_position[0] = position[id]
+        if name[id] == 'left_hip_roll':
+            joint_name[1] = name[id]
+            joint_goal_position[1] = position[id]
+        if name[id] == 'left_hip_pitch':
+            joint_name[2] = name[id]
+            joint_goal_position[2] = position[id]
+        if name[id] == 'left_knee_pitch':
+            joint_name[3] = name[id]
+            joint_goal_position[3] = position[id]
+        if name[id] == 'left_ankle_pitch':
+            joint_name[4] = name[id]
+            joint_goal_position[4] = position[id]
+        if name[id] == 'left_ankle_roll':
+            joint_name[5] = name[id]
+            joint_goal_position[5] = position[id]
+        if name[id] == 'right_hip_yaw':
+            joint_name[6] = name[id]
+            joint_goal_position[6] = position[id]
+        if name[id] == 'right_hip_roll':
+            joint_name[7] = name[id]
+            joint_goal_position[7] = position[id]
+        if name[id] == 'right_hip_pitch':
+            joint_name[8] = name[id]
+            joint_goal_position[8] = position[id]
+        if name[id] == 'right_knee_pitch':
+            joint_name[9] = name[id]
+            joint_goal_position[9] = position[id]
+        if name[id] == 'right_ankle_pitch':
+            joint_name[10] = name[id]
+            joint_goal_position[10] = position[id]
+        if name[id] == 'right_ankle_roll':
+            joint_name[11] = name[id]
+            joint_goal_position[11] = position[id]
+        # Left arm position
+        if name[id] == 'left_shoulder_pitch':
+            joint_name[12] = name[id]
+            joint_goal_position[12] = position[id]
+        if name[id] == 'left_shoulder_roll':
+            joint_name[13] = name[id]
+            joint_goal_position[13] = position[id]
+        if name[id] == 'left_elbow_pitch':
+            joint_name[14] = name[id]
+            joint_goal_position[14] = position[id]     
+        # Right arm position
+        if name[id] == 'right_shoulder_pitch':
+            joint_name[15] = name[id]
+            joint_goal_position[15] = position[id]
+        if name[id] == 'right_shoulder_roll':
+            joint_name[16] = name[id]
+            joint_goal_position[16] = position[id]
+        if name[id] == 'right_elbow_pitch':
+            joint_name[17] = name[id]
+            joint_goal_position[17] = position[id]  
+        # Head position
+        if name[id] == 'neck_yaw':
+            joint_name[18] = name[id]
+            joint_goal_position[18] = position[id]
+        if name[id] == 'head_pitch':
+            joint_name[19] = name[id]
+            joint_goal_position[19] = position[id]
 
-        if joint_name[id] == 'left_shoulder_pitch':
-            left_arm_position[0] = joint_position[id]
-        if joint_name[id] == 'left_shoulder_roll':
-            left_arm_position[1] = joint_position[id]
-        if joint_name[id] == 'left_elbow_pitch':
-            left_arm_position[2] = joint_position[id]     
 
-        if joint_name[id] == 'right_shoulder_pitch':
-            right_arm_position[0] = joint_position[id]
-        if joint_name[id] == 'right_shoulder_roll':
-            right_arm_position[1] = joint_position[id]
-        if joint_name[id] == 'right_elbow_pitch':
-            right_arm_position[2] = joint_position[id]  
-
-        if joint_name[id] == 'left_hip_yaw':
-            legs_position[0] = joint_position[id]
-        if joint_name[id] == 'left_hip_roll':
-            legs_position[1] = joint_position[id]
-        if joint_name[id] == 'left_hip_pitch':
-            legs_position[2] = joint_position[id]
-        if joint_name[id] == 'left_knee_pitch':
-            legs_position[3] = joint_position[id]
-        if joint_name[id] == 'left_ankle_pitch':
-            legs_position[4] = joint_position[id]
-        if joint_name[id] == 'left_ankle_roll':
-            legs_position[5] = joint_position[id]
-        if joint_name[id] == 'right_hip_yaw':
-            legs_position[6] = joint_position[id]
-        if joint_name[id] == 'right_hip_roll':
-            legs_position[7] = joint_position[id]
-        if joint_name[id] == 'right_hip_pitch':
-            legs_position[8] = joint_position[id]
-        if joint_name[id] == 'right_knee_pitch':
-            legs_position[9] = joint_position[id]
-        if joint_name[id] == 'right_ankle_pitch':
-            legs_position[10] = joint_position[id]
-        if joint_name[id] == 'right_ankle_roll':
-            legs_position[11] = joint_position[id]
 
 
     print"Robot state: " , req.robot_pose
@@ -107,12 +124,8 @@ def allocate_positions(req):
     print "Delay: " , res.delay
     print "----------------------"
 
-
-    res.head_position.data = head_position
-    res.legs_position.data = legs_position    
-    res.left_arm_position.data = left_arm_position
-    res.right_arm_position.data = right_arm_position
-
+    res.joint_name = joint_name
+    res.joint_goal_position.data = joint_goal_position
     return res
 
 if __name__ == '__main__':
