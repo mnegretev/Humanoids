@@ -27,6 +27,47 @@ MainWindow::MainWindow(QWidget *parent) :
 	
     legLeftGoalPose.resize(6);
     legRightGoalPose.resize(6);
+
+    std::vector<float> joint_angles;
+    if(!qtRosNode->getAllJointCurrentAngles(joint_angles))
+    {
+	std::cout << "MainWindow.->Cannot get current joint angles" << std::endl;
+	return;
+    }
+
+    legLeftIgnoreValueChanged = true;
+    legRightIgnoreValueChanged = true;
+    armLeftIgnoreValueChanged = true;
+    armRightIgnoreValueChanged = true;
+    headIgnoreValueChanged = true;
+
+    ui->sbLegLeft0->setValue(joint_angles[0]);
+    ui->sbLegLeft1->setValue(joint_angles[1]);
+    ui->sbLegLeft2->setValue(joint_angles[2]);
+    ui->sbLegLeft3->setValue(joint_angles[3]);
+    ui->sbLegLeft4->setValue(joint_angles[4]);
+    ui->sbLegLeft5->setValue(joint_angles[5]);
+    ui->sbLegRight0->setValue(joint_angles[6]);
+    ui->sbLegRight1->setValue(joint_angles[7]);
+    ui->sbLegRight2->setValue(joint_angles[8]);
+    ui->sbLegRight3->setValue(joint_angles[9]);
+    ui->sbLegRight4->setValue(joint_angles[10]);
+    ui->sbLegRight5->setValue(joint_angles[11]);
+    ui->sbArmLeft0->setValue(joint_angles[12]);
+    ui->sbArmLeft1->setValue(joint_angles[13]);
+    ui->sbArmLeft2->setValue(joint_angles[14]);
+    ui->sbArmRight0->setValue(joint_angles[15]);
+    ui->sbArmRight1->setValue(joint_angles[16]);
+    ui->sbArmRight2->setValue(joint_angles[17]);
+    ui->sbHead0->setValue(joint_angles[18]);
+    ui->sbHead1->setValue(joint_angles[19]);
+
+    legLeftIgnoreValueChanged = false;
+    legRightIgnoreValueChanged = false;
+    armLeftIgnoreValueChanged = false;
+    armRightIgnoreValueChanged = false;
+    headIgnoreValueChanged = false;
+
 }
 
 MainWindow::~MainWindow()

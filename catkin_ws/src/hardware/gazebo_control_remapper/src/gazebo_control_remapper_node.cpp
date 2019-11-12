@@ -212,12 +212,12 @@ int main(int argc, char** argv)
     pubRightKneePitch     = n.advertise<std_msgs::Float64>("/nimbro/right_knee_pitch_position_controller/command",1); 
     pubRightAnklePitch    = n.advertise<std_msgs::Float64>("/nimbro/right_ankle_pitch_position_controller/command",1);
     pubRightAnkleRoll     = n.advertise<std_msgs::Float64>("/nimbro/right_ankle_roll_position_controller/command",1);
-    pubLeftShoulderPitch  = n.advertise<std_msgs::Float64>("/nimbro/right_shoulder_pitch_position_controller/command", 1);
-    pubLeftShoulderRoll   = n.advertise<std_msgs::Float64>("/nimbro/right_shoulder_roll_position_controller/command",1);  
-    pubLeftElbowPitch     = n.advertise<std_msgs::Float64>("/nimbro/right_elbow_pitch_position_controller/command", 1); 
-    pubRightShoulderPitch = n.advertise<std_msgs::Float64>("/nimbro/left_shoulder_pitch_position_controller/command", 1);
-    pubRightShoulderRoll  = n.advertise<std_msgs::Float64>("/nimbro/left_shoulder_roll_position_controller/command", 1);
-    pubRightElbowPitch    = n.advertise<std_msgs::Float64>("/nimbro/left_elbow_pitch_position_controller/command", 1);
+    pubLeftShoulderPitch  = n.advertise<std_msgs::Float64>("/nimbro/left_shoulder_pitch_position_controller/command", 1);
+    pubLeftShoulderRoll   = n.advertise<std_msgs::Float64>("/nimbro/left_shoulder_roll_position_controller/command",1);  
+    pubLeftElbowPitch     = n.advertise<std_msgs::Float64>("/nimbro/left_elbow_pitch_position_controller/command", 1); 
+    pubRightShoulderPitch = n.advertise<std_msgs::Float64>("/nimbro/right_shoulder_pitch_position_controller/command", 1);
+    pubRightShoulderRoll  = n.advertise<std_msgs::Float64>("/nimbro/right_shoulder_roll_position_controller/command", 1);
+    pubRightElbowPitch    = n.advertise<std_msgs::Float64>("/nimbro/right_elbow_pitch_position_controller/command", 1);
     pubNeckYaw            = n.advertise<std_msgs::Float64>("/nimbro/neck_yaw_position_controller/command", 1);
     pubNeckPitch          = n.advertise<std_msgs::Float64>("/nimbro/head_pitch_position_controller/command", 1);
 

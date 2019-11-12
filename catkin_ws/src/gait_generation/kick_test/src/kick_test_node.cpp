@@ -158,8 +158,8 @@ int main(int argc, char **argv)
 
 			pubHeadPositions.publish(head_msg);
 			pubLegsPositions.publish(legs_msg);
-			//pubLeftArmPositions.publish(left_arm_msg);
-			//pubRightArmPositions.publish(right_arm_msg);
+			pubLeftArmPositions.publish(left_arm_msg);
+			pubRightArmPositions.publish(right_arm_msg);
 			break; 
 
 		case SM_COMPUTE_PROFILES:
@@ -191,8 +191,8 @@ int main(int argc, char **argv)
 
 				pubHeadPositions.publish(head_msg);
 				pubLegsPositions.publish(legs_msg);
-				//pubLeftArmPositions.publish(left_arm_msg);
-				//pubRightArmPositions.publish(right_arm_msg);
+				pubLeftArmPositions.publish(left_arm_msg);
+				pubRightArmPositions.publish(right_arm_msg);
 
 				time_k++;
 			}
