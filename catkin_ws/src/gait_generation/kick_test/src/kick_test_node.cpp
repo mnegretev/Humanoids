@@ -4,22 +4,20 @@
 #include "kick_test/getPose.h"
 #include "kick_test/speedProfile.h"
 
-#define sampling_freq 50
+#define sampling_freq 60
 
 #define SM_GET_PREFEF_POSE        0
-#define SM_GETTING_CURRENT_POSE  10
-#define SM_COMPUTE_PROFILES      20
-#define SM_PUBLISH_PROFILES      30
-#define SM_FINISH_TEST           40
-#define SM_JUST_PUBLISH          50
+#define SM_COMPUTE_PROFILES      10
+#define SM_PUBLISH_PROFILES      20
+#define SM_FINISH_TEST           30
+
 
 using namespace std;
 
 
 int state = SM_GET_PREFEF_POSE;
-bool proceed_to_compute = false;
 
-vector<float> current_joint_position;
+vector<float> current_joint_position(20, 0);
 
 
 bool compute_profiles(ros::ServiceClient& clt_speed_profile, vector<float>& joint_goal_position, 
@@ -28,7 +26,7 @@ bool compute_profiles(ros::ServiceClient& clt_speed_profile, vector<float>& join
 	kick_test::speedProfile srv;
 	
 	srv.request.dt = 1.0/sampling_freq;
-    srv.request.tf = 0.7;
+    srv.request.tf = 1.0;
 
 	joint_profile_positions.resize(20);
 
@@ -42,18 +40,11 @@ bool compute_profiles(ros::ServiceClient& clt_speed_profile, vector<float>& join
 			
 		else
 			return false;
+
+		current_joint_position[id] = joint_goal_position[id];
 	}
+
 	return true;
-}
-
-void current_positions_callback(const sensor_msgs::JointState::ConstPtr& msg)
-{
-	current_joint_position.resize(20);
-
-	for(int id=0; id<20; id++)
-		current_joint_position[id] = msg->position[id]; 
-
-	proceed_to_compute = true;
 }
 
 bool get_pose(ros::ServiceClient& clt_get_pose, string &kick_mode, int &robot_pose, 
@@ -64,7 +55,6 @@ bool get_pose(ros::ServiceClient& clt_get_pose, string &kick_mode, int &robot_po
 	srv.request.robot_pose = robot_pose;
 
 	joint_goal_position.resize(20);
-
 	if(clt_get_pose.call(srv)){
 		cout<<"--------------- Robot state: "<<srv.request.robot_pose<<" ---------------"<<endl;
 		number_poses = srv.response.number_poses;
@@ -88,7 +78,6 @@ int main(int argc, char **argv)
 	ros::Publisher pubLegsPositions = nh.advertise<std_msgs::Float32MultiArray>("/hardware/legs_goal_pose", 10);
 	ros::Publisher pubLeftArmPositions  = nh.advertise<std_msgs::Float32MultiArray>("/hardware/arm_left_goal_pose",  10);
 	ros::Publisher pubRightArmPositions = nh.advertise<std_msgs::Float32MultiArray>("/hardware/arm_right_goal_pose", 10);
-	ros::Subscriber subCurrentJointPositions = nh.subscribe("/joint_states", 1, current_positions_callback);
 	ros::Rate loop(sampling_freq);	
 
 	system("echo 1 | sudo tee /sys/bus/usb-serial/devices/ttyUSB0/latency_timer");
@@ -124,48 +113,15 @@ int main(int argc, char **argv)
 			{
 				if(!get_pose(clt_get_pose, kick_mode, robot_pose, number_poses, joint_goal_position))
 					ROS_ERROR("Failed to call service get_pose_server.py");
-				state = SM_GETTING_CURRENT_POSE;
+				state = SM_COMPUTE_PROFILES;
 			}
 			else	
 				state = SM_FINISH_TEST;
-			break;
-
-		case SM_GETTING_CURRENT_POSE:
-			cout<<"SM_GETTING_CURRENT_POSE"<<endl;
-			if(proceed_to_compute)
-				state = SM_COMPUTE_PROFILES;
-			break;
-
-		case SM_JUST_PUBLISH:
-			cout<<"SM_JUST_PUBLISH"<<endl;
-
-			for(int i=0;i<20;i++)
-				cout<<"joint_goal_position["<<i<<"]: "<<joint_goal_position[i]<<endl;
-	
-			for(int id = 0; id < 20; id++)
-			{
-				if(id < 12)
-					legs_msg.data[id] = joint_goal_position[id];
-
-				if(id >=12 && id < 15)
-					left_arm_msg.data[id-12] = joint_goal_position[id];
-				
-				if(id >=15 && id < 18)
-					right_arm_msg.data[id-15] = joint_goal_position[id];
-				if(id >= 18)
-					head_msg.data[id-18] = joint_goal_position[id];
-			}
-
-			pubHeadPositions.publish(head_msg);
-			pubLegsPositions.publish(legs_msg);
-			pubLeftArmPositions.publish(left_arm_msg);
-			pubRightArmPositions.publish(right_arm_msg);
 			break; 
 
 		case SM_COMPUTE_PROFILES:
 			cout<<"SM_COMPUTE_PROFILES"<<endl;
 			time_k = 0;
-			proceed_to_compute = false;
 
 			if(!compute_profiles(clt_speed_profile, joint_goal_position, joint_profile_positions))
 				ROS_ERROR("Failed to call service speed_profile_server.py");

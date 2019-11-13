@@ -46,7 +46,9 @@
 		joint_state_controller
 		"
           />
-    <!-- Nodes for vision-->
-	<node name="get_ball_position_node" pkg="get_ball_position" type="get_ball_position_node"/>
-	<node name="get_ball_velocity_node" pkg="get_ball_velocity" type="get_ball_velocity_node"/>
+	
+	<!-- kick servers -->
+	<node name="get_pose_server" pkg="kick_test" type="get_pose_server.py"/>
+	<node name="speed_profile_server" pkg="kick_test" type="speed_profile_server.py"/>
+
 </launch>
