@@ -16,6 +16,7 @@ using namespace std;
 
 
 int state = SM_GET_PREFEF_POSE;
+float tf;
 
 vector<float> current_joint_position(20, 0);
 
@@ -26,7 +27,7 @@ bool compute_profiles(ros::ServiceClient& clt_speed_profile, vector<float>& join
 	kick_test::speedProfile srv;
 	
 	srv.request.dt = 1.0/sampling_freq;
-    srv.request.tf = 1.0;
+    srv.request.tf = tf;
 
 	joint_profile_positions.resize(20);
 
@@ -58,7 +59,8 @@ bool get_pose(ros::ServiceClient& clt_get_pose, string &kick_mode, int &robot_po
 	if(clt_get_pose.call(srv)){
 		cout<<"--------------- Robot state: "<<srv.request.robot_pose<<" ---------------"<<endl;
 		number_poses = srv.response.number_poses;
-		joint_goal_position = srv.response.joint_goal_position.data;			
+		joint_goal_position = srv.response.joint_goal_position.data;
+		tf = srv.response.delay;
 	}
 	else
 		return false;	

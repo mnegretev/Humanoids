@@ -35,7 +35,7 @@ int main(int argc, char **argv)
 
     system("echo 1 | sudo tee /sys/bus/usb-serial/devices/ttyUSB0/latency_timer");
 
-    ros::Subscriber angles_sub = nh.subscribe("/vision/get_ball_position/vision_angles", 1000 , angles_callback);
+    ros::Subscriber angles_sub = nh.subscribe("/vision/ball_kinematics/vision_angles", 1000 , angles_callback);
                     head_pub   = nh.advertise<std_msgs::Float32MultiArray>("/hardware/head_goal_pose", 1);
 
     std_msgs::Float32MultiArray head_msg;
