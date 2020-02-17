@@ -83,7 +83,7 @@ int main(int argc, char **argv)
 
     std_msgs::Float32MultiArray msg;
     msg.data.resize(2);
-    ros::Rate loop(30);
+    ros::Rate loop(20);
 
 
     cv::VideoCapture capture;

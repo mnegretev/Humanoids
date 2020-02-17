@@ -22,4 +22,7 @@
         <node name="speed_profile_server" pkg="kick_test" type="speed_profile_server.py"/>
     </group>
 
+    <!-- kick servers -->
+    <node name="get_pose_server" pkg="kick_test" type="get_pose_server.py"/>
+    <node name="speed_profile_server" pkg="kick_test" type="speed_profile_server.py"/>
 </launch>

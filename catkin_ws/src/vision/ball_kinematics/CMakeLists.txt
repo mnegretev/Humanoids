@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(ball_kinematics)
 
-
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   roslib
@@ -31,5 +30,3 @@ target_link_libraries(${PROJECT_NAME}_node   ${catkin_LIBRARIES} )
 add_executable(ball_viz_node src/ball_viz_node.cpp)
 add_dependencies(ball_viz_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(ball_viz_node ${catkin_LIBRARIES} ${OpenCV_LIBS}) 
-
-

@@ -38,7 +38,7 @@
 #define ZERO_LEG_LEFT_HIP_ROLL          2070
 #define ZERO_LEG_LEFT_HIP_PITCH         2048
 #define ZERO_LEG_LEFT_KNEE_PITCH        2400
-#define ZERO_LEG_LEFT_ANKLE_PITCH       2016
+#define ZERO_LEG_LEFT_ANKLE_PITCH       2150
 #define ZERO_LEG_LEFT_ANKLE_ROLL        2048
 
 #define ZERO_LEG_RIGHT_HIP_YAW          2048
@@ -49,7 +49,7 @@
 #define ZERO_LEG_RIGHT_ANKLE_ROLL       2048
 
 #define ZERO_ARM_LEFT_SHOULDER_PITCH    2048
-#define ZERO_ARM_LEFT_SHOULDER_ROLL     2540
+#define ZERO_ARM_LEFT_SHOULDER_ROLL     2440
 #define ZERO_ARM_LEFT_ELBOW_PITCH       2048
 
 #define ZERO_ARM_RIGHT_SHOULDER_PITCH   1905
@@ -386,11 +386,6 @@ int main(int argc, char** argv)
 	
 	for(int i=0; i < 20; i++)
 	{
-        
-		//if(servos_ids[i]==ID_ARM_RIGHT_SHOULDER_PITCH)
-		//	continue;	
-        //if(servos_ids[i]==ID_LEG_LEFT_ANKLE_PITCH)
-        //  continue;
 	    dxl_comm_result = packetHandler->write2ByteTxRx(portHandler, servos_ids[i], ADDR_MX_GOAL_POSITION,
 							    servos_goal_position[i], &dxl_error);
 	    if(dxl_comm_result != COMM_SUCCESS)
