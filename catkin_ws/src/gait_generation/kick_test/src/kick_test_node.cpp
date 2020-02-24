@@ -3,6 +3,7 @@
 #include "sensor_msgs/JointState.h"
 #include "kick_test/getPose.h"
 #include "kick_test/speedProfile.h"
+#include <boost/shared_ptr.hpp>
 
 #define sampling_freq 60
 
@@ -103,6 +104,19 @@ int main(int argc, char **argv)
 	left_arm_msg.data.resize(3);
 	right_arm_msg.data.resize(3);
 	
+
+	boost::shared_ptr<sensor_msgs::JointState const> initial_pose;
+	sensor_msgs::JointState pose;
+
+	initial_pose = ros::topic::waitForMessage<sensor_msgs::JointState>("/joint_states", nh);
+
+	if(initial_pose !=NULL){
+		pose = *initial_pose;
+	}
+	
+	for(int id=0; id<20; id++)
+		current_joint_position[id] = initial_pose->position[id];
+
 
 	while(ros::ok())
 	{
