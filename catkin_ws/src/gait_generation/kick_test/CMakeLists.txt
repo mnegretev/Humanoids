@@ -32,3 +32,11 @@ add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catk
 target_link_libraries(${PROJECT_NAME}_node
   ${catkin_LIBRARIES}
 )
+
+add_executable(ready_to_kick_node src/ready_to_kick_node.cpp)
+
+add_dependencies(ready_to_kick_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+target_link_libraries(ready_to_kick_node
+  ${catkin_LIBRARIES}
+)

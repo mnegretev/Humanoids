@@ -10,12 +10,13 @@ from kick_test.srv import *
 
 
 def read_config_files():
-    global left_poses, right_poses, name
+    global left_poses, right_poses, ready_to_kick, name
     rospack = rospkg.RosPack()
     rospack.list()
     
     left_poses = yaml.load(open(rospack.get_path('config_files') + '/predef_poses/LEFT_KICK.yaml', 'r'))
     right_poses = yaml.load(open(rospack.get_path('config_files') + '/predef_poses/RIGHT_KICK.yaml', 'r'))
+    ready_to_kick = yaml.load(open(rospack.get_path('config_files') + '/predef_poses/READY_TO_KICK.yaml', 'r'))
     name = left_poses['motion'][0]['joints'].keys()
 
 
@@ -46,6 +47,12 @@ def allocate_positions(req):
             position.append(right_poses['motion'][req.robot_pose]['joints'][name[i]]['position'])
         res.number_poses = len(right_poses['motion'])       
         res.delay = right_poses['motion'][req.robot_pose]['duration']
+
+    elif req.kick_mode == 'ready':
+        for i in range(0, 20):
+            position.append(ready_to_kick['motion'][req.robot_pose]['joints'][name[i]]['position'])
+        res.number_poses = len(ready_to_kick['motion'])       
+        res.delay = ready_to_kick['motion'][req.robot_pose]['duration']
 
     else:
         print "Invalid kick mode"
