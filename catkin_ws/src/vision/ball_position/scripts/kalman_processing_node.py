@@ -5,18 +5,27 @@ import rospy
 import numpy
 import rospkg
 
+from std_msgs.msg import Bool
 from std_msgs.msg import Float32MultiArray
 
 x_ = 0
 y_ = 0
 t0 = 0
+
+curr_time = 0
+kicking_duration = 0.4
+time_left_to_kick = 0
+
 first_sample = True
 abs_path = ""
 
+samples = 0
+max_samples = 70
+
 def initialMatrixes():
 	global F, G, u , Xn, Pn, Q, H, R
-	print ""
-	print "------------------Initializing Parameters--------------------"
+	#print ""
+	#print "------------------Initializing Parameters--------------------"
 	dt = 0.05
 	mu = 0.1
 	g  = 9.81
@@ -28,7 +37,7 @@ def initialMatrixes():
 	F4 = [ 0, 0,  0,  1]
 
 	F = numpy.array([F1, F2, F3, F4])
-	print "F" 
+	#print "F" 
 	#print  F
 
 	#Control matrix
@@ -38,7 +47,7 @@ def initialMatrixes():
 	G4 = [	   0    ,     dt   ]
 
 	G = numpy.array([G1, G2, G3, G4])
-	print "G"
+	#print "G"
 	#print  G
 
 	#Control input
@@ -46,27 +55,27 @@ def initialMatrixes():
 	u2 = [-mu*g]
 
 	u = numpy.array([u1, u2])
-	print "u"
+	#print "u"
 	#print  u
 
 	#Initial state
 	Xn = numpy.array([[0], [0], [0], [0]])
-	print "Xn"
+	#print "Xn"
 	#print  Xn
 
 	#Covariance estimation matrix
 	Pn = numpy.identity(4)
-	print "Pn"
+	#print "Pn"
 	#print  Pn
 
 	#Observation matrix
 	H = numpy.identity(4)
-	print "H"
+	#print "H"
 	#print  H
 
 	#Process error matrix
 	Q = numpy.zeros((4,4))
-	print "Q"
+	#print "Q"
 	#print  Q
 
 	#Measurement error
@@ -78,68 +87,72 @@ def initialMatrixes():
 
 def extrapolationState():
 	global Xn, Xn1, Pn, Pn1
-	print ""
-	print "---Extrapolation State---"
+	#print ""
+	#print "---Extrapolation State---"
 	#Extrapolation state
 	Xn1 = numpy.dot(F, Xn) + numpy.dot(G, u)
 	#Extrapolation estimate covariance
 
 	Pn1 = numpy.dot(F, numpy.dot(Pn, F.transpose())) + Q
-	print "Xn"
+	'''print "Xn"
 	print Xn
 	print "Xn1"
 	print Xn1
 	print "Pn"
 	print Pn
 	print "Pn1"
-	print Pn1
+	print Pn1'''
 
 def estimationState():
 	global Xn, Xn_, Pn
-	print ""
-	print "---Estimation State---"
+	#print ""
+	#print "---Estimation State---"
 
 	#Changing state
 	Pn_ = Pn1
-	print "Pn_"
-	print  Pn_
+	#print "Pn_"
+	#print  Pn_
 
 	#Kalman gain
 	HT = H.transpose()
 	
 	K1 = numpy.dot(Pn_, HT)
-	print "K1"
+	#print "K1"
 	#print  K1
 
 	K2 = numpy.dot(H, numpy.dot(Pn_, H)) + R
-	print "K2"
+	#print "K2"
 	#print  K2
 
 	K  = numpy.dot(K1, numpy.linalg.inv(K2))
-	print "K"
-	print  K
+	#print "K"
+	#print  K
 
 	#Updating state matrix
 	Xn_ = Xn1
 	Xn = Xn_ +  numpy.dot(K, Z - numpy.dot(H, Xn_))
 
-	print "Xn_"
-	print  Xn_
-	print "Xn"
-	print  Xn
+	#print "Xn_"
+	#print  Xn_
+	#print "Xn"
+	#print  Xn
 
 	#Updating covariance matrix
 	Pn = numpy.dot(numpy.identity(4) - numpy.dot(K, H), Pn_)
-	print "Pn"
-	print  Pn
+	#print "Pn"
+	#print  Pn
 
 	extrapolationState();
 
 def measurementInput(data): 
-	global abs_path, first_sample, x_, y_, t0, Z, Xn_
-	print ""
-	print "-----------------------Measurement State-------------------"
+	global abs_path, first_sample, x_, y_, t0, Z, Xn_, samples, curr_time, time_left_to_kick
+	#print ""
+	#print "-----------------------Measurement State-------------------"
+
+	samples+=1
+	print "Samples: ", samples
 	ti = rospy.get_time()
+
 	if first_sample :
 		t0 = ti
 		x_ = data.data[0]
@@ -150,19 +163,20 @@ def measurementInput(data):
 	dy = data.data[1] - y_;
 	dt = ti - t0
 
-
 	positions_list = list(data.data)
 	positions_list.append(dt)
 
-	
 	x_ = data.data[0]
 	y_ = data.data[1]
 	t0 = ti
+	
+	curr_time+=dt
+	print "Current time: ", curr_time
 
 	#Measurement matrix
-	Z = numpy.array([[x_], [y_], [dx], [dy]])
-	print "Z"
-	print  Z
+	Z = numpy.array([[x_], [y_], [dx/dt], [dy/dt]])
+	#print "Z"
+	#print  Z
 	estimationState()
 
 	positions_list.append(float(Xn[0]))
@@ -174,15 +188,23 @@ def measurementInput(data):
 		json.dump(positions_list, filehandle)
 		filehandle.write("\n")
 
+	if samples == max_samples:
+		time_left_to_kick = abs(Xn[1]-0.2) * dt / abs(dy) - 3*curr_time
+		print "time_left_to_kick: ", time_left_to_kick
+
+	if curr_time >= time_left_to_kick and time_left_to_kick != 0:
+		pub_kick_flag.publish(True)
+
 def kalman_processing_node():
-	global abs_path
+	global abs_path, pub_kick_flag
 	rospy.init_node('kalman_processing_node', anonymous=True)
-	rospy.Subscriber("/vision/ball_kinematics/ball_kinematics", Float32MultiArray, measurementInput)
+	rospy.Subscriber("/vision/ball_position/ball_position", Float32MultiArray, measurementInput)
+	pub_kick_flag = rospy.Publisher('/kick_test/kick_flag', Bool, queue_size=10)
 
 	rospack = rospkg.RosPack()
 	rospack.list()
 
-	abs_path = rospack.get_path('ball_kinematics')
+	abs_path = rospack.get_path('ball_position')
 	if os.path.exists(abs_path + '/scripts/kalman_data.txt'):
 		os.remove(abs_path + '/scripts/kalman_data.txt')
 

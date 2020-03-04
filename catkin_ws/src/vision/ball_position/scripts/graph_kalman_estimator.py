@@ -20,17 +20,17 @@ print "Number of positions loaded->", len(number_positions)
 for i in number_positions:
     axis = json.loads(number_positions[index])
     #print "axis", axis
-    t = t + axis[4]
+    t = t + axis[2]
     time.append(t)	 
     position_x.append(axis[0])
     position_y.append(axis[1])
-    estimator_x.append(axis[5])
-    estimator_y.append(axis[6])
-    predictor_x.append(axis[7])
-    predictor_y.append(axis[8])
+    estimator_x.append(axis[3])
+    estimator_y.append(axis[4])
+    predictor_x.append(axis[5])
+    predictor_y.append(axis[6])
     index+=1
 
-print "data size: ", len(axis)
+#print "data size: ", len(axis)-1
 
 plt.figure(1)
 plt.plot(time, position_x, 'k.', time, estimator_x, 'b^', time, predictor_x, 'g*')

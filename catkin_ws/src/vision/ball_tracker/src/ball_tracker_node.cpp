@@ -9,6 +9,7 @@ cv::Mat   video_frame;
 cv::Mat     hsv_frame;
 cv::Mat    mask_frame;
 cv::Mat  eroded_frame;
+cv::Mat dilated_frame;
 cv::Mat tracked_frame;
 cv::Mat kernel=cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5,5));
 
@@ -117,9 +118,20 @@ int main(int argc, char **argv)
         cv::cvtColor( video_frame , hsv_frame, CV_BGR2HSV);
         cv::inRange(  hsv_frame   , cv::Scalar(h_min, s_min  , v_min), cv::Scalar(h_max, s_max, v_max), mask_frame);
         cv::erode(    mask_frame  , eroded_frame    , kernel , cv::Point(-1,-1), 1);
-        cv::dilate(   eroded_frame, tracked_frame   , kernel , cv::Point(-1,-1), 1);
+        cv::dilate(   eroded_frame, dilated_frame   , kernel , cv::Point(-1,-1), 1);
 
         putText(video_frame, "click on scroll to set values", cv::Point(5,50), cv::FONT_HERSHEY_DUPLEX, 1, cv::Scalar( 143, 30, 90), 2);
+        
+        video_frame.copyTo(tracked_frame);
+
+        for(int j=0; j<dilated_frame.cols; j++)
+            for(int i=0; i<dilated_frame.rows; i++)
+                if((int)(dilated_frame).at<uchar>(i, j) == 0){
+                    tracked_frame.at<cv::Vec3b>(i, j)[0] = 0;
+                    tracked_frame.at<cv::Vec3b>(i, j)[1] = 0;
+                    tracked_frame.at<cv::Vec3b>(i, j)[2] = 0;
+                }
+
         cv::imshow("tracked_frame", tracked_frame);
         cv::imshow("video_frame", video_frame);
         
