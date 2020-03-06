@@ -13,18 +13,30 @@ cv::FileStorage  fs;
 cv::Mat hsv_min = cv::Mat_<int>::zeros(1, 3);
 cv::Mat hsv_max = cv::Mat_<int>::zeros(1, 3);
 
+cv::Mat   video_frame;
+cv::Mat tracked_frame;
+cv::Mat  ball_located;
+cv::Mat dilated_frame;
+cv::Mat kernel = cv::getStructuringElement( cv::MORPH_ELLIPSE, cv::Size(5,5) );
+
 void callback_img(const std_msgs::UInt8MultiArray::ConstPtr& msg)
 {
-    cv::Mat       video_frame;
-    cv::Mat     tracked_frame;
-    cv::Mat    ball_located;
-    cv::Mat kernel = cv::getStructuringElement( cv::MORPH_ELLIPSE, cv::Size(5,5) );
 
     video_frame = cv::imdecode(msg->data,1); 
     cv::imshow("Camera visualizer", video_frame);  
-    cv::cvtColor( video_frame, tracked_frame, CV_BGR2HSV);  
-    cv::inRange(  tracked_frame   ,  hsv_min         , hsv_max, tracked_frame); 
-    cv::erode( tracked_frame, tracked_frame, kernel, cv::Point(-1, -1), 2);
+    cv::cvtColor( video_frame, dilated_frame, CV_BGR2HSV);  
+    cv::inRange(  dilated_frame, hsv_min, hsv_max, dilated_frame); 
+    cv::erode( dilated_frame, dilated_frame, kernel, cv::Point(-1, -1), 2);
+
+    video_frame.copyTo(tracked_frame);
+
+        for(int j=0; j<dilated_frame.cols; j++)
+            for(int i=0; i<dilated_frame.rows; i++)
+                if((int)(dilated_frame).at<uchar>(i, j) == 0){
+                    tracked_frame.at<cv::Vec3b>(i, j)[0] = 0;
+                    tracked_frame.at<cv::Vec3b>(i, j)[1] = 0;
+                    tracked_frame.at<cv::Vec3b>(i, j)[2] = 0;
+                }
     cv::dilate( tracked_frame, ball_located, kernel, cv::Point(-1, -1), 1);   
     cv::imshow("Ball located",ball_located);
 }

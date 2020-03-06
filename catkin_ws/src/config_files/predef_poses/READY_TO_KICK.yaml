@@ -5,7 +5,7 @@ header:
   postState: init
 motion:
   #Robot state: 0
-  - duration: 2.0
+  - duration: 2.4
     support: ""
     joints:
       head_pitch:
@@ -467,7 +467,7 @@ motion:
         effort: 0.2
         velocity: 0
       left_shoulder_roll:
-        position: 0.104
+        position: 0.4
         effort: 0.2
         velocity: 0
       neck_yaw:
@@ -507,7 +507,7 @@ motion:
         effort: 0.2
         velocity: 0
       right_shoulder_roll:
-        position: -0.9
+        position: -0.5
         effort: 0.2
         velocity: 0
 
@@ -553,7 +553,7 @@ motion:
         effort: 0.2
         velocity: 0
       left_shoulder_roll:
-        position: 0.104
+        position: 0.4
         effort: 0.2
         velocity: 0
       neck_yaw:
@@ -593,7 +593,7 @@ motion:
         effort: 0.2
         velocity: 0
       right_shoulder_roll:
-        position: -0.9
+        position: -0.5
         effort: 0.2
         velocity: 0
 
@@ -678,7 +678,7 @@ motion:
         effort: 0.2
         velocity: 0
       right_shoulder_roll:
-        position: -0.9
+        position: -0.5
         effort: 0.2
         velocity: 0
   #Robot state 8
