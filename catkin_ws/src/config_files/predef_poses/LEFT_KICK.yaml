@@ -5,11 +5,11 @@ header:
   postState: init
 motion:
   #Robot state: 0
-  - duration: 2.4
+  - duration: 2.5
     support: ""
     joints:
       head_pitch:
-        position: -0.136524290121822
+        position: 1.035
         effort: 0.2
         velocity: 0
       left_ankle_pitch:
@@ -49,7 +49,7 @@ motion:
         effort: 0.2
         velocity: 0
       neck_yaw:
-        position: 0.0230097118182846
+        position: 0.0
         effort: 0.2
         velocity: 0
       right_ankle_pitch:
@@ -93,7 +93,7 @@ motion:
     support: ""
     joints:
       head_pitch:
-        position: -0.136524290121822
+        position: 1.035
         effort: 0.2
         velocity: 0
       left_ankle_pitch:
@@ -133,7 +133,7 @@ motion:
         effort: 0.2
         velocity: 0
       neck_yaw:
-        position: 0.0230097118182846
+        position: 0.0
         effort: 0.2
         velocity: 0
       right_ankle_pitch:
@@ -177,7 +177,7 @@ motion:
     support: ""
     joints:
       head_pitch:
-        position: -0.207087406364562
+        position: 1.035
         effort: 0.2
         velocity: 0
       left_ankle_pitch:
@@ -217,7 +217,7 @@ motion:
         effort: 0.2
         velocity: 0
       neck_yaw:
-        position: 0.0199417502425133
+        position: 0.0
         effort: 0.2
         velocity: 0
       right_ankle_pitch:
@@ -261,7 +261,7 @@ motion:
     support: ""
     joints:
       head_pitch:
-        position: -0.207087406364562
+        position: 1.035
         effort: 0.2
         velocity: 0
       left_ankle_pitch:
@@ -301,7 +301,7 @@ motion:
         effort: 0.2
         velocity: 0
       neck_yaw:
-        position: 0.0199417502425133
+        position: 0.0
         effort: 0.2
         velocity: 0
       right_ankle_pitch:
@@ -346,7 +346,7 @@ motion:
     support: ""
     joints:
       head_pitch:
-        position: -0.207087406364562
+        position: 1.035
         effort: 0.2
         velocity: 0
       left_ankle_pitch:
@@ -366,7 +366,7 @@ motion:
         effort: 0.2
         velocity: 0
       left_hip_roll:
-        position: 0.1
+        position: 0.12
         effort: 0.2
         velocity: 0
       left_hip_yaw:
@@ -386,7 +386,7 @@ motion:
         effort: 0.2
         velocity: 0
       neck_yaw:
-        position: 0.0199417502425133
+        position: 0.0
         effort: 0.2
         velocity: 0
       right_ankle_pitch:
@@ -431,7 +431,7 @@ motion:
     support: ""
     joints:
       head_pitch:
-        position: -0.207087406364562
+        position: 1.035
         effort: 0.2
         velocity: 0
       left_ankle_pitch:
@@ -471,7 +471,7 @@ motion:
         effort: 0.2
         velocity: 0
       neck_yaw:
-        position: 0.0199417502425133
+        position: 0.0
         effort: 0.2
         velocity: 0
       right_ankle_pitch:
@@ -517,7 +517,7 @@ motion:
     support: ""
     joints:
       head_pitch:
-        position: -0.207087406364562
+        position: 1.035
         effort: 0.2
         velocity: 0
       left_ankle_pitch:
@@ -557,7 +557,7 @@ motion:
         effort: 0.2
         velocity: 0
       neck_yaw:
-        position: 0.0199417502425133
+        position: 0.0
         effort: 0.2
         velocity: 0
       right_ankle_pitch:
@@ -602,7 +602,7 @@ motion:
     support: ""
     joints:
       head_pitch:
-        position: -0.207087406364562
+        position: 1.035
         effort: 0.2
         velocity: 0
       left_ankle_pitch:
@@ -642,7 +642,7 @@ motion:
         effort: 0.2
         velocity: 0
       neck_yaw:
-        position: 0.0199417502425133
+        position: 0.0
         effort: 0.2
         velocity: 0
       right_ankle_pitch:
@@ -686,7 +686,7 @@ motion:
     support: ""
     joints:
       head_pitch:
-        position: -0.136524290121822
+        position: 1.035
         effort: 0.2
         velocity: 0
       left_ankle_pitch:
@@ -726,7 +726,7 @@ motion:
         effort: 0.2
         velocity: 0
       neck_yaw:
-        position: 0.0230097118182846
+        position: 0.0
         effort: 0.2
         velocity: 0
       right_ankle_pitch:
@@ -770,7 +770,7 @@ motion:
     support: ""
     joints:
       head_pitch:
-        position: -0.136524290121822
+        position: 1.035
         effort: 0.2
         velocity: 0
       left_ankle_pitch:
@@ -810,7 +810,7 @@ motion:
         effort: 0.2
         velocity: 0
       neck_yaw:
-        position: 0.0230097118182846
+        position: 0.0
         effort: 0.2
         velocity: 0
       right_ankle_pitch:
@@ -855,7 +855,7 @@ motion:
     support: ""
     joints:
       head_pitch:
-        position: -0.136524290121822
+        position: 1.035
         effort: 0.2
         velocity: 0
       left_ankle_pitch:
@@ -895,7 +895,7 @@ motion:
         effort: 0.2
         velocity: 0
       neck_yaw:
-        position: 0.0230097118182846
+        position: 0.0
         effort: 0.2
         velocity: 0
       right_ankle_pitch:
