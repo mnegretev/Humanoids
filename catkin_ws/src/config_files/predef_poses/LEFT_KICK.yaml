@@ -734,7 +734,7 @@ motion:
         effort: 0.2
         velocity: 0
       right_ankle_roll:
-        position: -0.00766990393942821
+        position: 0.0
         effort: 0.2
         velocity: 0
       right_elbow_pitch:

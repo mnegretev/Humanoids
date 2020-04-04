@@ -83,7 +83,7 @@ int main(int argc, char **argv)
 	ros::Publisher pubRightArmPositions = nh.advertise<std_msgs::Float32MultiArray>("/hardware/arm_right_goal_pose", 10);
 	ros::Rate loop(sampling_freq);	
 
-	system("echo 1 | sudo tee /sys/bus/usb-serial/devices/ttyUSB0/latency_timer");
+	//system("echo 1 | sudo tee /sys/bus/usb-serial/devices/ttyUSB0/latency_timer");
 
 	string kick_mode;
 	if( argc == 2)
