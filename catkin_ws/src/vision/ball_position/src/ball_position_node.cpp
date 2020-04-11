@@ -5,7 +5,8 @@
 #include<std_msgs/UInt8MultiArray.h>
 #include<std_msgs/Float32MultiArray.h>
 
-#define ball_radius  0.03156
+//#define ball_radius  0.03156
+#define ball_radius 0.093106
 
 using namespace std;
 
@@ -18,9 +19,15 @@ cv::Scalar centroid;
 cv::Mat hsv_min = cv::Mat_<int>::zeros(1, 3);
 cv::Mat hsv_max = cv::Mat_<int>::zeros(1, 3);
 
+cv::Mat   video_frame;
+cv::Mat tracked_frame;
+cv::Mat  ball_located;
+vector<cv::Point> pixel_point;
+cv::Mat kernel = cv::getStructuringElement( cv::MORPH_ELLIPSE, cv::Size(5,5) );
+
 int camera_resolution[2] = {640, 480};
-float vertical_view   = 0.39;
-float horizontal_view = 0.46;
+double vertical_view;
+double horizontal_view;
 
 
 double px, py,  pz;
@@ -89,14 +96,9 @@ void compute_ball_position()
 
 void callback_img(const std_msgs::UInt8MultiArray::ConstPtr& msg)
 {
-    cv::Mat   video_frame;
-    cv::Mat tracked_frame;
-    cv::Mat  ball_located;
-    vector<cv::Point> pixel_point;
-    cv::Mat kernel = cv::getStructuringElement( cv::MORPH_ELLIPSE, cv::Size(5,5) );
 
     video_frame = cv::imdecode(msg->data,1); 
-    
+    //GaussianBlur(video_frame, video_frame, cv::Size(15,15), 0);    
     cv::imshow( "Camera visualizer", video_frame);  
     cv::cvtColor(video_frame, tracked_frame, CV_BGR2HSV);  
     cv::inRange( tracked_frame,  hsv_min, hsv_max, tracked_frame); 
@@ -117,13 +119,16 @@ int main(int argc, char** argv)
 {
     std::cout << "Starting ball_position_node by Luis Näva..." << std::endl;
     ros::init(argc, argv, "ball_position_node");
-    ros::NodeHandle nh;
+    ros::NodeHandle nh("~");
     ros::Rate loop(30);
 
     file_pkg = ros::package::getPath("config_files");
     ros::Subscriber sub_compressed_image = nh.subscribe("/hardware/camera/img_compressed",  1,  callback_img);
     pub_centroid = nh.advertise<std_msgs::Float32MultiArray>("/vision/ball_position/centroid_position", 1000);
     pub_ball_position = nh.advertise<std_msgs::Float32MultiArray>("/vision/ball_position/ball_position",   1);    
+
+    nh.param("vertical_view", vertical_view, 0.39);
+    nh.param("horizontal_view", horizontal_view, 0.46);
 
     if(!get_hsv_values()){
         ROS_ERROR("Please track colour with: rosrun ball_tracker ball_tracker_node.");

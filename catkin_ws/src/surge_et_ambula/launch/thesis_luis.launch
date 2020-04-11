@@ -1,0 +1,31 @@
+<launch>
+    <param name="robot_description" command="cat $(find nimbro_op_model)/robots/simple_nimbro_op_hull.xml" />
+    <param name="robot_description_semantic" textfile="$(find nimbro_op_srdf)/config/nimbro_op_hull.srdf" />
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher"/>
+
+    <group ns="hardware">
+        <node name="cm730" pkg="cm730" type="cm730_node" output="screen"/>
+        <node name="camera_node" pkg="camera" type="camera_node"/>
+    </group>
+
+    <group ns="hri">
+        <node name="rviz" pkg="rviz" type="rviz" args="-d $(find config_files)/rviz/config.rviz" required="true"/>
+	<node name="humanoid_gui" pkg="humanoid_gui" type="humanoid_gui" output="screen"/>
+    </group>
+
+    <group ns="control">
+        <rosparam command="load" file="$(find nimbro_op_srdf)/config/kinematics.yaml"/>
+        <node name="inverse_kinematics" pkg="inverse_kinematics" type="ik_moveit_node" output="screen"/>
+    </group>
+
+    <group ns="gait_generation">
+        <node name="get_pose_server" pkg="kick_test" type="get_pose_server.py"/>
+        <node name="speed_profile_server" pkg="kick_test" type="speed_profile_server.py"/>
+    </group>
+
+    <!-- kick servers -->
+    <node name="get_pose_server" pkg="kick_test" type="get_pose_server.py"/>
+    <node name="speed_profile_server" pkg="kick_test" type="speed_profile_server.py"/>
+
+    <node name="ball_position_node" pkg="ball_position" type="ball_position_node"/>
+</launch>
