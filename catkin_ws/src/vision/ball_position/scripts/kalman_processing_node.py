@@ -14,7 +14,6 @@ t0 = 0
 
 curr_time = 0
 kicking_duration = 0.4
-time_left_to_kick = 0
 
 first_sample = True
 abs_path = ""
@@ -104,7 +103,7 @@ def extrapolationState():
 	print Pn1'''
 
 def estimationState():
-	global Xn, Xn_, Pn
+	global Xn, Xn_, Pn, Z
 	#print ""
 	#print "---Estimation State---"
 
@@ -142,15 +141,16 @@ def estimationState():
 	#print "Pn"
 	#print  Pn
 
+
 	extrapolationState();
 
 def measurementInput(data): 
-	global abs_path, first_sample, x_, y_, t0, Z, Xn_, samples, curr_time, time_left_to_kick
+	global abs_path, first_sample, x_, y_, t0, Z, Xn_, samples, curr_time, kicking_duration
 	#print ""
 	#print "-----------------------Measurement State-------------------"
 
 	samples+=1
-	print "Samples: ", samples
+	#print "Samples: ", samples
 	ti = rospy.get_time()
 
 	if first_sample :
@@ -163,41 +163,58 @@ def measurementInput(data):
 	dy = data.data[1] - y_;
 	dt = ti - t0
 
-	positions_list = list(data.data)
-	positions_list.append(dt)
+	curr_time+=dt
+
+	vx = dx/dt
+	vy = dy/dt
+
+
 
 	x_ = data.data[0]
 	y_ = data.data[1]
 	t0 = ti
 	
-	curr_time+=dt
-	print "Current time: ", curr_time
 
 	#Measurement matrix
-	Z = numpy.array([[x_], [y_], [dx/dt], [dy/dt]])
-	#print "Z"
-	#print  Z
+	if dt != 0:
+		Z = numpy.array([[x_], [y_], [dx/dt], [dy/dt]])
+		#print "Z"
+		#print  Z
+	
 	estimationState()
 
+
+	distance_remaining = y_ #float(Xn[1])
+	time_remaining = abs(distance_remaining / vy)
+
+	if y_ > 0:
+		print "------------------------------------------"
+		#print "y: ", y_
+		print "vy: ", vy
+		print "distance_remaining: ", distance_remaining
+		print "time_remaining: ", time_remaining
+		print "Current time: ", curr_time
+
+	'''positions_list = list(data.data)
+	positions_list.append(dt)
 	positions_list.append(float(Xn[0]))
 	positions_list.append(float(Xn[1]))
 	positions_list.append(float(Xn_[0]))
 	positions_list.append(float(Xn_[1]))
 
+
+
 	with open(abs_path + '/scripts/kalman_data.txt', 'a') as filehandle:
 		json.dump(positions_list, filehandle)
-		filehandle.write("\n")
+		filehandle.write("\n")'''
 
-	if samples == max_samples:
-		time_left_to_kick = abs(Xn[1]-0.2) * dt / abs(dy) - 3*curr_time
-		print "time_left_to_kick: ", time_left_to_kick
-
-	if curr_time >= time_left_to_kick and time_left_to_kick != 0:
+	if time_remaining <= kicking_duration :
 		pub_kick_flag.publish(True)
 
 def kalman_processing_node():
 	global abs_path, pub_kick_flag
 	rospy.init_node('kalman_processing_node', anonymous=True)
+	print "Starting kalman_processing_node by Luis Nava"
 	rospy.Subscriber("/vision/ball_position/ball_position", Float32MultiArray, measurementInput)
 	pub_kick_flag = rospy.Publisher('/kick_test/kick_flag', Bool, queue_size=10)
 
