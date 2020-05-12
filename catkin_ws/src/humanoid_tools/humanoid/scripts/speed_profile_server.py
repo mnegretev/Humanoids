@@ -51,7 +51,7 @@ def callback_speed_profile(req):
 def speed_profile_sever():
     rospy.init_node('speed_profile_server')
     print "Starting speed_profile_server..."
-    server = rospy.Service('/kick_test/get_speed_profile', speedProfile, callback_speed_profile )
+    server = rospy.Service('/humanoid/get_speed_profile', speedProfile, callback_speed_profile )
     rospy.spin()
 
 if __name__ == "__main__":

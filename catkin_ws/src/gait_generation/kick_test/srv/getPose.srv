@@ -1,7 +1,0 @@
-string kick_mode
-int64 robot_pose
----
-float32 delay
-int32 number_poses
-string[] joint_name
-std_msgs/Float32MultiArray joint_goal_position

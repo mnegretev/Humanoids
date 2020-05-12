@@ -1,4 +1,4 @@
-string get_up_mode
+string pose_to_load
 int64 robot_pose
 ---
 float32 delay
