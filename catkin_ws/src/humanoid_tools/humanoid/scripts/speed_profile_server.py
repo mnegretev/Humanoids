@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from std_msgs.msg import *
-from kick_test.srv import *
+from humanoid_msgs.srv import *
 import rospy
 import numpy
 import math

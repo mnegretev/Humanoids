@@ -31,6 +31,7 @@ class Humanoid {
 
         static ros::Subscriber sub_stop_by_topic;
 
+        static std::vector<float> start_pose_duration;
         static std::vector<float> current_joint_position;
         static std::vector<float> left_kick_pose_duration;
         static std::vector<float> right_kick_pose_duration;
@@ -40,6 +41,7 @@ class Humanoid {
        
         static std::vector<std::vector<float> > leg_left_angles;    
         static std::vector<std::vector<float> > leg_right_angles;   
+        static std::vector<std::vector<float> > start_pose_movement;
         static std::vector<std::vector<float> > left_kick_movements;
         static std::vector<std::vector<float> > right_kick_movements;
         static std::vector<std::vector<float> > prone_get_up_movements;
@@ -66,6 +68,7 @@ class Humanoid {
         static void setStepsNumber(int);
 
         static void leftKick();
+        static void startPose();
         static void rightKick();
         static void proneGetUp();
         static void supineGetUp();

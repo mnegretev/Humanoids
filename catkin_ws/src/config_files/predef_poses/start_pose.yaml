@@ -1,0 +1,89 @@
+header:
+  name: start_pose
+  preState: init
+  playState: ""
+  postState: init
+motion:
+  - duration: 2.5
+    support: ""
+    joints:
+      head_pitch:
+        position: 0.835
+        effort: 0.2
+        velocity: 0
+      left_ankle_pitch:
+        position: -0.408 #-0.526155410244775
+        effort: 0.2
+        velocity: 0
+      left_ankle_roll:
+        position: -0.012
+        effort: 0.2
+        velocity: 0
+      left_elbow_pitch:
+        position: -1.31768949679377
+        effort: 0.2
+        velocity: 0
+      left_hip_pitch:
+        position: -0.3 #-0.6
+        effort: 0.2
+        velocity: 0
+      left_hip_roll:
+        position: 0.0
+        effort: 0.2
+        velocity: 0
+      left_hip_yaw:
+        position: 0.0 #0.0230097118182846
+        effort: 0.2
+        velocity: 0
+      left_knee_pitch:
+        position: 0.668  #0.912718568791956
+        effort: 0.2
+        velocity: 0
+      left_shoulder_pitch:
+        position: 0.868233125943273
+        effort: 0.2
+        velocity: 0
+      left_shoulder_roll:
+        position: 0.446388409274722
+        effort: 0.2
+        velocity: 0
+      neck_yaw:
+        position: 0.0
+        effort: 0.2
+        velocity: 0
+      right_ankle_pitch:
+        position: -0.408 #-0.543029198911517
+        effort: 0.2
+        velocity: 0
+      right_ankle_roll:
+        position: 0.012
+        effort: 0.2
+        velocity: 0
+      right_elbow_pitch:
+        position: -1.2824079386724
+        effort: 0.2
+        velocity: 0
+      right_hip_pitch:
+        position: -0.3 #-0.6
+        effort: 0.2
+        velocity: 0
+      right_hip_roll:
+        position: 0.0
+        effort: 0.2
+        velocity: 0
+      right_hip_yaw:
+        position: 0.0 #-0.00613592315154256
+        effort: 0.2
+        velocity: 0
+      right_knee_pitch:
+        position: 0.668 #0.917320511155613
+        effort: 0.2
+        velocity: 0
+      right_shoulder_pitch:
+        position: 0.714835047154709
+        effort: 0.2
+        velocity: 0
+      right_shoulder_roll:
+        position: -0.420310735880666
+        effort: 0.2
+        velocity: 0

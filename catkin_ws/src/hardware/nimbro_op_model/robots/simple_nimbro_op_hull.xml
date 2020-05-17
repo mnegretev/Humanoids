@@ -135,12 +135,12 @@
       </geometry>
     </collision>
   </link>
-  <joint name="right_knee_pitch" type="continuous">
-    <origin xyz="0 0 -0.22" rpy="0 0 0" />
+  <joint name="right_knee_pitch" type="revolute">
+    <origin xyz="0 0 -0.22" rpy="0 0.05 0" />
     <parent link="right_thigh_link" />
     <child link="right_shank_link" />
     <axis xyz="0 1 0" />
-    <limit lower="0" upper="2.5" effort="30" velocity="15"/>
+    <limit lower="0.05" upper="2.5" effort="30" velocity="15"/>
   </joint>
 
 

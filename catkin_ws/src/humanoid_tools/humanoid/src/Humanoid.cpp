@@ -22,6 +22,7 @@ ros::Publisher Humanoid::pub_leg_right_goal_pose;
 
 ros::Subscriber Humanoid::sub_stop_by_topic;
 
+std::vector<float> Humanoid::start_pose_duration;
 std::vector<float> Humanoid::left_kick_pose_duration;
 std::vector<float> Humanoid::right_kick_pose_duration;
 std::vector<float> Humanoid::prone_get_up_pose_duration;
@@ -31,6 +32,7 @@ std::vector<float> Humanoid::current_joint_position(20, 0);
 
 std::vector<std::vector<float> > Humanoid::leg_left_angles;
 std::vector<std::vector<float> > Humanoid::leg_right_angles;
+std::vector<std::vector<float> > Humanoid::start_pose_movement;
 std::vector<std::vector<float> > Humanoid::left_kick_movements;
 std::vector<std::vector<float> > Humanoid::right_kick_movements;
 std::vector<std::vector<float> > Humanoid::prone_get_up_movements;
@@ -96,7 +98,7 @@ void Humanoid::leftKick() {
 	}
 }
 
-void Humanoid::rightKick(){
+void Humanoid::rightKick() {
     movement = "right_kick";
 
     Humanoid::getCurrentPose();
@@ -107,6 +109,15 @@ void Humanoid::rightKick(){
     	Humanoid::computeSpeedProfile(right_kick_movements, right_kick_pose_duration, robot_pose);
     	Humanoid::publishPositions();
 	}
+}
+
+void Humanoid::startPose() {
+    movement = "start_pose";
+    //Humanoid::getCurrentPose();
+    Humanoid::loadPredefPoses(start_pose_movement, start_pose_duration);
+
+    Humanoid::computeSpeedProfile(start_pose_movement, start_pose_duration, 0);
+    Humanoid::publishPositions();
 }
 
 void Humanoid::proneGetUp() {
@@ -177,6 +188,7 @@ void Humanoid::computeSpeedProfile(std::vector<std::vector<float> >& joint_goal_
     srv.request.dt = 1.0/sampling_freq;
     srv.request.tf = profile_time[robot_pose];
 
+    //joint_profile_positions.resize(joint_goal_positions[0].size());
     joint_profile_positions.resize(20);
 
     for(int id=0; id < 20; id++) {
@@ -232,6 +244,7 @@ void Humanoid::publishPositions() {
 void Humanoid::loadWalkPositions() {
     std::cout << "Loading walk positions..." << std::endl;
     ctrl_msgs::CalculateIK srvIK;
+
 
     //Trajectory generation
     float left_start_x  = -0.036;
@@ -314,6 +327,8 @@ void Humanoid::loadWalkPositions() {
         t += 1.0/30.0;
     }
 
+    std::cout << "Computing inverse kinematic for left leg..." << std::endl; 
+
     for(int i=0; i < number_of_points; i++) {
         srvIK.request.x     = leg_left_x    [i];
         srvIK.request.y     = leg_left_y    [i];
@@ -324,9 +339,9 @@ void Humanoid::loadWalkPositions() {
  
         if(clt_calculate_ik_leg_left.call(srvIK)) {
             leg_left_angles[i] = srvIK.response.joint_values;
-            std::cout << "StepTest.->Left angles: ";
+            /*std::cout << "walk.->Left angles: ";
             for(int j=0; j < 6; j++) std::cout << leg_left_angles[i][j] << "\t";
-            std::cout << std::endl;
+            std::cout << std::endl;//*/
         }
 
         else {
@@ -335,6 +350,8 @@ void Humanoid::loadWalkPositions() {
             std::cout << leg_left_yaw[i] << std::endl;
         }
     }
+
+    std::cout << "Computing inverse kinematic for right leg..." << std::endl;
 
     for(int i=0; i < number_of_points; i++) {
         srvIK.request.x     = leg_right_x    [i];
@@ -346,13 +363,16 @@ void Humanoid::loadWalkPositions() {
      
         if(clt_calculate_ik_leg_right.call(srvIK)) {
             leg_right_angles[i] = srvIK.response.joint_values;
-            std::cout << "walk.->Right angles: ";
+
+            /*if(leg_right_angles[i][2] > 0)
+                ROS_ERROR("Error in calculate IK :(");//*/
+            /*std::cout << "walk.->Right angles: ";
             for(int j=0; j < 6; j++) std::cout << leg_right_angles[i][j] << "\t";
-            std::cout << std::endl;
+            std::cout << std::endl;//*/
         }
 
         else {
-            std::cout << "StepTest.->Cannot calculate IK iteration " << i << " values: " << leg_right_x[i] << "\t";
+            std::cout << "walk.->Cannot calculate IK iteration " << i << " values: " << leg_right_x[i] << "\t";
             std::cout << leg_right_y[i]<<"\t"<< leg_right_z[i] << "\t" << leg_right_roll[i] << "\t" << leg_right_pitch[i] << "\t";
             std::cout << leg_right_yaw[i] << std::endl;
         }
@@ -375,6 +395,10 @@ void Humanoid::walk() {
     std_msgs::Float32MultiArray leg_left_goal_pose_msg;
     std_msgs::Float32MultiArray leg_right_goal_pose_msg;
 
+    Humanoid::startPose();
+    
+    ros::Duration(0.5).sleep();
+
     while(ros::ok() && !enable_stop) {
 
         if(step_number >= goal_steps && goal_steps != 0)
@@ -393,7 +417,7 @@ void Humanoid::walk() {
 
                     if(idx == number_of_points/2 -1) {
                         step_number++;
-                        std::cout << "step_number: " << step_number << std::endl;
+                        //std::cout << "step_number: " << step_number << std::endl;
                    }
 	            }
 
@@ -408,7 +432,7 @@ void Humanoid::walk() {
 
                     if(idx == number_of_points - 1) {
                         step_number++;
-                        std::cout << "step_number: " << step_number << std::endl;
+                        //std::cout << "step_number: " << step_number << std::endl;
                    }
 	            }
                 
