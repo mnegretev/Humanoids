@@ -7,7 +7,9 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   image_transport
   cv_bridge
+  geometry_msgs
   sensor_msgs
+  gazebo_msgs
   std_msgs
   tf
 )
