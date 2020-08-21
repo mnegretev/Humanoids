@@ -39,3 +39,7 @@ target_link_libraries(ball_position_simul ${catkin_LIBRARIES} ${OpenCV_LIBS})
 add_executable(compres_ball_viz_node src/compres_ball_viz_node.cpp)
 add_dependencies(compres_ball_viz_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(compres_ball_viz_node   ${catkin_LIBRARIES} ${OpenCV_LIBS})
+
+add_executable(move_ball_node src/move_ball_node.cpp)
+add_dependencies(move_ball_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(move_ball_node ${catkin_LIBRARIES} ${OpenCV_LIBS})

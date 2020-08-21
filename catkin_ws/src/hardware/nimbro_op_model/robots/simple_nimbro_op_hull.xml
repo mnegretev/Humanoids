@@ -650,7 +650,7 @@
   </link>
   <joint name="head_pitch" type="continuous">
     <origin xyz="0 0 0.0504999999999999"
-	    rpy="-5.87630490298277E-17 -6.63424384579142E-15 0.145633370434016" />
+	    rpy="-5.87630490298277E-17 0.953 0.145633370434016" />
     <parent link="neck_link" />
     <child link="head_link" />
     <axis xyz="0 1 0" />
