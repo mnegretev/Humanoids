@@ -86,6 +86,9 @@ void compute_ball_position() {
     x = px - pz * tan(1.5708 + psi) * cos(theta) - ball_radius * cos(theta) / tan(psi);
     y = py - pz * tan(1.5708 + psi) * sin(theta) - ball_radius * sin(theta) / tan(psi);
 
+    //Factor correction
+   y = 7.4407 * y - 0.29628;
+
     //Exactly ball's pose
     position_msg.data[0] = ball_model_pose.position.x;
     position_msg.data[1] = ball_model_pose.position.y;
