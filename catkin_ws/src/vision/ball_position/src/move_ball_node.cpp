@@ -1,18 +1,28 @@
 #include <ros/ros.h>
+#include <std_msgs/Bool.h>
 #include <geometry_msgs/Twist.h>
 
 
 //#define v0 5.336 
 #define  g 9.81
-#define Mg 0.3636
+#define Mg 0.15
 
 using namespace std;
+
+
+bool log_out;
+
+void stop_moving_callback(const std_msgs::BoolConstPtr& msg) { 
+   log_out = msg->data; 
+}
+
 
 int main(int argc, char** argv) {
 	cout << "Starting move_ball_node by Luis Näva" << endl;
 	ros::init(argc, argv, "move_ball_node");
 	ros::NodeHandle nh;
 
+    ros::Subscriber stop_moving  = nh.subscribe("/robot_stop", 1, stop_moving_callback);
 	ros::Publisher move_ball_pub = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 1000);
 	ros::Rate loop(30);
     
@@ -34,7 +44,7 @@ int main(int argc, char** argv) {
 		loop.sleep();
 		ros::spinOnce();
 
-        if(vel <= 0) break;
+        if(vel <= 0 || log_out) break;
 	}
 
 	return 0;	

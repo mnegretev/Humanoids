@@ -64,7 +64,6 @@ void get_centroid_angles() {
     std_msgs::Float32MultiArray centroid_angle;
     centroid_angle.data.resize(2);
 
-    //cout << "x_pix->" << centroid[0] << "\ty_pix->" << centroid[1] << endl;
     centroid[0] =   horizontal_view * (centroid[0] - 0.5 * camera_resolution[0]) / (0.5 * camera_resolution[0]);
     centroid[1] = - vertical_view   * (centroid[1] - 0.5 * camera_resolution[1]) / (0.5 * camera_resolution[1]);
 
@@ -82,27 +81,25 @@ void compute_ball_position() {
 
     psi   = -centroid[1] + pitch;
     theta = -centroid[0] +  yaw ;
-    //cout<<"psi: "<<psi<<"\ttheta: "<<theta<<endl;
+    
     x = px - pz * tan(1.5708 + psi) * cos(theta) - ball_radius * cos(theta) / tan(psi);
-    y = py - pz * tan(1.5708 + psi) * sin(theta) - ball_radius * sin(theta) / tan(psi);
 
-    //Factor correction
-   y = 7.4407 * y - 0.29628;
+    v = sqrt(pow(x, 2) + pow(pz, 2));
+    y = v * tan(theta);
 
     //Exactly ball's pose
-    position_msg.data[0] = ball_model_pose.position.x;
-    position_msg.data[1] = ball_model_pose.position.y;
+    position_msg.data[0] = ball_model_pose.position.x - 0.049;
+    position_msg.data[1] = ball_model_pose.position.y + 0.065;
     //ball's pose calculated by vision system
     position_msg.data[2] = x;
     position_msg.data[3] = y;
+
 
     if(centroid[0] != - horizontal_view && centroid[1] != - vertical_view)
         pub_ball_position.publish(position_msg);    
 }
 
 void callback_img(const sensor_msgs::ImageConstPtr& msg) {
-    
-    //ROS_INFO("height = %d, width = %d",msg->height, msg->width);
     
     video_frame = cv_bridge::toCvShare(msg, "bgr8")->image;
     cv::imshow("Simulation view", video_frame);
@@ -161,11 +158,9 @@ int main(int argc, char**argv) {
 
     ros::Subscriber ball_position_sub = nh.subscribe("/gazebo/model_states", 1, callback_ball_position);
     
-    nh.param("vertical_view", vertical_view, 0.6981);
-    nh.param("horizontal_view", horizontal_view, 0.6981);
 
     if(!get_hsv_values()){
-        ROS_ERROR("Please track colour with: rosrun ball_tracker ball_tracker_node.");
+        ROS_ERROR("Please track colour with: rosrun ball_tracker ball_tracker_simul");
         return -1;
     }        
     
@@ -177,6 +172,11 @@ int main(int argc, char**argv) {
 
     while(ros::ok() && cv::waitKey(15)!=27) {
 
+        if(!nh.hasParam("vertical_view")) { cerr << "missing vertical_view param" << endl; return -1; }
+        if(!nh.hasParam("horizontal_view")) { cerr << "missign horizontal_view param" << endl; return -1; }
+        if(!nh.getParam("vertical_view", vertical_view)) { cerr << "invalid vertical_view param" << endl; return -1; }
+        if(!nh.getParam("horizontal_view", horizontal_view)) { cerr << "invalid horizontal_view param" << endl; return -1; }
+
         tf::StampedTransform transform;
         listener.waitForTransform("/right_foot_plane_link", "/camera_optical", ros::Time(0), ros::Duration(10.0));
         listener.lookupTransform( "/right_foot_plane_link", "/camera_optical", ros::Time(0), transform);
@@ -184,11 +184,8 @@ int main(int argc, char**argv) {
 
         px = transform.getOrigin().x();
         py = transform.getOrigin().y();
-        pz = transform.getOrigin().z();
+        pz = transform.getOrigin().z() + 0.05;
 
-        //cout<<"px: "<<px<<"\tpy: "<<py<<"\tpz: "<<pz<<endl;
-        //cout<<"roll: "<<roll<<"\tpitch: "<<pitch<<"\tyaw: "<<yaw<<endl;
-        
         ros::spinOnce();
     }
 

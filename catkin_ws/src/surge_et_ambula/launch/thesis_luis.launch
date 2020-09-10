@@ -50,5 +50,11 @@
     <node name="get_predef_poses_server" pkg="humanoid" type="get_predef_poses_server.py" output="screen"/>
     <node name="speed_profile_server"    pkg="humanoid" type="speed_profile_server.py"/>
     
-    <node name="ball_position_simul"     pkg="ball_position" type="ball_position_simul"/>
+    
+    <node name="ball_position_simul"     pkg="ball_position" type="ball_position_simul" output="screen">
+    	<param name="vertical_view"   value="0.6"/> 
+    	<param name="horizontal_view" value="0.6981"/>
+    </node>
+
+
 </launch>

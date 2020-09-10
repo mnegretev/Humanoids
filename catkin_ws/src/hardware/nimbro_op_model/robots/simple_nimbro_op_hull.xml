@@ -2,6 +2,7 @@
   <material name="black">
     <color rgba="0.1 0.1 0.1 1" />
   </material>
+  <link name="world"/>
   <link name="trunk_link">
     <inertial>
       <origin xyz="-0.016856 -0.00019822 0.019225" rpy="0 0 0" />
@@ -24,7 +25,11 @@
     </collision>
   </link>
 
-  
+  <joint name="fixed" type="fixed">
+    <parent link="world"/>
+    <child link="trunk_link"/>
+  </joint>
+
   <link name="right_hip_yaw_link">
     <inertial>
       <origin xyz="4.7878E-16 2.8449E-16 -0.013803" rpy="0 0 0" />
@@ -650,7 +655,7 @@
   </link>
   <joint name="head_pitch" type="continuous">
     <origin xyz="0 0 0.0504999999999999"
-	    rpy="-5.87630490298277E-17 0.953 0.145633370434016" />
+	    rpy="-5.87630490298277E-17 -6.63424384579142E-15 0.145633370434016" />
     <parent link="neck_link" />
     <child link="head_link" />
     <axis xyz="0 1 0" />
