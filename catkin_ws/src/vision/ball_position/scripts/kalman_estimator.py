@@ -12,7 +12,7 @@ from std_msgs.msg import Float32MultiArray
 flag_once = False
 curr_time = 0
 time_2_kick = 0
-data_samples = 15
+data_samples = 7
 next_position = 0
 distance_remaining = 0
 

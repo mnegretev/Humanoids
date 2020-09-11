@@ -3,9 +3,12 @@
 #include <geometry_msgs/Twist.h>
 
 
-//#define v0 5.336 
 #define  g 9.81
 #define Mg 0.15
+
+
+
+
 
 using namespace std;
 
@@ -26,19 +29,22 @@ int main(int argc, char** argv) {
 	ros::Publisher move_ball_pub = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 1000);
 	ros::Rate loop(30);
     
-    float vel, t = 0;
-    float v0 = atof(argv[1]);
+    float velx, vely, t = 0;
+    float vx0 = atof(argv[1]);
+    float vy0 = atof(argv[2]);
     
-    cout << "Moving ball with initial vel: " << v0 << " m/s" << endl;
+    cout << "Moving ball with initial vel x: " << vx0 << "\tvel y: " << vy0 << " m/s" << endl;
 
     ros::Duration(1.0).sleep();
 
 	while(ros::ok()) {
 		geometry_msgs::Twist ball_msg;
 
-        vel = v0 - Mg * g * t; 
+        velx = vx0 - Mg * g * t; 
+        vely = vy0 - Mg * g * t;
 
-		ball_msg.linear.y = vel;
+        ball_msg.linear.x = -velx;
+		ball_msg.linear.y = vely;
 
 		move_ball_pub.publish(ball_msg);
 
@@ -46,7 +52,7 @@ int main(int argc, char** argv) {
 		loop.sleep();
 		ros::spinOnce();
 
-        if(vel <= 0 || log_out) break;
+        if(velx <= 0 || log_out) break;
 	}
 
 	return 0;	
