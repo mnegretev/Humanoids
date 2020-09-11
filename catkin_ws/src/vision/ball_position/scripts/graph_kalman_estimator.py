@@ -32,13 +32,15 @@ for position in all_positions:
 
 plt.figure(2)
 plt.plot(time_axis, exact_position_y, 'k.-', time_axis, measurent_position_y, 'b.', time_axis, prediction_position_y, 'g*', time_axis, estimation_position_y, 'r+')
+#plt.plot(time_axis, exact_position_y, 'k.-', time_axis, measurent_position_y, 'b.', time_axis, estimation_position_y, 'r+')
 #plt.plot(time_axis, exact_position_y, 'k.-', time_axis, measurent_position_y, 'b.')
 
 
-plt.xlabel('Time[s]')
-plt.ylabel('Y position [m]')
-plt.title('Time vs Position')
-plt.legend(('real', 'measured', 'predicted', 'corrected'), loc = 'upper left')
+plt.xlabel('Tiempo [s]')
+plt.ylabel('Posicion [m]')
+plt.title('Tiempo vs Posicion')
+plt.legend(('Real', 'Medicion', 'Prediccion', 'Correccion'), loc = 'upper left')
+#plt.legend(('Real', 'Medicion', 'Estimacion'), loc = 'upper left')
 #plt.legend(('real', 'measured'), loc = 'upper left')
 
 plt.show()

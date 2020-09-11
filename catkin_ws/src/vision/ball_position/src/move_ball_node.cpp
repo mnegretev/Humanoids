@@ -31,6 +31,8 @@ int main(int argc, char** argv) {
     
     cout << "Moving ball with initial vel: " << v0 << " m/s" << endl;
 
+    ros::Duration(1.0).sleep();
+
 	while(ros::ok()) {
 		geometry_msgs::Twist ball_msg;
 
