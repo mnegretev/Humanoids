@@ -9,211 +9,295 @@ from random import gauss
 from std_msgs.msg import Bool
 from std_msgs.msg import Float32MultiArray
 
-flag_once = False
-curr_time = 0
-time_2_kick = 0
-data_samples = 7
-next_position = 0
-distance_remaining = 0
 
-time_movement = 0.15
+#VARIABLES FISICAS
+g  = 9.81	  #ACELERACION DE LA GRAVEDAD
+dt = 0.033333  #TIEMPO DE MUESTREO
+mu_d = 0.15   #COEFICIENTE DE FRICCION DINAMICA
 
-abs_path = ""
-all_positions = []
-number_positions  = 0
-first_measurement = True
+#CONTADOR DE MUESTRAS
+measurements = 0
 
-g  = 9.81
-dt = 0.0333
-mu_d = 0.15
+#NUMERO MINIMO DE MUESTRAS PARA EMPEZAR LA ESTIMACION 
+data_samples = 35
 
-counter = 1
+#MUESTRAS TOTALES
+x_positions = []
+y_positions = []
 
-pub = rospy.Publisher('/robot_stop', Bool, queue_size=1000)
+#BANDERA PARA DEJAR DE REGISTRAR DATOS
+log_out = False
 
-#Prediction parameters
-print "-------------Initial state---------------"
-Xn = numpy.array([[-0.3], 
-				  [ 0.3]])
-print "Xn"
-print  Xn
+#TIEMPO ESTIMADO PARA LLEGAR A LA META 
+time_to_kick = 0
 
-#Covariance estimation matrix
-Pn  = numpy.array([[0.1],
-				   [0.1]])
-print "Pn"
-print  Pn
+#PUBLICADOR PARA PATEAR EL BALON
+kick = rospy.Publisher('/robot_stop', Bool, queue_size=1000)
 
-#Model noise
-#Q = numpy.zeros((4,4))
-Q = numpy.array([[0.000001],
-				 [0.0]])
+#POSICION INICIAL
+print "------------- ESTADO INICIAL ---------------"
+print "Numero de muestras por registar: ", data_samples
 
-print "Q"
-print  Q
+Xn = numpy.array([[-1.2],
+				  [-1.2],
+				  [ 1.9],
+				  [ 1.9]])
+#print "X0"
+#print  Xn
 
-#Process noise
-w = numpy.array([[0.015],
-	             [0.0]])
+#MATRIZ DE COVARIANZA DEL PROCESO
+Pn  = 10 * numpy.identity(4)
 
+#print "P0"
+#print  Pn
 
-#Measurement noise
-Rn = numpy.array([[0.00001],
-	              [0.00001]])
+#MATRIZ DE PREDICCION
+F1 = [ 1, 0, dt,  0]
+F2 = [ 0, 1,  0, dt]
+F3 = [ 0, 0,  1,  0]
+F4 = [ 0, 0,  0,  1]
 
-print "Rn"
-print  Rn
-
-#Measurement vector
-Z = numpy.array([[0.0], 
-				 [0.0]])
+F = numpy.array([F1, F2, F3, F4])
 
 
-def estimator():
-	global Xn
+#MATRIZ DE COVARIANZA DEL RUIDO DE LA ESTIMACION
+#Q  = 0.000001 * numpy.identity(4)
+Q  = 0 * numpy.identity(4)
 
-	Xn = numpy.array([Xn[0] +  Xn[1]*dt + w[0],
-					   Xn[1] - mu_d*g*dt + w[1]])
+#print "Q"
+#print  Q
+
+#MATRIZ DE OBSERVACION
+H1 = [ 1, 0, 0, 0]
+H2 = [ 0, 1, 0, 0]
+H3 = [ 0, 0, 0, 0]
+H4 = [ 0, 0, 0, 0]
+
+H = numpy.array([H1, H2, H3, H4])
 
 
+#MATRIZ DE GANANCIA DE KALMAN
+K = numpy.zeros((4,4))
+
+
+#MATRIZ REDIMENSIONANTE
+V1 = [ 1, 0]
+V2 = [ 0, 1]
+V3 = [ 0, 0]
+V4 = [ 0, 0]
+
+V = numpy.array([V1, V2, V3, V4])
+
+
+#MATRIZ DE COVARIANZA DE RUIDO EN LA MEDICION
+R = 0.01 * numpy.identity(2)
+
+#print "Rn"
+#print  R
+
+#FUERZA DE FRICCION
+Fr = numpy.array([[     0    ],
+				  [     0    ],
+				  [-dt*mu_d*g],
+				  [-dt*mu_d*g]])
+
+#print "Fr"
+#print  Fr
+
+#FUNCION DE PREDICCION ESTADO SIGUIENTE
 def prediction_state():
-	global Xn, Xn1, Xn_, Pn, Pn1, Pn_
-	'''print "-------------Prediction state--------------"'''
+	global Xn_, Pn_, Xn1
+	#print ""
+	#print "------------- ESTADO DE PREDICCION --------------"
 
-	Xn1 = numpy.array([Xn[0] +  Xn[1]*dt + w[0],
-					   Xn[1] - mu_d*g*dt + w[1]])
+	#PREDICCION DEL ESTADO SIGUIENTE
+	Xn1 = numpy.dot(F, Xn) + Fr  
+	#print "Xn1"
+	#print  Xn1
 
+	#PREDICCION DE LA COVARIANZA
+	Pn1 = numpy.dot(numpy.dot(F, Pn), F.transpose())
+	Pn1 = numpy.diag(numpy.diag(Pn1)) + Q
+	#print "Pn1"
+	#print  Pn1
 
-
-	Pn1 = numpy.array([Pn[0] + dt**2 * Pn[1]**2 + Q[0],
-		                       Pn[1]            + Q[1]])
-
-
-	# n-> n+1
+	# n -> n+1
 	Xn_ = Xn1
- 	Pn_ = Pn1
+	Pn_ = Pn1
 
-
-
-def correction_state():
-	global Kn, Xn, Xn_, Xn1, Pn, Pn_, Z, counter
-
-	print ""
-	print "----------- Correction State: ",counter,"-------------"
-	counter += 1
-
-	K0 = Pn_[0] / ( Pn_[0] + Rn[0] )
-	K1 = Pn_[1] / ( Pn_[1] + Rn[1] )
-
-	#Kalman gain
-	Kn = numpy.array([K0,
-		              K1])
-
-
-
-	Xn[0] = Xn_[0] + Kn[0] * (Z[0] - Xn_[0])
-	Xn[1] = Xn_[1] + Kn[1] * (Z[1] - Xn_[1])
-
-	Pn[0] = (1 - Kn[0]) * Pn_[0]
-	Pn[1] = (1 - Kn[1]) * Pn_[1]
-
-	print "Xn[0]: ", float(Xn[0])
-	#print "Xn[1]: ", float(Xn[1])
-	
-	'''print "Z"
-	print  Z
-	print "Xn_"
-	print  Xn_
-	print "Pn_"
-	print  Pn_
-
-	print "Kn"
-	print  Kn
-	
-	print "Xn"
-	print  Xn
-	
-	print "Pn"
-	print  Pn'''
-
-
-def measurement_input(data): 
-	global first_measurement, number_positions, Z, time_2_kick, curr_time, next_position, distance_remaining, flag_once
-
-
-	Z[1] = (data.data[3] - Z[0]) / dt
-	Z[0] =  data.data[3] + gauss(0, 0.025)
-  
+#FUNCION PARA GUARDAR EL ESTADO DEL BALON
+def catch_x_position(Rx, Z1, x_, xn):
 	position_list = list()
+	position_list.append(round(Rx,3)) #VALOR EXACTO
+	position_list.append(round(Z1,3)) #VALOR MEDIDO
+	position_list.append(round(x_,3)) #PREDICCION
+	position_list.append(round(xn,3)) #VALOR CORREGIDO
+
+	x_positions.append(position_list)
+
+def catch_y_position(Ry, Z2, y_, yn):
+	position_list = list()
+	position_list.append(round(Ry,3)) #VALOR EXACTO
+	position_list.append(round(Z2,3)) #VALOR MEDIDO
+	position_list.append(round(y_,3)) #PREDICCION
+	position_list.append(round(yn,3)) #VALOR CORREGIDO
+
+	y_positions.append(position_list)
+
+#FUNCION DE PATEO
+def wait_for_kick():
+	rate = rospy.Rate(30)
+	
+	#CONTADOR DE TIEMPO
+	current_time = 0
+	while current_time < time_to_kick:
+		current_time += dt
+		rate.sleep()
+
+	print "Pateando balon..."
+	kick.publish(Bool(True))
 
 
-	if(number_positions < data_samples):
-		if not first_measurement:
-			correction_state()
+#FUNCION QUE CALCULA EL TIEMPO RESTANTE PARA EL PATEO
+def estimator():
+	global Xn, Xn1, time_to_kick
+	
+	print "\nCalculando tiempo para patear..."
 
-			position_list.append(data.data[1])
-			position_list.append(float(Z[0]))
-			position_list.append(float(Xn_[0]))
-			position_list.append(float(Xn[0]))
+	if float(Xn[1]) < 0:
+		print "Distancia restante:", 100 * round(0 - float(Xn[1]), 3) , "cm"
+		while float(Xn[1]) < 0:
+			prediction_state()
+			Xn = Xn1
+			time_to_kick += dt
+			print "Xn[1]:", round(float(Xn[1]),3), "\tXn[3]:", round(float(Xn[3]),3)
+			
+			if Xn[3] < 0:
+				print "El balon no tiene suficiente impulso"
+				break
+		
+		if Xn[1] >= 0:
+			if time_to_kick < 0.1: #UMBRAL DE TIEMPO DE PATEO
+				print "Tiempo insuficiente para patear."
+			else:		
+				print "Tiempo estimado para patear:", time_to_kick
+				wait_for_kick()
 
-			all_positions.append(position_list)
-			number_positions += 1
+	else: print "El balon esta fuera de rango."
 
-			next_position = float(Xn[0]) -1
-			curr_time = 0
-			prediction_state();
+#FUNCION DE RESPUESTA AL RECIBIR LOS DATOS DE ENTRADA
+def measurement_input(data):
+	global Xn, Pn, measurements, log_out
+	measurements += 1
+	#print ""
+	#print "------------- VALORES DE ENTRADA --------------"
+	#print "Medicion numero:", measurements
 
+	#VALOR EXACTO DE POSICION
+	Rx = data.data[0]
+	Ry = data.data[1]
 
-	else:
-		while(next_position < float(Xn[0])):
-			next_position = float(Xn[0])
-			if next_position < 0.1 :
-				print "extrapolation: ", next_position
-				time_2_kick += dt
+	#VECTOR DE MEDICION
+	Z1 = data.data[2]
+	Z2 = data.data[3]
 
-			estimator()
+	Z = numpy.array([[Z1],
+				     [Z2],
+				     [ 0],
+				     [ 0]])
+	#print "Z"
+	#print  Z
+	#print "\nZ2:", Z2
 
-		if flag_once == False:
-			print ""
-			print "time_2_kick: ", time_2_kick
-			flag_once = True
+	if measurements - 1 < data_samples:
+		#print ""
+		#print "------------- ESTADO DE CORRECCION --------------"
+		
 
-		if curr_time > time_2_kick - time_movement:
-			pub.publish(Bool(True))
+		#CALCULO DE LA GANANCIA DE KALMAN
+		K1 = numpy.dot(Pn_, H.transpose())
+		K2 = numpy.dot(numpy.dot(H,Pn_), H.transpose()) + numpy.dot(numpy.dot(V, R), V.transpose()) 
+		 
+		#print "K1"
+		#print  K1
+		#print "K2"
+		#print  K2
 
-		curr_time += dt
+		K[0,0] = K1[0,0] / K2[0,0] 
+		K[1,1] = K1[1,1] / K2[1,1]	
 
-	first_measurement = False
+		#print "K"
+		#print  K
 
+		#CORRECCION DE LA POSICION
+		Xn = Xn_ + numpy.dot(K, Z - Xn_)
 
-def save_ball_positions():
-	global number_positions, all_positions, time_2_kick
-	with open(abs_path + '/scripts/kalman_estimator_data.txt', 'a') as filehandle:
-		for i in range(number_positions):
-			json.dump(all_positions[i], filehandle)
-			filehandle.write("\n")
+		
+		#print "Xn"
+		#print  Xn
+		#print "Z1:", round(float(Z1), 3), "\t"
+		#print "y:", round(float(Xn[1]),3), "\tv_y:", round(float(Xn[3]),3)
 
-	print "------>", number_positions, " positions saved :)" 
+		#CORRECCION DE LA COVARIANZA DEL PROCESO
+		Pn = numpy.dot(numpy.identity(4)- numpy.dot(K, H), Pn_)
+		
+		#print "Pn"
+		#print  Pn
 
+		catch_x_position(Rx, Z1, float(Xn_[0]), float(Xn[1]))
+		catch_y_position(Ry, Z2, float(Xn_[1]), float(Xn[1]))
+		prediction_state()
 
+	if measurements == data_samples:
+		log_out = True
+
+	
+#FUNCION PRINCIPAL
 def kalman_estimator():
-	global abs_path, all_positions
+	#INICIALIZA EL NODO
 	rospy.init_node('kalman_estimator', anonymous=True)
-	print "Starting kalman_estimator by Luis Nava"
+	print ""
+	print "Inicializando nodo kalman_estimator por Luis Nava"
+
+	#TOPICO AL CUAL SE SUBSCRIBE PARA OBTENER LOS DATOS DE POSICION
 	rospy.Subscriber("/vision/ball_position/ball_position", Float32MultiArray, measurement_input)
 
+	#METODOS PARA GUARDAR INFORMACION EN UN ARCHIVO DE TEXTO
 	rospack = rospkg.RosPack()
 	rospack.list()
 
 	abs_path = rospack.get_path('ball_position')
-	if os.path.exists(abs_path + '/scripts/kalman_estimator_data.txt'):
-		os.remove(abs_path + '/scripts/kalman_estimator_data.txt')
 
-	print "Loading positions..."
-	rospy.spin()
-
-	save_ball_positions()
+	if os.path.exists(abs_path + '/scripts/kalman_data_x.txt'):
+		os.remove(abs_path + '/scripts/kalman_data_x.txt')	
 	
+	if os.path.exists(abs_path + '/scripts/kalman_data_y.txt'):
+		os.remove(abs_path + '/scripts/kalman_data_y.txt')
+
+	print "Esperando datos de entrada..."
+
+	#BUCLE PARA LA RECEPCION DE MENSAJES
+	while not rospy.core.is_shutdown():
+		if log_out: break
+
+	#FUNCION PARA ESTIMAR EL TIEMPO PARA PATEAR
+	estimator()
+
+	print "\nFinalizando nodo..."
+
+	#SALVANDO POSICIONES EN UN ARCHIVO DE TEXTO
+	with open(abs_path + '/scripts/kalman_data_x.txt', 'a') as filehandle:
+		for i in range(data_samples):
+			json.dump(x_positions[i], filehandle)
+			filehandle.write("\n")
+
+	with open(abs_path + '/scripts/kalman_data_y.txt', 'a') as filehandle:
+		for i in range(data_samples):
+			json.dump(y_positions[i], filehandle)
+			filehandle.write("\n")
+
+	print data_samples, "Muestras almacenadas en kalman_data_x.txt y kalman_data_y.txt"
+
 if __name__ == '__main__':
 	prediction_state()
 	kalman_estimator()
