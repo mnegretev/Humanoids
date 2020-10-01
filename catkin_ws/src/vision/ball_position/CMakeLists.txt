@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   gazebo_msgs
   std_msgs
   tf
+  random_numbers
 )
 
 ## System dependencies are found with CMake's conventions

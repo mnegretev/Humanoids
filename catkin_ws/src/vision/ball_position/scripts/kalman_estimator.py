@@ -11,15 +11,15 @@ from std_msgs.msg import Float32MultiArray
 
 
 #VARIABLES FISICAS
-g  = 9.81	  #ACELERACION DE LA GRAVEDAD
+g  = 9.81	   #ACELERACION DE LA GRAVEDAD
 dt = 0.033333  #TIEMPO DE MUESTREO
-mu_d = 0.15   #COEFICIENTE DE FRICCION DINAMICA
+mu_d = 0.15    #COEFICIENTE DE FRICCION DINAMICA
 
 #CONTADOR DE MUESTRAS
 measurements = 0
 
 #NUMERO MINIMO DE MUESTRAS PARA EMPEZAR LA ESTIMACION 
-data_samples = 35
+data_samples = 8
 
 #MUESTRAS TOTALES
 x_positions = []
@@ -31,6 +31,15 @@ log_out = False
 #TIEMPO ESTIMADO PARA LLEGAR A LA META 
 time_to_kick = 0
 
+#POSICION DE LATENCIA DEL PIE IZQUIERDO
+foot_pose = 0.05
+
+#TIEMPO DE TRAYECTORIA DE PATEO
+movement_time = 0.1
+
+#RANGO DE PATEO EN EL EJE X
+range_in_x = 0.39
+
 #PUBLICADOR PARA PATEAR EL BALON
 kick = rospy.Publisher('/robot_stop', Bool, queue_size=1000)
 
@@ -39,21 +48,21 @@ print "------------- ESTADO INICIAL ---------------"
 print "Numero de muestras por registar: ", data_samples
 
 Xn = numpy.array([[-1.2],
-				  [-1.2],
-				  [ 1.9],
-				  [ 1.9]])
-#print "X0"
-#print  Xn
+				  [-0.8],
+				  [ 3.5],
+				  [ 3.5]])
+print "X0"
+print  Xn
 
 #MATRIZ DE COVARIANZA DEL PROCESO
-Pn  = 10 * numpy.identity(4)
+Pn  = 5 * numpy.identity(4)
 
-#print "P0"
-#print  Pn
+print "P0"
+print  Pn
 
 #MATRIZ DE PREDICCION
 F1 = [ 1, 0, dt,  0]
-F2 = [ 0, 1,  0, dt]
+F2 = [ 0, 1,  0, dt]	
 F3 = [ 0, 0,  1,  0]
 F4 = [ 0, 0,  0,  1]
 
@@ -61,39 +70,26 @@ F = numpy.array([F1, F2, F3, F4])
 
 
 #MATRIZ DE COVARIANZA DEL RUIDO DE LA ESTIMACION
-#Q  = 0.000001 * numpy.identity(4)
-Q  = 0 * numpy.identity(4)
+Q  = 0.000002 * numpy.identity(4)
 
-#print "Q"
-#print  Q
+print "Q"
+print  Q
 
 #MATRIZ DE OBSERVACION
 H1 = [ 1, 0, 0, 0]
 H2 = [ 0, 1, 0, 0]
-H3 = [ 0, 0, 0, 0]
-H4 = [ 0, 0, 0, 0]
-
-H = numpy.array([H1, H2, H3, H4])
 
 
-#MATRIZ DE GANANCIA DE KALMAN
-K = numpy.zeros((4,4))
+H = numpy.array([H1, H2])
 
-
-#MATRIZ REDIMENSIONANTE
-V1 = [ 1, 0]
-V2 = [ 0, 1]
-V3 = [ 0, 0]
-V4 = [ 0, 0]
-
-V = numpy.array([V1, V2, V3, V4])
-
+print "H"
+print  H
 
 #MATRIZ DE COVARIANZA DE RUIDO EN LA MEDICION
-R = 0.01 * numpy.identity(2)
+R = 0.00002 * numpy.identity(2)
 
-#print "Rn"
-#print  R
+print "Rn"
+print  R
 
 #FUERZA DE FRICCION
 Fr = numpy.array([[     0    ],
@@ -116,8 +112,8 @@ def prediction_state():
 	#print  Xn1
 
 	#PREDICCION DE LA COVARIANZA
-	Pn1 = numpy.dot(numpy.dot(F, Pn), F.transpose())
-	Pn1 = numpy.diag(numpy.diag(Pn1)) + Q
+	Pn1 = numpy.dot(numpy.dot(F, Pn), F.transpose()) + Q
+	#Pn1 = numpy.diag(numpy.diag(Pn1)) + Q
 	#print "Pn1"
 	#print  Pn1
 
@@ -150,7 +146,7 @@ def wait_for_kick():
 	
 	#CONTADOR DE TIEMPO
 	current_time = 0
-	while current_time < time_to_kick:
+	while current_time < time_to_kick - movement_time:
 		current_time += dt
 		rate.sleep()
 
@@ -162,28 +158,36 @@ def wait_for_kick():
 def estimator():
 	global Xn, Xn1, time_to_kick
 	
-	print "\nCalculando tiempo para patear..."
+	print "\nMuestreo completado."
+
 
 	if float(Xn[1]) < 0:
 		print "Distancia restante:", 100 * round(0 - float(Xn[1]), 3) , "cm"
-		while float(Xn[1]) < 0:
+		print "Estimando posiciones..."
+		while float(Xn[1]) < foot_pose:
 			prediction_state()
 			Xn = Xn1
 			time_to_kick += dt
-			print "Xn[1]:", round(float(Xn[1]),3), "\tXn[3]:", round(float(Xn[3]),3)
-			
+			#print "Xn[1]:", round(float(Xn[1]),3), "\tXn[3]:", round(float(Xn[3]),3)
+
 			if Xn[3] < 0:
-				print "El balon no tiene suficiente impulso"
+				print "\nEl balon no tiene suficiente impulso"
 				break
 		
-		if Xn[1] >= 0:
-			if time_to_kick < 0.1: #UMBRAL DE TIEMPO DE PATEO
-				print "Tiempo insuficiente para patear."
+		#CONDICIONAL CUANDO EL BALON LLEGA A LA META
+		if Xn[1] >= foot_pose:
+			if time_to_kick < movement_time: #UMBRAL DE TIEMPO DE PATEO
+				print "\nTiempo insuficiente para patear."
 			else:		
-				print "Tiempo estimado para patear:", time_to_kick
+				print "\nTiempo estimado para patear:", time_to_kick
 				wait_for_kick()
+				'''if(Xn[0] <= range_in_x): #SI EL BALON ESTA DENTRO DE RANGO EN X
+					print "\nTiempo estimado para patear:", time_to_kick
+					wait_for_kick()
+				
+				else: print "\nBalon fuera de rango en X"'''
 
-	else: print "El balon esta fuera de rango."
+	else: print "\nEl balon esta fuera de rango en Y"
 
 #FUNCION DE RESPUESTA AL RECIBIR LOS DATOS DE ENTRADA
 def measurement_input(data):
@@ -202,12 +206,9 @@ def measurement_input(data):
 	Z2 = data.data[3]
 
 	Z = numpy.array([[Z1],
-				     [Z2],
-				     [ 0],
-				     [ 0]])
+				     [Z2]])
 	#print "Z"
 	#print  Z
-	#print "\nZ2:", Z2
 
 	if measurements - 1 < data_samples:
 		#print ""
@@ -216,27 +217,20 @@ def measurement_input(data):
 
 		#CALCULO DE LA GANANCIA DE KALMAN
 		K1 = numpy.dot(Pn_, H.transpose())
-		K2 = numpy.dot(numpy.dot(H,Pn_), H.transpose()) + numpy.dot(numpy.dot(V, R), V.transpose()) 
-		 
-		#print "K1"
-		#print  K1
-		#print "K2"
-		#print  K2
+		K2 = numpy.dot(numpy.dot(H,Pn_), H.transpose()) + R 
 
-		K[0,0] = K1[0,0] / K2[0,0] 
-		K[1,1] = K1[1,1] / K2[1,1]	
+
+		K = numpy.dot(K1, numpy.linalg.inv(K2))
 
 		#print "K"
 		#print  K
 
 		#CORRECCION DE LA POSICION
-		Xn = Xn_ + numpy.dot(K, Z - Xn_)
+		Xn = Xn_ + numpy.dot(K, Z - numpy.dot(H, Xn_))
 
-		
 		#print "Xn"
 		#print  Xn
-		#print "Z1:", round(float(Z1), 3), "\t"
-		#print "y:", round(float(Xn[1]),3), "\tv_y:", round(float(Xn[3]),3)
+
 
 		#CORRECCION DE LA COVARIANZA DEL PROCESO
 		Pn = numpy.dot(numpy.identity(4)- numpy.dot(K, H), Pn_)

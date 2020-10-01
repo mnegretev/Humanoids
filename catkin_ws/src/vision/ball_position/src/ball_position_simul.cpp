@@ -8,6 +8,7 @@
 #include<sensor_msgs/image_encodings.h>
 #include<image_transport/image_transport.h>
 
+#include<random_numbers/random_numbers.h>
 #include<geometry_msgs/Pose.h>
 #include<gazebo_msgs/ModelStates.h>
 
@@ -76,6 +77,7 @@ void get_centroid_angles() {
 
 void compute_ball_position() { 
 
+    random_numbers::RandomNumberGenerator rnd;
     std_msgs::Float32MultiArray position_msg;
     position_msg.data.resize(4);
 
@@ -88,13 +90,13 @@ void compute_ball_position() {
     y = v * tan(theta);
 
     //Exactly ball's pose
-    position_msg.data[0] = ball_model_pose.position.x - 0.049;
-    position_msg.data[1] = ball_model_pose.position.y + 0.065;
+    position_msg.data[0] = ball_model_pose.position.x;
+    position_msg.data[1] = ball_model_pose.position.y;
     //ball's pose calculated by vision system
-    position_msg.data[2] = x;
-    position_msg.data[3] = y;
+    position_msg.data[2] = ball_model_pose.position.x + rnd.gaussian(0, 0.025);
+    position_msg.data[3] = ball_model_pose.position.y + rnd.gaussian(0, 0.025);
 
-
+    
     if(centroid[0] != - horizontal_view && centroid[1] != - vertical_view)
         pub_ball_position.publish(position_msg);    
 }

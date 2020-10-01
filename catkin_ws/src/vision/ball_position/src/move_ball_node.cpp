@@ -6,10 +6,6 @@
 #define  g 9.81
 #define Mg 0.15
 
-
-
-
-
 using namespace std;
 
 
@@ -25,9 +21,11 @@ int main(int argc, char** argv) {
 	ros::init(argc, argv, "move_ball_node");
 	ros::NodeHandle nh;
 
+	float sample_freq = 50;
+
     ros::Subscriber stop_moving  = nh.subscribe("/robot_stop", 1, stop_moving_callback);
 	ros::Publisher move_ball_pub = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 1000);
-	ros::Rate loop(30);
+	ros::Rate loop(sample_freq);
     
     float velx, vely, t = 0;
     float vx0 = atof(argv[1]);
@@ -43,16 +41,20 @@ int main(int argc, char** argv) {
         velx = vx0 - Mg * g * t; 
         vely = vy0 - Mg * g * t;
 
+        if(velx < 0) velx = 0;
+        
+        //cout << "vely: " << vely << "\ttime: " << t << endl;
+
         ball_msg.linear.x = -velx;
 		ball_msg.linear.y = vely;
 
 		move_ball_pub.publish(ball_msg);
 
-        t += 0.0333;
+        t += 1 / sample_freq;
 		loop.sleep();
 		ros::spinOnce();
 
-        if(velx <= 0 || log_out) break;
+        if(vely < 0 || log_out) break;
 	}
 
 	return 0;	
