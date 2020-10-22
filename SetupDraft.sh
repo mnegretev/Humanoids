@@ -9,4 +9,4 @@ sudo apt-get install ros-melodic-dynamixel-sdk
 sudo apt-get install ros-melodic-moveit-core
 sudo apt-get install ros-melodic-moveit-ros-planning-interface
 
-echo "export GAZEBO_MODEL_PATH=~/Humanoids/catkin_ws/src/hardware/nimbro_op_gazebo/models/" >> /home/$USER/.bashrc
+#echo "export GAZEBO_MODEL_PATH=~/Humanoids/catkin_ws/src/hardware/nimbro_op_gazebo/models/" >> /home/$USER/.bashrc
