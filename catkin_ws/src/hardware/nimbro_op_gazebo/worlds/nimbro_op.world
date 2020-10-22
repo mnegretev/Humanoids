@@ -35,7 +35,7 @@
 		</include>
 		<include>
 			<uri>model://teensize_ball</uri>
-			<pose>0 0 0.095 0 0 0</pose>
+			<pose>-0.700000 -1.180000 0.095 0 0 0</pose>
 		</include>
 		<include>
 			<uri>model://teensize_goal</uri>
