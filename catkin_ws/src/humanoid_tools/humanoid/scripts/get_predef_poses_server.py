@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+
 import rospy
 import numpy
 import yaml
@@ -35,7 +36,7 @@ def get_predef_poses(req):
 
 def read_positions_from_disk(req, res):
     global name, all_positions, number_poses, pose_duration
-    print "Getting predef poses from: ../"+ req.pose_to_load+ ".yaml"
+    print("Getting predef poses from: ../"+ req.pose_to_load+ ".yaml")
 
     rospack = rospkg.RosPack()
     rospack.list()

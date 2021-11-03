@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from std_msgs.msg import *
 from humanoid_msgs.srv import *
@@ -50,7 +50,7 @@ def callback_speed_profile(req):
 
 def speed_profile_sever():
     rospy.init_node('speed_profile_server')
-    print "Starting speed_profile_server..."
+    print("Starting speed_profile_server...")
     server = rospy.Service('/humanoid/get_speed_profile', speedProfile, callback_speed_profile )
     rospy.spin()
 
