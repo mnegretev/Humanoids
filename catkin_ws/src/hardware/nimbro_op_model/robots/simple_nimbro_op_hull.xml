@@ -2,7 +2,6 @@
   <material name="black">
     <color rgba="0.1 0.1 0.1 1" />
   </material>
-  <link name="world"/>
   <link name="trunk_link">
     <inertial>
       <origin xyz="-0.016856 -0.00019822 0.019225" rpy="0 0 0" />
@@ -24,11 +23,6 @@
       </geometry>
     </collision>
   </link>
-
-  <joint name="fixed" type="fixed">
-    <parent link="world"/>
-    <child link="trunk_link"/>
-  </joint>
 
   <link name="right_hip_yaw_link">
     <inertial>

@@ -38,7 +38,7 @@ bool log_out;
 
 void set_hsv_values( int event, int x, int y, int, void* param ) {
 
-    if(event == CV_EVENT_MBUTTONDOWN){
+    if(event == cv::EVENT_MBUTTONDOWN){
         cv::FileStorage fs("src/config_files/vision/hsv_values.xml", cv::FileStorage::WRITE);
         hsv_min.at<int>(0,0) = h_min;
         hsv_min.at<int>(0,1) = s_min;

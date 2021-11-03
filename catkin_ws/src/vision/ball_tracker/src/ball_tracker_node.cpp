@@ -1,7 +1,6 @@
 #include <ros/ros.h>
 #include <opencv2/opencv.hpp>   
 
-
 using namespace std;
 
 
@@ -31,7 +30,7 @@ void set_hsv_values( int event, int x, int y, int, void* param )
     cv::Mat hsv_max = cv::Mat_<int>::zeros(1, 3);
    
    
-    if (event == CV_EVENT_LBUTTONDOWN){
+    if (event == cv::EVENT_LBUTTONDOWN){
         H.push_back((int)(hsv_frame).at<cv::Vec3b>(y, x)[0]);
         S.push_back((int)(hsv_frame).at<cv::Vec3b>(y, x)[1]);
         V.push_back((int)(hsv_frame).at<cv::Vec3b>(y, x)[2]);
@@ -62,7 +61,7 @@ void set_hsv_values( int event, int x, int y, int, void* param )
 
 
 
-    if(event == CV_EVENT_MBUTTONDOWN){
+    if(event == cv::EVENT_MBUTTONDOWN){
         cv::FileStorage fs("src/config_files/vision/hsv_values.xml", cv::FileStorage::WRITE);
         hsv_min.at<int>(0,0) = h_min; 
         hsv_min.at<int>(0,1) = s_min; 
@@ -115,7 +114,7 @@ int main(int argc, char **argv)
     while ( ros::ok() && cv::waitKey(15)!=27 )
     {
         capture.read( video_frame );
-        cv::cvtColor( video_frame , hsv_frame, CV_BGR2HSV);
+        cv::cvtColor( video_frame , hsv_frame, cv::COLOR_BGR2HSV);
         cv::inRange(  hsv_frame   , cv::Scalar(h_min, s_min  , v_min), cv::Scalar(h_max, s_max, v_max), mask_frame);
         cv::erode(    mask_frame  , eroded_frame    , kernel , cv::Point(-1,-1), 1);
         cv::dilate(   eroded_frame, dilated_frame   , kernel , cv::Point(-1,-1), 1);

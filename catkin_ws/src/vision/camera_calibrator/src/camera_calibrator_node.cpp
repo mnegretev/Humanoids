@@ -46,12 +46,12 @@ int main(int argc, char **argv)
 
     while(successes<numBoards)
     {
-        cvtColor(image, gray_image, CV_BGR2GRAY);
-        bool found = findChessboardCorners(image, board_sz, corners, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
+        cvtColor(image, gray_image, COLOR_BGR2GRAY);
+        bool found = findChessboardCorners(image, board_sz, corners, CALIB_CB_ADAPTIVE_THRESH | CALIB_CB_FILTER_QUADS);
 
         if(found)
         {
-            cornerSubPix(gray_image, corners, Size(11, 11), Size(-1, -1), TermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 30, 0.1));
+            cornerSubPix(gray_image, corners, Size(11, 11), Size(-1, -1), TermCriteria(TermCriteria::EPS  | TermCriteria::MAX_ITER, 30, 0.1));
             drawChessboardCorners(gray_image, board_sz, corners, found);
         }
         imshow("Frame for training", gray_image);

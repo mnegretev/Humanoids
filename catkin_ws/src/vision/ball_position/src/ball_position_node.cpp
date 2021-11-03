@@ -100,7 +100,7 @@ void callback_img(const std_msgs::UInt8MultiArray::ConstPtr& msg)
     video_frame = cv::imdecode(msg->data,1); 
     //GaussianBlur(video_frame, video_frame, cv::Size(15,15), 0);    
     cv::imshow( "Camera visualizer", video_frame);  
-    cv::cvtColor(video_frame, tracked_frame, CV_BGR2HSV);  
+    cv::cvtColor(video_frame, tracked_frame, cv::COLOR_BGR2HSV);  
     cv::inRange( tracked_frame,  hsv_min, hsv_max, tracked_frame); 
     cv::erode(   tracked_frame, tracked_frame, kernel, cv::Point(-1, -1), 2);
     cv::dilate(  tracked_frame, ball_located, kernel, cv::Point(-1, -1), 1);   

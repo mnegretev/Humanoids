@@ -24,7 +24,7 @@ void callback_img(const std_msgs::UInt8MultiArray::ConstPtr& msg)
 
     video_frame = cv::imdecode(msg->data,1); 
     cv::imshow("Camera visualizer", video_frame);  
-    cv::cvtColor( video_frame, dilated_frame, CV_BGR2HSV);  
+    cv::cvtColor( video_frame, dilated_frame, cv::COLOR_BGR2HSV);  
     cv::inRange(  dilated_frame, hsv_min, hsv_max, dilated_frame); 
     cv::erode( dilated_frame, dilated_frame, kernel, cv::Point(-1, -1), 2);
 
