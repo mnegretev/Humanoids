@@ -41,8 +41,8 @@ def read_positions_from_disk(req, res):
     rospack = rospkg.RosPack()
     rospack.list()
     
-    predef_poses = yaml.load(open(rospack.get_path('config_files') + '/predef_poses/'+req.pose_to_load+'.yaml', 'r'))
-    name = predef_poses['motion'][0]['joints'].keys()
+    predef_poses = yaml.safe_load(open(rospack.get_path('config_files') + '/predef_poses/'+req.pose_to_load+'.yaml', 'r'))
+    name = list(predef_poses['motion'][0]['joints'].keys())
 
     pose_duration = []
     number_poses = len(predef_poses['motion'])        
@@ -50,13 +50,13 @@ def read_positions_from_disk(req, res):
     for pose in range(0, number_poses):
         position = []
         for i in range(0, 20):
-             position.append(predef_poses['motion'][pose]['joints'][name[i]]['position'])
+            position.append(predef_poses['motion'][pose]['joints'][name[i]]['position'])
 
         all_positions.append(position)   
         pose_duration.append(predef_poses['motion'][pose]['duration'])
 
     res.delay = pose_duration[0] 
-    res.number_poses = number_poses
+    res.number_poses = number_poses 
 
 
 def allocate_positions(req, res):

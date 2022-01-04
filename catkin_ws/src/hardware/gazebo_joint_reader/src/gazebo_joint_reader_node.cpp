@@ -22,6 +22,7 @@ int main(int argc, char** argv)
     ros::Publisher pub_joint_current_angles   = n.advertise<std_msgs::Float32MultiArray>("joint_current_angles", 1);
     std_msgs::Float32MultiArray msg_joint_current_angles;
     msg_joint_current_angles.data.resize(20);
+    ros::Duration(0.1).sleep();
     ros::service::waitForService("/gazebo/get_joint_properties", ros::Duration(10));
     ros::service::waitForService("/gazebo/get_link_state", ros::Duration(10));
     ros::ServiceClient clt_joints       = n.serviceClient<gazebo_msgs::GetJointProperties>("/gazebo/get_joint_properties");

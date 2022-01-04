@@ -4,7 +4,7 @@
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
 
     <group ns="hardware">
-      <node name="gazebo_joint_reader" pkg="gazebo_joint_reader" type="gazebo_joint_reader_node" output="screen" respawn="true"/>
+      <node name="gazebo_joint_reader" pkg="gazebo_joint_reader" type="gazebo_joint_reader_node" respawn="true"/>
       <node name="control_remapper" pkg="gazebo_control_remapper" type="gazebo_control_remapper_node" output="screen"/>
     </group>
     
