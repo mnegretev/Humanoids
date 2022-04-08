@@ -8,60 +8,93 @@
 #include "std_msgs/String.h"
 #include <sstream>
 
-#define ID_LEG_LEFT_HIP_YAW               8
-#define ID_LEG_LEFT_HIP_ROLL             10
-#define ID_LEG_LEFT_HIP_PITCH            12
-#define ID_LEG_LEFT_KNEE_PITCH           14
-#define ID_LEG_LEFT_ANKLE_PITCH          16
-#define ID_LEG_LEFT_ANKLE_ROLL           18
+/*---------------------------------------
+|      DEFINE SERVO ID'S AND NAMING     |
+-----------------------------------------*/
 
-#define ID_LEG_RIGHT_HIP_YAW              7
-#define ID_LEG_RIGHT_HIP_ROLL             9
-#define ID_LEG_RIGHT_HIP_PITCH           11
-#define ID_LEG_RIGHT_KNEE_PITCH          13
-#define ID_LEG_RIGHT_ANKLE_PITCH         15
-#define ID_LEG_RIGHT_ANKLE_ROLL          17
+//-> ROS THINKS CM730 IS A SERVO
+#define ID_CM730    200
 
-#define ID_ARM_LEFT_SHOULDER_PITCH        2
-#define ID_ARM_LEFT_SHOULDER_ROLL         4
-#define ID_ARM_LEFT_ELBOW_PITCH           6
+/*---------------------------------------
+            UPPER BODY
+-----------------------------------------
+*///-> LEFT SHOULDER
+#define ID_ARM_LEFT_SHOULDER_PITCH  2
+#define ID_ARM_LEFT_SHOULDER_ROLL   4
+// --> LEFT ELBOW
+#define ID_ARM_LEFT_ELBOW_PITCH     6
 
-#define ID_ARM_RIGHT_SHOULDER_PITCH       1
-#define ID_ARM_RIGHT_SHOULDER_ROLL        3
-#define ID_ARM_RIGHT_ELBOW_PITCH          5
+// --> RIGHT SHOULDER
+#define ID_ARM_RIGHT_SHOULDER_PITCH 1
+#define ID_ARM_RIGHT_SHOULDER_ROLL  3
+// --> RIGHT ELBOW
+#define ID_ARM_RIGHT_ELBOW_PITCH    5
 
-#define ID_NECK_YAW                       19
-#define ID_HEAD_PITCH                     20
+// --> HEAD
+#define ID_NECK_YAW                 19
+#define ID_HEAD_PITCH               20
 
-#define ID_CM730                         200
+/*--------------------------------------
+             LOWER BODY
+----------------------------------------
+*/// --> LEFT HIP
+#define ID_LEG_LEFT_HIP_YAW         8
+#define ID_LEG_LEFT_HIP_ROLL        10
+#define ID_LEG_LEFT_HIP_PITCH       12
+// --> LEFT KNEE
+#define ID_LEG_LEFT_KNEE_PITCH      14
+// --> LEFT ANKLE
+#define ID_LEG_LEFT_ANKLE_PITCH     16
+#define ID_LEG_LEFT_ANKLE_ROLL      18
 
+// --> RIGHT HIP
+#define ID_LEG_RIGHT_HIP_YAW        7
+#define ID_LEG_RIGHT_HIP_ROLL       9
+#define ID_LEG_RIGHT_HIP_PITCH      11
+// --> RIHT KNEE
+#define ID_LEG_RIGHT_KNEE_PITCH     13
+// --> RIGHT ANKLE
+#define ID_LEG_RIGHT_ANKLE_PITCH    15
+#define ID_LEG_RIGHT_ANKLE_ROLL     17
 
-#define ZERO_LEG_LEFT_HIP_YAW           2070
-#define ZERO_LEG_LEFT_HIP_ROLL          2070
-#define ZERO_LEG_LEFT_HIP_PITCH         2048
-#define ZERO_LEG_LEFT_KNEE_PITCH        2400
-#define ZERO_LEG_LEFT_ANKLE_PITCH       2016
-#define ZERO_LEG_LEFT_ANKLE_ROLL        2048
+/*------------------------------------------*\
+|               ZERO STATE                   |    |
+| Zero state is considered to be the natural |
+|  state of the humanoid when it stands up   |
+|  staight.                                  |
+\-------------------------------------------*/
 
-#define ZERO_LEG_RIGHT_HIP_YAW          2048
-#define ZERO_LEG_RIGHT_HIP_ROLL         2048
-#define ZERO_LEG_RIGHT_HIP_PITCH        2048
-#define ZERO_LEG_RIGHT_KNEE_PITCH       2890
-#define ZERO_LEG_RIGHT_ANKLE_PITCH      2048
-#define ZERO_LEG_RIGHT_ANKLE_ROLL       2048
+#define ZERO_LEG_LEFT_HIP_YAW       2061 // Servo 8
+#define ZERO_LEG_LEFT_HIP_ROLL      2100 
+#define ZERO_LEG_LEFT_HIP_PITCH     1903
+#define ZERO_LEG_LEFT_KNEE_PITCH    2439
+#define ZERO_LEG_LEFT_ANKLE_PITCH   2119
+#define ZERO_LEG_LEFT_ANKLE_ROLL    2075
 
-#define ZERO_ARM_LEFT_SHOULDER_PITCH    2048
-#define ZERO_ARM_LEFT_SHOULDER_ROLL     2540
-#define ZERO_ARM_LEFT_ELBOW_PITCH       2048
+#define ZERO_LEG_RIGHT_HIP_YAW      2049
+#define ZERO_LEG_RIGHT_HIP_ROLL     1060
+#define ZERO_LEG_RIGHT_HIP_PITCH    3219
+#define ZERO_LEG_RIGHT_KNEE_PITCH   2857
+#define ZERO_LEG_RIGHT_ANKLE_PITCH  2019
+#define ZERO_LEG_RIGHT_ANKLE_ROLL   2021
 
-#define ZERO_ARM_RIGHT_SHOULDER_PITCH   1905
-#define ZERO_ARM_RIGHT_SHOULDER_ROLL    1407
-#define ZERO_ARM_RIGHT_ELBOW_PITCH      2048
+#define ZERO_ARM_LEFT_SHOULDER_PITCH    2041
+#define ZERO_ARM_LEFT_SHOULDER_ROLL     2462
+#define ZERO_ARM_LEFT_ELBOW_PITCH       1617
+
+#define ZERO_ARM_RIGHT_SHOULDER_PITCH   1943
+#define ZERO_ARM_RIGHT_SHOULDER_ROLL    939
+#define ZERO_ARM_RIGHT_ELBOW_PITCH      2920
 
 #define ZERO_NECK_YAW                   2048
 #define ZERO_HEAD_PITCH                 2048
 
-
+/*------------------------------------------\
+|       CLOCKWISE OR COUNTER-CLOCKWISE
+|  Servos position goes from 0 to 4095 in a 
+|  counter clock-wise direction, but some
+|  servos
+\-------------------------------------------*/
 
 #define CW_LEG_LEFT_HIP_YAW               -1
 #define CW_LEG_LEFT_HIP_ROLL               1
@@ -88,15 +121,32 @@
 #define CW_NECK_YAW                        1
 #define CW_HEAD_PITCH                     -1
 
+/*  Servos have 4096 different positions, since there are
+    2*PI radians in a circumference, eache radian has
+    4096/2*PI = 651.898646904 BITS PER RADIAN*/
+#define SERVO_MX_BITS_PER_RAD       651.898646904
 
-#define SERVO_MX_BITS_PER_RAD  651.898646904
-#define SERVO_MX_RADS_PER_BIT    0.001533981
-#define SERVO_PROTOCOL_VERSION           1.0
+/*  Inverse of SERVO_MX_BITS_PER_RAD*/
+#define SERVO_MX_RADS_PER_BIT       0.001533981
 
-#define ADDR_MX_CURRENT_POSITION         36
-#define ADDR_MX_GOAL_POSITION            30
-#define ADDR_CM730_DYNAMIXEL_POWER       24
+/*  DYNAMIXEL PROTOCOL VERSION: 1.0
+    DYNMIXEL PROTOCOL 2.0 IS NOT CURRENTLY SUPPORTED */
+#define SERVO_PROTOCOL_VERSION      1.0
 
+/*
+    DYNAMIXEL SERVOS HAVE UP TO 70 DIFFERENT CONTROL OPTIONS
+    EITHER TO READ DATA OR WRITE DATA. THE NUMBERS SHOWN BELOW
+    ARE THE ACTUAL ADDRESSES THAT WE WILL BE USING. FOR THIS NODE
+    WE WILL NEED TO TURN ON THE MOTOR (24), REVIEW THE CURRENT
+    POSITION OF THE MOTOR (36) AND SEND A DESIRED GOAL POSITION (30)
+
+    TO SEE THE COMPLETE LIST OF CONTROL OPTIONS VISIT:
+    https://emanual.robotis.com/docs/en/dxl/mx/mx-64/#control-table-of-eeprom-area*/
+#define ADDR_MX_CURRENT_POSITION    36
+#define ADDR_MX_GOAL_POSITION       30
+#define ADDR_CM730_DYNAMIXEL_POWER  24
+
+// --> SETTING UP THE ARRAY OF ID'S
 uint16_t servos_ids[20] =
 {
     ID_LEG_LEFT_HIP_YAW    ,
@@ -121,6 +171,7 @@ uint16_t servos_ids[20] =
     ID_HEAD_PITCH,
 };
 
+//->Setting up the array of state_zero_positions
 uint16_t servos_position_zero[20] =
 {
     ZERO_LEG_LEFT_HIP_YAW    ,
@@ -145,6 +196,7 @@ uint16_t servos_position_zero[20] =
     ZERO_HEAD_PITCH,
 };
 
+// -->Setting up the array of cw info for each servo
 int servos_is_clockwise[20] =
 {
     CW_LEG_LEFT_HIP_YAW    ,
@@ -170,7 +222,14 @@ int servos_is_clockwise[20] =
 };
 
 uint16_t servos_goal_position[20];
-uint16_t motors_state1[1];
+//->motors satate[1];
+
+/*------------------------------------------*\
+|                CALLBACKS
+|
+|
+|
+\-------------------------------------------*/
 
 void callback_legs_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg)
 {
@@ -256,52 +315,44 @@ void callback_head_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg)
             servos_position_zero[j]);
 }
 
-void callback_motors_state(const std_msgs::Float32MultiArray::ConstPtr& msg)
-{
-    if(msg->data.size() != 1)
-    {
-        std::cout << "CM730.-> botón Motores Error!!" << std::endl;
-        return;
-    }
-    motors_state1[0] = msg->data[0];
-}
-
 int main(int argc, char** argv)
-{     
+{   
+    // --> INITIALIZING ROS  
     std::cout << "INITIALIZING CM730 NODE BY MARCOSOFT..." << std::endl;
-    ros::init(argc, argv, "cm730");
+    ros::init(argc, argv, "cm730v2");
     ros::NodeHandle n;
 
-    std::string usbport;
+    // --> OBTAINING USB PORT NAME
+    std::string usbport="ttyUSB0";
     n.getParam("usbport", usbport);
-    std::string lat1, pto, lat2, latencia;
+    
+    std::string lat1, lat2, latencia;
     lat1 = "echo 1 | sudo tee /sys/bus/usb-serial/devices/";
     lat2="/latency_timer";
     latencia= lat1+usbport+lat2;
     char const *late = latencia.data();
     ros::Rate loop(30);
     system(late);
-    //system("echo 1 | sudo tee /sys/bus/usb-serial/devices/ttyUSB0/latency_timer");
 
-    ros::Subscriber sub_legs_goal_pose      = n.subscribe("legs_goal_pose", 1, callback_legs_goal_pose);
-    ros::Subscriber sub_leg_left_goal_pose  = n.subscribe("leg_left_goal_pose", 1, callback_leg_left_goal_pose);
+    ros::Subscriber sub_legs_goal_pose      = n.subscribe("legs_goal_pose",      1, callback_legs_goal_pose);
+    ros::Subscriber sub_leg_left_goal_pose  = n.subscribe("leg_left_goal_pose",  1, callback_leg_left_goal_pose);
     ros::Subscriber sub_leg_right_goal_pose = n.subscribe("leg_right_goal_pose", 1, callback_leg_right_goal_pose);
-    ros::Subscriber sub_arms_goal_pose      = n.subscribe("arms_goal_pose", 1, callback_arms_goal_pose);
-    ros::Subscriber sub_arm_left_goal_pose  = n.subscribe("arm_left_goal_pose", 1, callback_arm_left_goal_pose);
+    ros::Subscriber sub_arms_goal_pose      = n.subscribe("arms_goal_pose",      1, callback_arms_goal_pose);
+    ros::Subscriber sub_arm_left_goal_pose  = n.subscribe("arm_left_goal_pose",  1, callback_arm_left_goal_pose);
     ros::Subscriber sub_arm_right_goal_pose = n.subscribe("arm_right_goal_pose", 1, callback_arm_right_goal_pose);
-    ros::Subscriber sub_head_goal_pose      = n.subscribe("head_goal_pose", 1, callback_head_goal_pose);
-    ros::Subscriber sub_motors_state        = n.subscribe("motors_state", 1, callback_motors_state);
-        
-    ros::Publisher pub_legs_current_pose      = n.advertise<std_msgs::Float32MultiArray>("legs_current_pose", 1);
-    ros::Publisher pub_leg_left_current_pose  = n.advertise<std_msgs::Float32MultiArray>("leg_left_current_pose", 1);
-    ros::Publisher pub_leg_right_current_pose = n.advertise<std_msgs::Float32MultiArray>("leg_right_current_pose", 1);
-    ros::Publisher pub_arms_current_pose      = n.advertise<std_msgs::Float32MultiArray>("arms_current_pose", 1);
-    ros::Publisher pub_arm_left_current_pose  = n.advertise<std_msgs::Float32MultiArray>("arm_left_current_pose", 1);
-    ros::Publisher pub_arm_right_current_pose = n.advertise<std_msgs::Float32MultiArray>("arm_right_current_pose", 1);
-    ros::Publisher pub_head_current_pose      = n.advertise<std_msgs::Float32MultiArray>("head_current_pose", 1);
-    ros::Publisher pub_joint_current_angles   = n.advertise<std_msgs::Float32MultiArray>("joint_current_angles", 1);
+    ros::Subscriber sub_head_goal_pose      = n.subscribe("head_goal_pose",      1, callback_head_goal_pose);     
+
+    ros::Publisher pub_legs_current_pose      = n.advertise<std_msgs::Float32MultiArray>("legs_current_pose",       1);
+    ros::Publisher pub_leg_left_current_pose  = n.advertise<std_msgs::Float32MultiArray>("leg_left_current_pose",   1);
+    ros::Publisher pub_leg_right_current_pose = n.advertise<std_msgs::Float32MultiArray>("leg_right_current_pose",  1);
+    ros::Publisher pub_arms_current_pose      = n.advertise<std_msgs::Float32MultiArray>("arms_current_pose",       1);
+    ros::Publisher pub_arm_left_current_pose  = n.advertise<std_msgs::Float32MultiArray>("arm_left_current_pose",   1);
+    ros::Publisher pub_arm_right_current_pose = n.advertise<std_msgs::Float32MultiArray>("arm_right_current_pose",  1);
+    ros::Publisher pub_head_current_pose      = n.advertise<std_msgs::Float32MultiArray>("head_current_pose",       1);
+    ros::Publisher pub_joint_current_angles   = n.advertise<std_msgs::Float32MultiArray>("joint_current_angles",    1);
     
     ros::Publisher  pub_joint_states = n.advertise<sensor_msgs::JointState>("/joint_states", 1);
+
     sensor_msgs::JointState msg_joint_states;
     std_msgs::Float32MultiArray msg_joint_current_angles;
     msg_joint_current_angles.data.resize(20);
@@ -337,7 +388,6 @@ int main(int argc, char** argv)
     std::string dev="/dev/";
     std::string puerto = dev+usbport;
     char const *puertochar = puerto.data();
-    //dynamixel::PortHandler   *portHandler   = dynamixel::PortHandler::getPortHandler("/dev/ttyUSB0");
     dynamixel::PortHandler   *portHandler   = dynamixel::PortHandler::getPortHandler(puertochar);
     dynamixel::PacketHandler *packetHandler = dynamixel::PacketHandler::getPacketHandler(SERVO_PROTOCOL_VERSION);
 
@@ -361,16 +411,21 @@ int main(int argc, char** argv)
     int      dxl_comm_result = COMM_TX_FAIL;
     uint16_t dxl_current_pos;
 
-    //Turn on motor power through the CM730
-    std::cout << "CM730.->Turning on dynamixel power..." << std::endl;
+    /*---------------------------------------
+    |      WAKE UP CM730 (ADDR 24)          |
+    -----------------------------------------*/
+    std::cout << "Wake up CM730 " << std::endl;
     dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, ID_CM730, ADDR_CM730_DYNAMIXEL_POWER, 1, &dxl_error);
+    
     if(dxl_comm_result != COMM_SUCCESS)
         std::cout << "CM730.->Commnunication problem while turning on dynamixel power." << std::endl;
     if(dxl_error != 0)
         std::cout << "CM730.->Status error after turning on dynamixel power: " << int(dxl_error) << std::endl;
-
     ros::Duration(1.0).sleep();
-    //Read current position to start goal position with the current position.
+   
+    /*---------------------------------------
+    |      READ ALL POSITIONS (ADDR 36)      |
+    -----------------------------------------*/
     for(int i = 0; i < 20; i++)
     {
         dxl_comm_result = packetHandler->read2ByteTxRx(portHandler, 
@@ -384,6 +439,8 @@ int main(int argc, char** argv)
             msg_joint_states.position[i] = (int(dxl_current_pos) - int(servos_position_zero[i]))*SERVO_MX_RADS_PER_BIT *
                 servos_is_clockwise[i];
             std::cout << "CM730.->Initial position servo " << servos_ids[i] << ": " << int(dxl_current_pos) << std::endl;
+            std::cout << "CM730.->Initial position servo " << servos_ids[i] << ": " << msg_joint_states.position[i] << std::endl;
+
         }
         else 
             if(dxl_comm_result != COMM_SUCCESS)
@@ -391,21 +448,11 @@ int main(int argc, char** argv)
             else
                 std::cout << "CM730.->Warning! Error in servo id "<< servos_ids[i] << " with code "<< int(dxl_error) << std::endl;
     }
-    //Wait the order for turn on the motors.
-    /*for(int i=0; i < 20; i++)
-    {
-        dxl_comm_result = packetHandler->write2ByteTxRx(portHandler, servos_ids[i], ADDR_MX_GOAL_POSITION,
-            servos_goal_position[i], &dxl_error);
-        if(dxl_comm_result != COMM_SUCCESS)
-            std::cout << "CM730.->Commnunication problem while writing goal pose to servo "<< int(servos_ids[i])  << std::endl;
-        if(dxl_error != 0)
-        {
-            std::cout << "CM730.->Status error while writing goal pose "<< (int)servos_goal_position[i];
-            std::cout << " to servo "<< int(servos_ids[i]) << "\tError code:" << int(dxl_error) << std::endl;
-        }
-    }*/
-
     ros::Duration(1.0).sleep();
+
+    /*---------------------------------------\
+    |      HUMANOID IS ALIVE, NOW         |
+    -----------------------------------------*/
     while(ros::ok())
     {
         for(int i = 0; i < 20; i++)
@@ -414,11 +461,12 @@ int main(int argc, char** argv)
                                                          servos_ids[i],
                                                          ADDR_MX_CURRENT_POSITION,
                                                          &dxl_current_pos, 
-                                                         &dxl_error);
+                                                         &dxl_error);                                                         
             if(dxl_comm_result == COMM_SUCCESS && dxl_error == 0)
             {
-                msg_joint_states.position[i] = (int(dxl_current_pos) - int(servos_position_zero[i]))*SERVO_MX_RADS_PER_BIT *
-                    servos_is_clockwise[i];
+                msg_joint_states.position[i] = (int(dxl_current_pos) - int(servos_position_zero[i]))
+                                                *SERVO_MX_RADS_PER_BIT
+                                                *servos_is_clockwise[i];
                 msg_joint_current_angles.data[i] = msg_joint_states.position[i];
             }
             else 
@@ -427,27 +475,28 @@ int main(int argc, char** argv)
                 else
                     std::cout << "CM730.->Warning! Error in servo id "<< servos_ids[i] << " with code "<< int(dxl_error) << std::endl;    
         }
-        //Wait the order for turn on the motors.
+
         for(int i=0; i < 20; i++)
-        {
-            if(motors_state1[0] == 1)
-            {
-                std::cout << "MOTORS_ON" << std::endl;      
-                dxl_comm_result = packetHandler->write2ByteTxRx(portHandler,
-                                                                servos_ids[i], 
-                                                                ADDR_MX_GOAL_POSITION, 
-                                                                servos_goal_position[i],
-                                                                &dxl_error);
-            }
+        {      
+            dxl_comm_result = packetHandler->write2ByteTxRx(portHandler,
+                                                            servos_ids[i], 
+                                                            ADDR_MX_GOAL_POSITION, 
+                                                            servos_goal_position[i],
+                                                            &dxl_error);
             if(dxl_comm_result != COMM_SUCCESS)
-                std::cout << "CM730.->Commnunication problem while writing goal pose to servo "<< int(servos_ids[i])  << std::endl;
+                std::cout << "CM730.-> Problem while writing goal pose to servo " << int(servos_ids[i]) << std::endl;
             if(dxl_error != 0)
             {
-                std::cout << "CM730.->Status error while writing goal pose "<< (int)servos_goal_position[i];
-                std::cout << " to servo "<< int(servos_ids[i]) << "\tError code:" << int(dxl_error) << std::endl;
+                std::cout << "CM730.-> Status error while writing goal pose to servo" 
+                          << (int)servos_goal_position[i] 
+                          << " to servo " 
+                          << int(servos_ids[i]) 
+                          << "\tError code:" 
+                          << int(dxl_error) 
+                          << std::endl;
             }
         }
-        
+    
        msg_joint_states.header.stamp = ros::Time::now();
        pub_joint_states.publish(msg_joint_states);
        pub_joint_current_angles.publish(msg_joint_current_angles);
