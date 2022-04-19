@@ -143,11 +143,15 @@
     TO SEE THE COMPLETE LIST OF CONTROL OPTIONS VISIT:
     https://emanual.robotis.com/docs/en/dxl/mx/mx-64/#control-table-of-eeprom-area*/
 #define ADDR_MX_CURRENT_POSITION    36
+#define ADDR_LEN_CURRENT_POSITION   2
+
 #define ADDR_MX_GOAL_POSITION       30
+#define ADDR_LEN_GOAL_POSITION      2
+
 #define ADDR_CM730_DYNAMIXEL_POWER  24
 
 // --> SETTING UP THE ARRAY OF ID'S
-uint16_t servos_ids[20] =
+uint8_t servos_ids[20] =
 {
     ID_LEG_LEFT_HIP_YAW    ,
     ID_LEG_LEFT_HIP_ROLL   , 
@@ -222,7 +226,6 @@ int servos_is_clockwise[20] =
 };
 
 uint16_t servos_goal_position[20];
-//->motors satate[1];
 
 /*------------------------------------------*\
 |                CALLBACKS
@@ -333,6 +336,8 @@ int main(int argc, char** argv)
     char const *late = latencia.data();
     ros::Rate loop(30);
     system(late);
+    //system("echo 1 | sudo tee /sys/bus/usb-serial/devices/ttyUSB0/latency_timer");
+
 
     ros::Subscriber sub_legs_goal_pose      = n.subscribe("legs_goal_pose",      1, callback_legs_goal_pose);
     ros::Subscriber sub_leg_left_goal_pose  = n.subscribe("leg_left_goal_pose",  1, callback_leg_left_goal_pose);
@@ -407,9 +412,24 @@ int main(int argc, char** argv)
         return -1;
     }
 
+    /*Sync read is not supported for protocol 1.0 communication, only for protocol 2.0 communication
+      so that is the reason why we are using bulk read communication*/
+    
+    // Initialize GroupBulkRead instance
+    dynamixel::GroupBulkRead groupRead(portHandler, packetHandler);
+    
+    // Initialize GroupSyncWrite instance
+    dynamixel::GroupSyncWrite groupSyncWrite(portHandler, packetHandler, ADDR_MX_GOAL_POSITION, ADDR_LEN_GOAL_POSITION);
+
+    // Variable to verify if instruction was added succesfully to groupRead
+    bool dxl_addparam_result = false;
+    // Variable to verify data result
+    bool dxl_getdata_result = false;
+
     uint8_t  dxl_error       = 0;
     int      dxl_comm_result = COMM_TX_FAIL;
     uint16_t dxl_current_pos;
+    uint8_t param_goal_position[2];
 
     /*---------------------------------------
     |      WAKE UP CM730 (ADDR 24)          |
@@ -426,77 +446,109 @@ int main(int argc, char** argv)
     /*---------------------------------------
     |      READ ALL POSITIONS (ADDR 36)      |
     -----------------------------------------*/
-    for(int i = 0; i < 20; i++)
-    {
-        dxl_comm_result = packetHandler->read2ByteTxRx(portHandler, 
-                                                       servos_ids[i], 
-                                                       ADDR_MX_CURRENT_POSITION,
-                                                       &dxl_current_pos,
-                                                       &dxl_error);
-        if(dxl_comm_result == COMM_SUCCESS && dxl_error == 0)
-        {
-            servos_goal_position[i] = dxl_current_pos;
-            msg_joint_states.position[i] = (int(dxl_current_pos) - int(servos_position_zero[i]))*SERVO_MX_RADS_PER_BIT *
-                servos_is_clockwise[i];
-            std::cout << "CM730.->Initial position servo " << servos_ids[i] << ": " << int(dxl_current_pos) << std::endl;
-            std::cout << "CM730.->Initial position servo " << servos_ids[i] << ": " << msg_joint_states.position[i] << std::endl;
 
+    for(int i=0; i<20; ++i)
+    {
+        dxl_addparam_result = groupRead.addParam(servos_ids[i], 
+                            ADDR_MX_CURRENT_POSITION, 
+                            ADDR_LEN_CURRENT_POSITION);
+        if(dxl_addparam_result != true){
+            std::cout << "CM730 -> Failed to add id " << servos_ids[i] << " to the list of groupBulkRead" << std::endl;
         }
-        else 
-            if(dxl_comm_result != COMM_SUCCESS)
-                std::cout << "CM730.->Communication error while trying to read servo id " << servos_ids[i] << std::endl;
-            else
-                std::cout << "CM730.->Warning! Error in servo id "<< servos_ids[i] << " with code "<< int(dxl_error) << std::endl;
+    } 
+    dxl_comm_result = groupRead.txRxPacket();
+    if(dxl_comm_result != COMM_SUCCESS)
+    {
+        std::cout << "Communication error with Bulk Read Instruction (dxl_comm_result1)" << std::endl;
+        //packetHandler->printTxRxResult(dxl_comm_result);
     }
+    for(int i=0; i<20; ++i)
+    {
+        dxl_getdata_result = groupRead.isAvailable(servos_ids[i],
+                                                   ADDR_MX_CURRENT_POSITION,
+                                                   ADDR_LEN_CURRENT_POSITION);
+        if (dxl_getdata_result != true)
+        {
+        std::cout << "CM730 -> FAILED TO OBTAIN DATA FROM SERVO " << servos_ids[i] << " IN groupRead.isAvailable()";
+        }
+        dxl_current_pos = groupRead.getData(servos_ids[i],
+                                            ADDR_MX_CURRENT_POSITION,
+                                            ADDR_LEN_CURRENT_POSITION);
+        servos_goal_position[i] = dxl_current_pos;
+        msg_joint_states.position[i] = (int(dxl_current_pos) - int(servos_position_zero[i]))
+                                        * SERVO_MX_RADS_PER_BIT 
+                                        * servos_is_clockwise[i];
+    }
+    groupRead.clearParam();
     ros::Duration(1.0).sleep();
 
     /*---------------------------------------\
-    |      HUMANOID IS ALIVE, NOW         |
+    |      HUMANOID IS ALIVE, NOW            |
     -----------------------------------------*/
+
     while(ros::ok())
     {
-        for(int i = 0; i < 20; i++)
-        {
-            dxl_comm_result = packetHandler->read2ByteTxRx(portHandler, 
-                                                         servos_ids[i],
-                                                         ADDR_MX_CURRENT_POSITION,
-                                                         &dxl_current_pos, 
-                                                         &dxl_error);                                                         
-            if(dxl_comm_result == COMM_SUCCESS && dxl_error == 0)
-            {
-                msg_joint_states.position[i] = (int(dxl_current_pos) - int(servos_position_zero[i]))
-                                                *SERVO_MX_RADS_PER_BIT
-                                                *servos_is_clockwise[i];
-                msg_joint_current_angles.data[i] = msg_joint_states.position[i];
-            }
-            else 
-                if(dxl_comm_result != COMM_SUCCESS)
-                    std::cout << "CM730.->Communication error while trying to read servo id " << servos_ids[i] << std::endl;
-                else
-                    std::cout << "CM730.->Warning! Error in servo id "<< servos_ids[i] << " with code "<< int(dxl_error) << std::endl;    
-        }
 
-        for(int i=0; i < 20; i++)
-        {      
-            dxl_comm_result = packetHandler->write2ByteTxRx(portHandler,
-                                                            servos_ids[i], 
-                                                            ADDR_MX_GOAL_POSITION, 
-                                                            servos_goal_position[i],
-                                                            &dxl_error);
-            if(dxl_comm_result != COMM_SUCCESS)
-                std::cout << "CM730.-> Problem while writing goal pose to servo " << int(servos_ids[i]) << std::endl;
-            if(dxl_error != 0)
-            {
-                std::cout << "CM730.-> Status error while writing goal pose to servo" 
-                          << (int)servos_goal_position[i] 
-                          << " to servo " 
-                          << int(servos_ids[i]) 
-                          << "\tError code:" 
-                          << int(dxl_error) 
-                          << std::endl;
+        /*---------------------------------------\
+        |      READ ALL POSITIONS                |
+        -----------------------------------------*/
+
+        for(int i=0; i<20; ++i)
+        {
+            dxl_addparam_result = groupRead.addParam(servos_ids[i], 
+                                ADDR_MX_CURRENT_POSITION, 
+                                ADDR_LEN_CURRENT_POSITION);
+            if(dxl_addparam_result != true){
+                std::cout << "CM730 -> Failed to add id " << servos_ids[i] << " to the list of groupBulkRead" << std::endl;
             }
         }
-    
+        dxl_comm_result = groupRead.txRxPacket();
+        if(dxl_comm_result != COMM_SUCCESS)
+        {
+            std::cout << "Communication error with Bulk Read Instruction (dxl_comm_result2)" << std::endl;
+            //packetHandler->printTxRxResult(dxl_comm_result);
+        }
+        for(int i=0; i<20; ++i)
+        {
+            std::cout << i << std::endl;
+            dxl_getdata_result = groupRead.isAvailable(servos_ids[i],
+                                                       ADDR_MX_CURRENT_POSITION,
+                                                       ADDR_LEN_CURRENT_POSITION);
+            if (dxl_getdata_result != true)
+            {
+            std::cout << "CM730 -> FAILED TO OBTAIN DATA FROM SERVO " << servos_ids[i] << " IN groupRead.isAvailable()";
+            }
+            dxl_current_pos = groupRead.getData(servos_ids[i],
+                                                ADDR_MX_CURRENT_POSITION,
+                                                ADDR_LEN_CURRENT_POSITION);
+            msg_joint_states.position[i] = (int(dxl_current_pos) - int(servos_position_zero[i]))
+                                            * SERVO_MX_RADS_PER_BIT 
+                                            * servos_is_clockwise[i];
+            msg_joint_current_angles.data[i] = msg_joint_states.position[i];
+        }
+        groupRead.clearParam();
+
+
+        /*---------------------------------------\
+        |      WRITE ALL POSITIONS (30)          |
+        -----------------------------------------*/
+        
+        for(int i=0; i<20; ++i)
+        {
+            param_goal_position[0] = DXL_LOBYTE(servos_goal_position[i]);
+            param_goal_position[1] = DXL_HIBYTE(servos_goal_position[i]);
+            dxl_addparam_result = groupSyncWrite.addParam(servos_ids[i], param_goal_position);
+            if (dxl_addparam_result != true)
+            {
+            std::cout << "CM730 -> ERROR ADDING ID TO GROUP SYNC WRITE (dxl_addparam_result)" << std::endl; 
+            }
+        }
+        dxl_comm_result = groupSyncWrite.txPacket();
+        if (dxl_comm_result != COMM_SUCCESS){
+            std::cout << "CM730 -> Communication error (groupSyncWrite.txPacket())" << std::endl;
+        }
+        groupSyncWrite.clearParam();
+
        msg_joint_states.header.stamp = ros::Time::now();
        pub_joint_states.publish(msg_joint_states);
        pub_joint_current_angles.publish(msg_joint_current_angles);
