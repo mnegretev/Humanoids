@@ -1,6 +1,6 @@
 <launch>
     <include file="$(find surge_et_ambula)/launch/humanoid_hardware_simul.launch"/>
-
+    <env name="GAZEBO_MODEL_PATH" value="$(find nimbro_op_gazebo)/models/" />
     <group ns="hri">
         <node name="rviz" pkg="rviz" type="rviz" args="-d $(find config_files)/rviz/config.rviz" required="true"/>
 	<node name="humanoid_gui" pkg="humanoid_gui" type="humanoid_gui" output="screen"/>
