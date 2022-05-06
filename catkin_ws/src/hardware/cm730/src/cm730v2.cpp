@@ -520,7 +520,7 @@ int main(int argc, char** argv)
                                                      ADDR_MX_CURRENT_POSITION, 
                                                      ADDR_LEN_CURRENT_POSITION);
             if(dxl_addparam_result != true){
-                std::cout << "CM730 -> Failed to add id " << servos_ids[i] << " to the list of groupBulkRead" << std::endl;
+                std::cout << "CM730 -> Failed to add id " << (int)servos_ids[i] << " to the list of groupBulkRead" << std::endl;
             }
         }
 
@@ -528,8 +528,7 @@ int main(int argc, char** argv)
         
         if(dxl_comm_result != COMM_SUCCESS)
         {
-            std::cout << "Communication error with Bulk Read Instruction (Second Process)" << std::endl;
-            return 0;
+            std::cout << "\n\tCommunication error with Bulk Read Instruction (Second Process)\n" << std::endl;
         }
 
         for(int i=0; i<20; ++i)
@@ -539,7 +538,7 @@ int main(int argc, char** argv)
                                                        ADDR_LEN_CURRENT_POSITION);
             if (dxl_getdata_result != true)
             {
-            std::cout << "CM730 -> FAILED TO OBTAIN DATA FROM SERVO " << servos_ids[i] << " IN groupRead.isAvailable()";
+            std::cout << "CM730 -> FAILED TO OBTAIN DATA FROM SERVO " << (int)servos_ids[i] << " IN groupRead.isAvailable()";
             }
             else
             {
@@ -558,7 +557,7 @@ int main(int argc, char** argv)
 
 
         /*---------------------------------------\
-        |      WRITE ALL POSITIONS (30)          |
+        |      WRITE ALL POSITIONS (addr 30)     |
         -----------------------------------------*/
         
         for(int i=0; i<20; ++i)
@@ -591,8 +590,18 @@ int main(int argc, char** argv)
     /*---------------------------------------\
     |  KILLING PROCESS, SHUTTING DOWN MOTORS |
     -----------------------------------------*/
+     dxl_comm_result = packetHandler->write1ByteTxRx(portHandler,
+                                                    ID_CM730,
+                                                    ADDR_CM730_DYNAMIXEL_POWER,
+                                                    0,
+                                                    &dxl_error);
 
-    // -> TODO
+
+    if(dxl_comm_result != COMM_SUCCESS)
+        std::cout << "CM730.-> Commnunication problem while trying to killing process CM730" << std::endl;
+    
+    if(dxl_error != 0)
+        std::cout << "CM730.-> Status error after turning off dynamixel power: " << int(dxl_error) << std::endl;
 
     portHandler->closePort();
     return 0;
