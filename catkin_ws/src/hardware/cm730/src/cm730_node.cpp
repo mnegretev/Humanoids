@@ -41,9 +41,9 @@
 #define ZERO_LEG_LEFT_ANKLE_PITCH       2150
 #define ZERO_LEG_LEFT_ANKLE_ROLL        2048
 
-#define ZERO_LEG_RIGHT_HIP_YAW          2048
-#define ZERO_LEG_RIGHT_HIP_ROLL         2048
-#define ZERO_LEG_RIGHT_HIP_PITCH        2048
+#define ZERO_LEG_RIGHT_HIP_YAW          2019
+#define ZERO_LEG_RIGHT_HIP_ROLL         1067
+#define ZERO_LEG_RIGHT_HIP_PITCH        3084
 #define ZERO_LEG_RIGHT_KNEE_PITCH       2890
 #define ZERO_LEG_RIGHT_ANKLE_PITCH      2048
 #define ZERO_LEG_RIGHT_ANKLE_ROLL       2048
@@ -53,11 +53,11 @@
 #define ZERO_ARM_LEFT_ELBOW_PITCH       2048
 
 #define ZERO_ARM_RIGHT_SHOULDER_PITCH   1905
-#define ZERO_ARM_RIGHT_SHOULDER_ROLL    1407
-#define ZERO_ARM_RIGHT_ELBOW_PITCH      2048
+#define ZERO_ARM_RIGHT_SHOULDER_ROLL     880 
+#define ZERO_ARM_RIGHT_ELBOW_PITCH      2505
 
 #define ZERO_NECK_YAW                   2048
-#define ZERO_HEAD_PITCH                 2048
+#define ZERO_HEAD_PITCH                 3072
 
 
 
@@ -79,8 +79,8 @@
 #define CW_ARM_LEFT_SHOULDER_ROLL         -1
 #define CW_ARM_LEFT_ELBOW_PITCH           -1
 				            	 
-#define CW_ARM_RIGHT_SHOULDER_PITCH       -1
-#define CW_ARM_RIGHT_SHOULDER_ROLL        -1
+#define CW_ARM_RIGHT_SHOULDER_PITCH       -1 
+#define CW_ARM_RIGHT_SHOULDER_ROLL        -1 
 #define CW_ARM_RIGHT_ELBOW_PITCH           1
 				      
 #define CW_NECK_YAW                        1
@@ -336,15 +336,17 @@ int main(int argc, char** argv)
     int      dxl_comm_result = COMM_TX_FAIL;
     uint16_t dxl_current_pos;
 
-    //Turn on motor power through the CM730
+    /*Turn on motor power through the CM730
     std::cout << "CM730.->Turning on dynamixel power..." << std::endl;
     dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, ID_CM730, ADDR_CM730_DYNAMIXEL_POWER, 1, &dxl_error);
     if(dxl_comm_result != COMM_SUCCESS)
 	std::cout << "CM730.->Commnunication problem while turning on dynamixel power." << std::endl;
     if(dxl_error != 0)
 	std::cout << "CM730.->Status error after turning on dynamixel power: " << int(dxl_error) << std::endl;
+	*/
 
     ros::Duration(1.0).sleep();
+    
     //Read current position to start goal position with the current position.
     for(int i = 0; i < 20; i++)
     {
