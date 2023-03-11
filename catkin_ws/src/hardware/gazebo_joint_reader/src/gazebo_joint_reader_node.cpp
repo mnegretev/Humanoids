@@ -72,7 +72,7 @@ int main(int argc, char** argv)
         {
             srv_joints.request.joint_name = joint_states.name[i];
             clt_joints.call(srv_joints);
-            joint_states.position[i] = srv_joints.response.position[0];
+            joint_states.position[i] = fmod(srv_joints.response.position[0] + M_PI, 2*M_PI) - M_PI;
             msg_joint_current_angles.data[i] = joint_states.position[i];
         }
 

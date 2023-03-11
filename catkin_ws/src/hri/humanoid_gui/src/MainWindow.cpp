@@ -343,7 +343,7 @@ void MainWindow::txtHeadArticularChanged(double)
 void MainWindow::btnZeroPositionClicked()
 {
     std::vector<float> joint_angles;
-    std::vector<float>  left_arm_angles;
+    std::vector<float> left_arm_angles;
     std::vector<float> right_arm_angles;
 
     left_arm_angles.resize(3);
