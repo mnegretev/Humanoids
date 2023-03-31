@@ -17,6 +17,7 @@ void QtRosNode::run()
     pubArmLeftGoalPose  = n->advertise<std_msgs::Float32MultiArray>("/hardware/arm_left_goal_pose", 1);
     pubArmRightGoalPose = n->advertise<std_msgs::Float32MultiArray>("/hardware/arm_right_goal_pose", 1);
     pubHeadGoalPose     = n->advertise<std_msgs::Float32MultiArray>("/hardware/head_goal_pose", 1);
+    srvResetGazeboWorld = n->serviceClient<std_srvs::Empty>("/gazebo/reset_world");
     cltCalculateIKLegLeft  = n->serviceClient<ctrl_msgs::CalculateIK>("/control/ik_leg_left");
     cltCalculateIKLegRight = n->serviceClient<ctrl_msgs::CalculateIK>("/control/ik_leg_right");
     cltCalculateDKLegLeft  = n->serviceClient<ctrl_msgs::CalculateDK>("/control/dk_leg_left");
@@ -122,6 +123,7 @@ bool QtRosNode::callDKLegLeft(std::vector<float>& joints, float& x, float& y, fl
     roll = srv.response.roll;
     pitch = srv.response.pitch;
     yaw = srv.response.yaw;
+    return true;
 }
 
 bool QtRosNode::callDKLegRight(std::vector<float>& joints, float& x, float& y, float& z, float& roll, float& pitch,float& yaw)
@@ -135,6 +137,7 @@ bool QtRosNode::callDKLegRight(std::vector<float>& joints, float& x, float& y, f
     roll = srv.response.roll;
     pitch = srv.response.pitch;
     yaw = srv.response.yaw;
+    return true;
 }
 
 
@@ -158,4 +161,9 @@ bool QtRosNode::getAllJointCurrentAngles(std::vector<float>& angles)
 	std::cout << "QtRosNode.->Cannot get current joint angles from topic :'(" << std::endl;
     }
     return true;
+}
+
+void QtRosNode::publishResetWorldGazebo()
+{
+    srvResetGazeboWorld.call(reset_world);
 }

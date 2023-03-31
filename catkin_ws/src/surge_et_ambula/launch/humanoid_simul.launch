@@ -1,10 +1,13 @@
 <launch>
     <include file="$(find surge_et_ambula)/launch/humanoid_hardware_simul.launch"/>
 
-    <group ns="hri">
+    <!-- <group ns="hri">
         <node name="rviz" pkg="rviz" type="rviz" args="-d $(find config_files)/rviz/config.rviz" required="true"/>
+    </group> -->
+
 	<node name="humanoid_gui" pkg="humanoid_gui" type="humanoid_gui" output="screen"/>
-    </group>
+
+	<!-- <node name="rqt_graph" pkg="rqt_graph" type="rqt"/> -->
 
     <group ns="control">
         <rosparam command="load" file="$(find nimbro_op_srdf)/config/kinematics.yaml"/>

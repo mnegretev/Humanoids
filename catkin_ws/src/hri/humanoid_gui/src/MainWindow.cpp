@@ -132,7 +132,7 @@ void MainWindow::setRosNode(QtRosNode* qtRosNode)
     QObject::connect(ui->btnZeroPose, SIGNAL(clicked()), this, SLOT(btnZeroPositionClicked()));
     QObject::connect(ui->btnCurrentPose, SIGNAL(clicked()), this, SLOT(btnCurrentPositionClicked()));
     QObject::connect(ui->btnStartPose, SIGNAL(clicked()), this, SLOT(btnStartPositionClicked()));
-
+    QObject::connect(ui->btnResetWorld, SIGNAL(clicked()), this, SLOT(btnResetWorldClicked()));
     txtLegLeftArticularChanged(0);
     txtLegRightArticularChanged(0);
     
@@ -437,4 +437,9 @@ void MainWindow::btnStartPositionClicked()
     joint_angles[10] = -0.408;
     joint_angles[11] = 0.012;
     qtRosNode->publishLegsGoalPose(joint_angles);
+}
+
+void MainWindow::btnResetWorldClicked()
+{
+    qtRosNode->publishResetWorldGazebo();
 }

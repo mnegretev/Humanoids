@@ -54,6 +54,7 @@ public slots:
     void btnZeroPositionClicked();
     void btnCurrentPositionClicked();
     void btnStartPositionClicked();
+    void btnResetWorldClicked();
 
 private:
     Ui::MainWindow *ui;

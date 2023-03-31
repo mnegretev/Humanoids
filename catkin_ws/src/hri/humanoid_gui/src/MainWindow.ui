@@ -1627,6 +1627,19 @@ QRadioButton::indicator{
        <string>Start Pose</string>
       </property>
      </widget>
+     <widget class="QPushButton" name="btnResetWorld">
+      <property name="geometry">
+       <rect>
+        <x>230</x>
+        <y>230</y>
+        <width>99</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Reset World</string>
+      </property>
+     </widget>
     </widget>
    </widget>
   </widget>

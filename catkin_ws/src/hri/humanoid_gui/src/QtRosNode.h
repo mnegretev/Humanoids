@@ -8,6 +8,7 @@
 #include "std_msgs/String.h"
 #include "std_msgs/Float32.h"
 #include "std_msgs/Float32MultiArray.h"
+#include "std_srvs/Empty.h"
 #include "ctrl_msgs/CalculateIK.h"
 #include "ctrl_msgs/CalculateDK.h"
 
@@ -37,7 +38,11 @@ public:
     ros::ServiceClient cltCalculateIKLegRight;
     ros::ServiceClient cltCalculateDKLegLeft;
     ros::ServiceClient cltCalculateDKLegRight;
-    
+
+    std_srvs::Empty reset_world;    
+    ros::ServiceClient srvResetGazeboWorld;
+
+
     void run();
     void setNodeHandle(ros::NodeHandle* nh);
 
@@ -47,6 +52,7 @@ public:
     void publishArmLeftGoalPose(std::vector<float> armLeftGoalPose);
     void publishArmRightGoalPose(std::vector<float> armRightGoalPose);
     void publishHeadGoalPose(std::vector<float> headGoalPose);
+    void publishResetWorldGazebo();
     bool callIKLegLeft(float x, float y, float z, float roll, float pitch, float yaw,std::vector<float>& result);
     bool callIKLegRight(float x, float y, float z, float roll, float pitch,float yaw,std::vector<float>& result);
     bool callDKLegLeft(std::vector<float>& joints, float& x, float& y, float& z, float& roll, float& pitch, float& yaw);
