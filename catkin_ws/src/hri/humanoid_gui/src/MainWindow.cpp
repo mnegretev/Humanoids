@@ -345,6 +345,7 @@ void MainWindow::btnZeroPositionClicked()
     std::vector<float> joint_angles;
     std::vector<float> left_arm_angles;
     std::vector<float> right_arm_angles;
+    std::vector<float> head_angles;
 
     left_arm_angles.resize(3);
     left_arm_angles[0] = 0;
@@ -371,9 +372,14 @@ void MainWindow::btnZeroPositionClicked()
     joint_angles[10] = 0;
     joint_angles[11] = 0;
 
+    head_angles.resize(2);
+    head_angles[0] = 0;
+    head_angles[1] = 0;
+
     qtRosNode->publishArmLeftGoalPose(left_arm_angles);
     qtRosNode->publishArmRightGoalPose(right_arm_angles);
     qtRosNode->publishLegsGoalPose(joint_angles);
+    qtRosNode->publishHeadGoalPose(head_angles);
 }
 
 void MainWindow::btnCurrentPositionClicked()
