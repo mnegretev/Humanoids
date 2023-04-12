@@ -57,30 +57,30 @@
 |  staight.                                  |
 \-------------------------------------------*/
 
-#define ZERO_LEG_LEFT_HIP_YAW       2061
-#define ZERO_LEG_LEFT_HIP_ROLL      2100 
-#define ZERO_LEG_LEFT_HIP_PITCH     1903
-#define ZERO_LEG_LEFT_KNEE_PITCH    2439
-#define ZERO_LEG_LEFT_ANKLE_PITCH   2119
-#define ZERO_LEG_LEFT_ANKLE_ROLL    2075
+#define ZERO_LEG_LEFT_HIP_YAW           2070
+#define ZERO_LEG_LEFT_HIP_ROLL          2070
+#define ZERO_LEG_LEFT_HIP_PITCH         2048
+#define ZERO_LEG_LEFT_KNEE_PITCH        2400
+#define ZERO_LEG_LEFT_ANKLE_PITCH       2150
+#define ZERO_LEG_LEFT_ANKLE_ROLL        2048
 
-#define ZERO_LEG_RIGHT_HIP_YAW      2049
-#define ZERO_LEG_RIGHT_HIP_ROLL     1060
-#define ZERO_LEG_RIGHT_HIP_PITCH    3219
-#define ZERO_LEG_RIGHT_KNEE_PITCH   2857
-#define ZERO_LEG_RIGHT_ANKLE_PITCH  2019
-#define ZERO_LEG_RIGHT_ANKLE_ROLL   2021
+#define ZERO_LEG_RIGHT_HIP_YAW          2019
+#define ZERO_LEG_RIGHT_HIP_ROLL         1067
+#define ZERO_LEG_RIGHT_HIP_PITCH        3084
+#define ZERO_LEG_RIGHT_KNEE_PITCH       2890
+#define ZERO_LEG_RIGHT_ANKLE_PITCH      2048
+#define ZERO_LEG_RIGHT_ANKLE_ROLL       2048
 
-#define ZERO_ARM_LEFT_SHOULDER_PITCH    2041
-#define ZERO_ARM_LEFT_SHOULDER_ROLL     2462
-#define ZERO_ARM_LEFT_ELBOW_PITCH       1617
+#define ZERO_ARM_LEFT_SHOULDER_PITCH    2048
+#define ZERO_ARM_LEFT_SHOULDER_ROLL     2440
+#define ZERO_ARM_LEFT_ELBOW_PITCH       2048
 
-#define ZERO_ARM_RIGHT_SHOULDER_PITCH   1943
-#define ZERO_ARM_RIGHT_SHOULDER_ROLL    939
-#define ZERO_ARM_RIGHT_ELBOW_PITCH      2920
+#define ZERO_ARM_RIGHT_SHOULDER_PITCH   1905
+#define ZERO_ARM_RIGHT_SHOULDER_ROLL     880 
+#define ZERO_ARM_RIGHT_ELBOW_PITCH      2505
 
 #define ZERO_NECK_YAW                   2048
-#define ZERO_HEAD_PITCH                 2048
+#define ZERO_HEAD_PITCH                 3072
 
 /*------------------------------------------\
 |       CLOCKWISE OR COUNTER-CLOCKWISE      |
@@ -313,19 +313,9 @@ int main(int argc, char** argv)
     std::cout << "INITIALIZING CM730 NODE BY MARCOSOFT..." << std::endl;
     ros::init(argc, argv, "cm730v2");
     ros::NodeHandle n;
-
-    // --> OBTAINING USB PORT NAME
-    std::string usbport="ttyUSB0";
-    n.getParam("usbport", usbport);
-    
-    std::string lat1, lat2, latencia;
-    lat1 = "echo 1 | sudo tee /sys/bus/usb-serial/devices/";
-    lat2="/latency_timer";
-    latencia= lat1+usbport+lat2;
-    char const *late = latencia.data();
     ros::Rate loop(30);
-    system(late);
-    //system("echo 1 | sudo tee /sys/bus/usb-serial/devices/ttyUSB0/latency_timer");
+    // --> OBTAINING USB PORT NAME
+    system("echo 1 | sudo tee /sys/bus/usb-serial/devices/ttyUSB0/latency_timer");
 
     /*----------------------------------------------*\
     |               ROS SUBSCRIBERS                  |
@@ -389,10 +379,7 @@ int main(int argc, char** argv)
     |               PORT AND PACKET HANDLER          |
     |-----------------------------------------------*/
 
-    std::string dev="/dev/";
-    std::string puerto = dev+usbport;
-    char const *puertochar = puerto.data();
-    dynamixel::PortHandler   *portHandler   = dynamixel::PortHandler::getPortHandler(puertochar);
+    dynamixel::PortHandler   *portHandler   = dynamixel::PortHandler::getPortHandler("/dev/ttyUSB0");
     dynamixel::PacketHandler *packetHandler = dynamixel::PacketHandler::getPacketHandler(SERVO_PROTOCOL_VERSION);
 
     if(portHandler->openPort())
@@ -606,5 +593,5 @@ int main(int argc, char** argv)
     portHandler->closePort();
     return 0;
     //DONE MOTORS OFF
-    //>:( 
+    
 }
