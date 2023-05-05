@@ -342,11 +342,22 @@ void MainWindow::txtHeadArticularChanged(double)
 
 void MainWindow::btnZeroPositionClicked()
 {
-    std::vector<float> joint_angles;
-    std::vector<float> left_arm_angles;
-    std::vector<float> right_arm_angles;
-    std::vector<float> head_angles;
+    std::vector<double> current_joint_angles;
+    if(!qtRosNode->getAllJointCurrentAngles(current_joint_angles))
+    {
+	std::cout << "MainWindow.->Cannot get current joint angles" << std::endl;
+	return;
+    }
+    std::vector<float>  joint_angles;
+    std::vector<float>  left_arm_angles;
+    std::vector<float>  right_arm_angles;
+    std::vector<float>  head_angles;
+    std::vector<double> goal_head_angles;
+    std::vector<double> current_head_angles;
 
+    goal_head_angles.resize(2);
+    current_head_angles.resize(2);
+    
     left_arm_angles.resize(3);
     left_arm_angles[0] = 0;
     left_arm_angles[1] = 0;
@@ -380,6 +391,7 @@ void MainWindow::btnZeroPositionClicked()
     qtRosNode->publishArmRightGoalPose(right_arm_angles);
     qtRosNode->publishLegsGoalPose(joint_angles);
     qtRosNode->publishHeadGoalPose(head_angles);
+    qtRosNode->callPolynomialTrajectory(current_head_angles, goal_head_angles);
 }
 
 void MainWindow::btnCurrentPositionClicked()

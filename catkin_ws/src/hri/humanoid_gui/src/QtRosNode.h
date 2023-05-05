@@ -11,6 +11,7 @@
 #include "std_srvs/Empty.h"
 #include "ctrl_msgs/CalculateIK.h"
 #include "ctrl_msgs/CalculateDK.h"
+#include "manip_msgs/GetPolynomialTrajectory.h"
 
 class QtRosNode : public QThread
 {
@@ -38,7 +39,7 @@ public:
     ros::ServiceClient cltCalculateIKLegRight;
     ros::ServiceClient cltCalculateDKLegLeft;
     ros::ServiceClient cltCalculateDKLegRight;
-
+    ros::ServiceClient cltPolynomialTrajectory;
     std_srvs::Empty reset_world;    
     ros::ServiceClient srvResetGazeboWorld;
 
@@ -57,12 +58,14 @@ public:
     bool callIKLegRight(float x, float y, float z, float roll, float pitch,float yaw,std::vector<float>& result);
     bool callDKLegLeft(std::vector<float>& joints, float& x, float& y, float& z, float& roll, float& pitch, float& yaw);
     bool callDKLegRight(std::vector<float>& joints, float& x, float& y, float& z, float& roll, float& pitch,float& yaw);
+    bool callPolynomialTrajectory(std::vector<double>  p_init, std::vector<double> p_final);
     bool getLegLeftPositionOnce(std::vector<float>& joints);
     bool getLegRightPositionOnce(std::vector<float>& joints);
     bool getArmLeftPositionOnce(std::vector<float>& joints);
     bool getArmRightPositionOnce(std::vector<float>& joints);
     bool getHeadPositionOnce(std::vector<float>& joints);
     bool getAllJointCurrentAngles(std::vector<float>& angles);
+    bool getAllJointCurrentAngles(std::vector<double>& angles);
 
 signals:
     void updateGraphics();

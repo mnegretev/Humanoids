@@ -18,11 +18,11 @@ void QtRosNode::run()
     pubArmRightGoalPose = n->advertise<std_msgs::Float32MultiArray>("/hardware/arm_right_goal_pose", 1);
     pubHeadGoalPose     = n->advertise<std_msgs::Float32MultiArray>("/hardware/head_goal_pose", 1);
     srvResetGazeboWorld = n->serviceClient<std_srvs::Empty>("/gazebo/reset_world");
-    cltCalculateIKLegLeft  = n->serviceClient<ctrl_msgs::CalculateIK>("/control/ik_leg_left");
-    cltCalculateIKLegRight = n->serviceClient<ctrl_msgs::CalculateIK>("/control/ik_leg_right");
-    cltCalculateDKLegLeft  = n->serviceClient<ctrl_msgs::CalculateDK>("/control/dk_leg_left");
-    cltCalculateDKLegRight = n->serviceClient<ctrl_msgs::CalculateDK>("/control/dk_leg_right");
-        
+    cltCalculateIKLegLeft   = n->serviceClient<ctrl_msgs::CalculateIK>("/control/ik_leg_left");
+    cltCalculateIKLegRight  = n->serviceClient<ctrl_msgs::CalculateIK>("/control/ik_leg_right");
+    cltCalculateDKLegLeft   = n->serviceClient<ctrl_msgs::CalculateDK>("/control/dk_leg_left");
+    cltCalculateDKLegRight  = n->serviceClient<ctrl_msgs::CalculateDK>("/control/dk_leg_right");
+    cltPolynomialTrajectory = n->serviceClient<manip_msgs::GetPolynomialTrajectory>("/manipulation/polynomial_trajectory");
     ros::Rate loop(10);
     while(ros::ok() && !this->gui_closed)
     {
@@ -140,8 +140,41 @@ bool QtRosNode::callDKLegRight(std::vector<float>& joints, float& x, float& y, f
     return true;
 }
 
+bool QtRosNode::callPolynomialTrajectory(std::vector<double>  p_init, std::vector<double> p_final)
+{
+    manip_msgs::GetPolynomialTrajectory srv;
+    srv.request.p1 = p_init;
+    srv.request.p2 = p_final;
+    srv.request.duration = 1;
+    srv.request.time_step = 0.05;
+    cltPolynomialTrajectory.call(srv);
+    
+
+}
 
 bool QtRosNode::getAllJointCurrentAngles(std::vector<float>& angles)
+{
+    angles.resize(20);
+    try
+    {
+	std_msgs::Float32MultiArray::ConstPtr msg = ros::topic::waitForMessage<std_msgs::Float32MultiArray>(
+	    "/hardware/joint_current_angles", ros::Duration(10));
+	if(msg->data.size() != 20)
+	{
+	    std::cout << "QtRosNode.->current joint angles message should be 20 values long " << std::endl;
+	    return false;
+	}
+	for(int i=0; i < 20; i++)
+	    angles[i] = msg->data[i];
+    }
+    catch(...)
+    {
+	std::cout << "QtRosNode.->Cannot get current joint angles from topic :'(" << std::endl;
+    }
+    return true;
+}
+
+bool QtRosNode::getAllJointCurrentAngles(std::vector<double>& angles)
 {
     angles.resize(20);
     try
