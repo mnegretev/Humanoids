@@ -6,18 +6,13 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   humanoid_msgs
-)
-
-generate_messages(
-  DEPENDENCIES
-  std_msgs
+  ctrl_msgs
 )
 
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES humanoid
-  CATKIN_DEPENDS roscpp rospy std_msgs humanoid_msgs 
-#  DEPENDS system_lib
+  CATKIN_DEPENDS roscpp rospy std_msgs humanoid_msgs ctrl_msgs
 )
 
 include_directories(

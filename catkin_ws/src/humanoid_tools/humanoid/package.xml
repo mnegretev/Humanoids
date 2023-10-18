@@ -57,10 +57,12 @@
   <build_export_depend>rospy</build_export_depend>
   <build_export_depend>std_msgs</build_export_depend>
   <build_export_depend>humanoid_msgs</build_export_depend>
+  <build_depend>ctrl_msgs</build_depend>
   <exec_depend>roscpp</exec_depend>
   <exec_depend>rospy</exec_depend>
   <exec_depend>std_msgs</exec_depend>
   <exec_depend>humanoid_msgs</exec_depend>
+  <exec_depend>ctrl_msgs</exec_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->

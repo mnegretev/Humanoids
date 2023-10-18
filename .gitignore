@@ -37,3 +37,7 @@ CMakeLists.txt.user
 *.pyc
 qtcreator-*
 *.user
+
+# Ignore generated dirs by catkin build
+logs/
+.catkin_tools/
