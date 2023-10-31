@@ -62,8 +62,6 @@ def main():
     #First, lower the body of the robot and move its COM to the right foot
     #This is a harcoded value that can be modified later
 
-    
-
     starting_body_points = np.array([
                      [0,0.67*X_BODY_TO_FEET],
                      [0,0],
@@ -90,21 +88,20 @@ def main():
     rel_position = body_position - [-X_BODY_TO_FEET, 0, 0]
 
     foot_right = np.array([[-X_BODY_TO_FEET,0,0]])
-    foot_left = np.array([[-X_BODY_TO_FEET,0,0]])
-
+    foot_left = np.array([[X_BODY_TO_FEET,0,0]])
+    
     for i in np.arange(0, len(time_vector)-1):
         foot_right = np.concatenate((foot_right, np.array([[-x_0, 0, 0]])), axis=0)
-        foot_left = np.concatenate((foot_left, np.array([[X_BODY_TO_FEET, 0 , 0]])), axis=0)
+        foot_left = np.concatenate((foot_left, np.array([[x_0, 0 , 0]])), axis=0)
 
-    print(rel_position.shape)
-    print(rel_position)
-    print(foot_right.shape)
+    # print(f"Relative position COM matrix shape: {rel_position.shape}")
+    # print(rel_position)
+    print(f"Right foot matrix shape: {foot_right.shape}")
     print(foot_right)
-    print(foot_left.shape)
+    print(f"Left foot matrix shape: {foot_left.shape}")
     print(foot_left)
 
     start_pose_step = Step(mode="DoubleSupport")
-    start_pose_step.com_rel_position = rel_position
     start_pose_step.timevec = time_vector
     start_pose_step.footleft = foot_left
     start_pose_step.footright = foot_right
@@ -142,7 +139,13 @@ def main():
                             [0,0],
                             [0,0]
                             ])
-                            
+
+    print(body_position.shape)
+    print(body_position)
+
+    start_pose_step = Step(mode="RightSupport")
+
+    exit()
 
     #################################################################
     ## PART 3: MAKE CONSECUTIVE STEPS
@@ -231,10 +234,10 @@ def changeLeg(finalState, body_position):
 
     return [newInitialState, newFoothold_x, newFoothold_y]
 
-def getFootSwingTraj():
-    return
+def getFootSwingTraj(footpos0, footpos1, swing_height, initial_state, t0, tf, Ts):
+    pass
 
 def cubicPolyTraj():
-    return
+    pass
 
 main()
