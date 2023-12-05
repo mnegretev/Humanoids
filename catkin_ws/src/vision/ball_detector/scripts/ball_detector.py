@@ -2,8 +2,10 @@
 
 import cv2
 import numpy as np
+import geometry_msgs.msg
 import math
 import rospy
+import tf2_msgs.msg
 from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
 
@@ -77,6 +79,25 @@ def get_quaternion_from_euler(roll, pitch, yaw):
 def get_undistorted_image(distorted_image, camera_matrix, distortion_coef):
     return cv2.undistort(distorted_image, camera_matrix, distortion_coef, None)
 
+def publish_new_coordinate_frame(t, q):
+    # Check: http://docs.ros.org/en/jade/api/tf2_msgs/html/msg/TFMessage.html
+    pub_tf = rospy.Publisher("/tf",
+                             tf2_msgs.msg.TFMessage,
+                             queue_size = 10)
+    # Check: http://docs.ros.org/en/jade/api/geometry_msgs/html/msg/TransformStamped.html
+    new_trans                 = geometry_msgs.msg.TransformStamped()
+    new_trans.header.frame_id = "camera_optical"
+    new_trans.header.stamp    = rospy.Time.now()
+    new_trans.child_frame_id  = "new_camera_optical"
+    new_trans.transform.translation.x = t[0]
+    new_trans.transform.translation.y = t[1]
+    new_trans.transform.translation.z = t[2]
+    new_trans.transform.rotation.x    = q[0]
+    new_trans.transform.rotation.y    = q[1]
+    new_trans.transform.rotation.z    = q[2]
+    new_trans.transform.rotation.w    = q[3]
+    pub_tf.publish(tf2_msgs.msg.TFMessage([new_trans]))
+
 def callback_calculate_new_camera_frame(msg):
     bridge = CvBridge()
     distorted_image = bridge.imgmsg_to_cv2(msg)
@@ -99,6 +120,9 @@ def callback_calculate_new_camera_frame(msg):
                                           vfov_rad = 2.2689)
     # Get the anglesr roll, pitch and yaw as a quaternion q
     q = get_quaternion_from_euler(roll = roll, pitch = pitch, yaw = yaw)
+    # Publish new coordinate frame
+    # The x-axis of the new frame goes through the center of the ball
+    publish_new_coordinate_frame(t = (0, 0, 0), q = q)
 
     # == BEGIN: DEBUGGING SECTION ==
     undistorted_image = get_undistorted_image(distorted_image = distorted_image,
