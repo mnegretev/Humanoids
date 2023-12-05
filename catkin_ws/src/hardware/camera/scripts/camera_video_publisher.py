@@ -12,7 +12,7 @@ from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
 
 PUBL_NAME  = "camera_video_publisher"
-TOPIC_NAME = "camera/hardware/image"
+TOPIC_NAME = "/hardware/camera/image"
 CAMERA     = 0
 RATE       = 10
 
@@ -21,23 +21,16 @@ def main():
     pub_img = rospy.Publisher(TOPIC_NAME, Image, queue_size = 10)
     # Check: http://wiki.ros.org/rospy/Overview/Initialization%20and%20Shutdown
     rospy.init_node(PUBL_NAME)
-
     video_capture = cv2.VideoCapture(CAMERA)
-
     bridge = CvBridge()
-
     rate = rospy.Rate(10)
-
     while not rospy.is_shutdown():
-
         ret, frame = video_capture.read()
-
         if not ret:
             rospy.logerr("Couldn't get image from camera")
             break
-
+        # Check: https://github.com/whats-in-a-name/CarND-Capstone/commit/de9ad68f4e5f1f983dd79254a71a51894946ac11
         pub_img.publish(bridge.cv2_to_imgmsg(frame, encoding = "rgb8"))
-
         rate.sleep()        
 
 if __name__ == "__main__":
