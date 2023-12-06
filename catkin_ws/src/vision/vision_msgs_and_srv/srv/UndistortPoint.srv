@@ -1,0 +1,7 @@
+# distorted point
+float64 x_dist
+float64 y_dist
+---
+# undistorted point
+float64 x_undis
+float64 y_undis
