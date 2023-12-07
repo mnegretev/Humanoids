@@ -108,7 +108,7 @@ target_include_directories(undistort_point_service PUBLIC
 ## Specify libraries to link a library or executable target against
 target_link_libraries(
   undistort_point_service 
-    "/usr/local/MATLAB/R2023a/sys/os/glnxa64/orig/libstdc++.so.6" m
+#    "/usr/local/MATLAB/R2023a/sys/os/glnxa64/orig/libstdc++.so.6" m
     ${catkin_LIBRARIES}
     ${Boost_LIBRARIES}
     ${CMAKE_DL_LIBS}
