@@ -8,6 +8,8 @@ import rospy
 import tf2_msgs.msg
 from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
+from vision_msgs_and_srv.srv import UndistortPoint
+from vision_msgs_and_srv.srv import UndistortPointRequest
 
 HSV_LOWER_LIMIT = np.array([40, 100, 50])
 HSV_UPPER_LIMIT = np.array([80, 255, 255])
@@ -36,9 +38,19 @@ def get_centroid_px_from_binary_img(binary_img):
     return (int(centroid[0]),int(centroid[1]))
 
 def get_undistorted_px_by_service(distorted_point):
-    # To Do: Create service to use MATLAB's function
-    # to undistort a pixel
-    return distorted_point
+    rospy.wait_for_service("srv/UndistortPoint")
+    try:
+        undistort_px = rospy.ServiceProxy(name = "srv/UndistortPoint",
+                                          service_class = UndistortPoint)
+        req = UndistortPointRequest()
+        req.x_dist = distorted_point[0]
+        req.y_dist = distorted_point[1]
+        res = undistort_px(req)
+        return (int(res.x_undis), int(res.y_undis))
+    except Exception as e:
+        rospy.logerr(e)
+
+    # return distorted_point
 
 def get_roll_pitch_yaw(centroid_x,
                        centroid_y,
