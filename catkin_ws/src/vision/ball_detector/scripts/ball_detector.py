@@ -153,8 +153,8 @@ def callback_calculate_new_camera_frame(msg):
                                  color = (0, 0, 255),
                                  thickness = -1)
 
-    cv2.imshow("distorted_image", distorted_image)
-    cv2.imshow("binary_image", binary_image)
+    # cv2.imshow("distorted_image", distorted_image)
+    # cv2.imshow("binary_image", binary_image)
     cv2.imshow("undistorted_image", undistorted_image)
     cv2.waitKey(1)
     # == END: DEBUGGING SECTION ==
