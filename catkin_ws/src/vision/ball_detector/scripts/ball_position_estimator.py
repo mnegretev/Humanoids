@@ -76,8 +76,8 @@ def main():
 
         # Publish ball position
         ball_position = Point()
-        ball_position.x = kf_pos_x
-        ball_position.y = kf_pos_y
+        ball_position.x = ball_x
+        ball_position.y = ball_y
         ball_position.z = ball_z
 
         pub_pos.publish(ball_position)

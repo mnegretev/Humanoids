@@ -1,7 +1,6 @@
 <launch>
     <node name = "camera_video_publisher" pkg = "camera" type = "camera_video_publisher.py"/>
     <node name = "undistort_point_service" pkg = "undistort_point_service" type = "undistort_point_service"/>
-    <node pkg="tf2_ros" type="static_transform_publisher" name="static_transform_publisher" args="0 0 0.7 0 0 0 left_foot_plane_link camera_optical" />
     <node name = "ball_detector" pkg = "ball_detector" type = "ball_detector.py"/>
     <node name = "ball_position_estimator" pkg = "ball_detector" type = "ball_position_estimator.py"/>
 </launch>
