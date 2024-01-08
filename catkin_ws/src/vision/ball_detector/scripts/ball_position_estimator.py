@@ -8,6 +8,28 @@ from geometry_msgs.msg import Point
 from geometry_msgs.msg import PoseStamped
 from kalman_filter import EKF
 
+# === Begin: To be removed later ===
+import time
+import csv
+
+def write_pose_and_velocity(x_pos, y_pos, # x and y positions. They are NOT calculated with KF
+                            kf_x_pos, kf_y_pos, # x and y positions. They are calculated with KF
+                            kf_x_vel, kf_y_vel, # x and y velocities. They are calculated with KF
+                            file_path):
+
+    with open(file_path, 'a', newline='') as csv_file:
+        csv_writer = csv.writer(csv_file)
+        csv_writer.writerow([time.time(),
+                             x_pos,
+                             y_pos,
+                             kf_x_pos,
+                             kf_y_pos,
+                             kf_x_vel,
+                             kf_y_vel])
+    print(type(kf_x_pos))
+
+# === End: To be removed lated ===
+
 def main():
 
     # Check:
@@ -21,7 +43,7 @@ def main():
 
     tfBuffer = tf2_ros.Buffer()
     listener = tf2_ros.TransformListener(tfBuffer)
-    rate = rospy.Rate(10.0)
+    rate = rospy.Rate(30.0)
 
     while not rospy.is_shutdown():
 
@@ -74,6 +96,11 @@ def main():
         kf = EKF(0.1, Q, R)
         kf_pos_x, kf_pos_y, kf_vel_x, kf_vel_y = kf.estimate(Z = [ball_x, ball_y])
 
+        kf_pos_x = kf_pos_x[0]
+        kf_pos_y = kf_pos_y[0]
+        kf_vel_x = kf_vel_x[0]
+        kf_vel_y = kf_vel_y[0]
+
         # Publish ball position
         ball_position = Point()
         ball_position.x = ball_x
@@ -81,6 +108,14 @@ def main():
         ball_position.z = ball_z
 
         pub_pos.publish(ball_position)
+        
+        write_pose_and_velocity(x_pos = ball_x,
+                                y_pos = ball_y,
+                                kf_x_pos = kf_pos_x,
+                                kf_y_pos = kf_pos_y,
+                                kf_x_vel = kf_vel_x,
+                                kf_y_vel = kf_vel_y,
+                                file_path = '/home/andreslopez/data/not_from_raspberry_test_3.csv')
 
         rate.sleep()
 
