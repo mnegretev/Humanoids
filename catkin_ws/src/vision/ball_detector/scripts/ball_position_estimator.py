@@ -6,29 +6,6 @@ import tf2_geometry_msgs
 import tf2_ros
 from geometry_msgs.msg import Point
 from geometry_msgs.msg import PoseStamped
-from kalman_filter import EKF
-
-# === Begin: To be removed later ===
-import time
-import csv
-
-def write_pose_and_velocity(x_pos, y_pos, # x and y positions. They are NOT calculated with KF
-                            kf_x_pos, kf_y_pos, # x and y positions. They are calculated with KF
-                            kf_x_vel, kf_y_vel, # x and y velocities. They are calculated with KF
-                            file_path):
-
-    with open(file_path, 'a', newline='') as csv_file:
-        csv_writer = csv.writer(csv_file)
-        csv_writer.writerow([time.time(),
-                             x_pos,
-                             y_pos,
-                             kf_x_pos,
-                             kf_y_pos,
-                             kf_x_vel,
-                             kf_y_vel])
-    print(type(kf_x_pos))
-
-# === End: To be removed lated ===
 
 def main():
 
@@ -86,36 +63,16 @@ def main():
         ball_x = Px + k * PQ[0]
         ball_y = Py + k * PQ[1]
         ball_z = r
-        ball_x = round(ball_x, 2)
-        ball_y = round(ball_y, 2)
+        ball_x = round(ball_x, 2) # Measured ball x-position
+        ball_y = round(ball_y, 2) # Measured ball y-position
         ball_z = round(ball_z, 2)
-
-        # Applying Kalman Filter and considering constant velocity
-        Q = np.identity(4) * 0.1
-        R = np.identity(2) * 0.01
-        kf = EKF(0.1, Q, R)
-        kf_pos_x, kf_pos_y, kf_vel_x, kf_vel_y = kf.estimate(Z = [ball_x, ball_y])
-
-        kf_pos_x = kf_pos_x[0]
-        kf_pos_y = kf_pos_y[0]
-        kf_vel_x = kf_vel_x[0]
-        kf_vel_y = kf_vel_y[0]
 
         # Publish ball position
         ball_position = Point()
-        ball_position.x = ball_x
-        ball_position.y = ball_y
+        ball_position.x = ball_x # Measured ball x-position
+        ball_position.y = ball_y # Measured ball y-position
         ball_position.z = ball_z
-
         pub_pos.publish(ball_position)
-        
-        write_pose_and_velocity(x_pos = ball_x,
-                                y_pos = ball_y,
-                                kf_x_pos = kf_pos_x,
-                                kf_y_pos = kf_pos_y,
-                                kf_x_vel = kf_vel_x,
-                                kf_y_vel = kf_vel_y,
-                                file_path = '/home/andreslopez/data/not_from_raspberry_test_3.csv')
 
         rate.sleep()
 
