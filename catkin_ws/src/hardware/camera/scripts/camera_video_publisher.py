@@ -14,7 +14,7 @@ from sensor_msgs.msg import Image
 PUBL_NAME  = "camera_video_publisher"
 TOPIC_NAME = "/hardware/camera/image"
 CAMERA     = 0
-RATE       = 10
+RATE       = 30.0
 
 def main():
     # Check: http://wiki.ros.org/rospy/Overview/Publishers%20and%20Subscribers
@@ -22,8 +22,11 @@ def main():
     # Check: http://wiki.ros.org/rospy/Overview/Initialization%20and%20Shutdown
     rospy.init_node(PUBL_NAME)
     video_capture = cv2.VideoCapture(CAMERA)
+    # video_capture.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+    # video_capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+    # video_capture.set(cv2.CAP_PROP_FPS, 30)
     bridge = CvBridge()
-    rate = rospy.Rate(10)
+    rate = rospy.Rate(RATE)
     while not rospy.is_shutdown():
         ret, frame = video_capture.read()
         if not ret:
@@ -31,7 +34,7 @@ def main():
             break
         # Check: https://github.com/whats-in-a-name/CarND-Capstone/commit/de9ad68f4e5f1f983dd79254a71a51894946ac11
         pub_img.publish(bridge.cv2_to_imgmsg(frame, encoding = "rgb8"))
-        rate.sleep()        
+        # rate.sleep()        
 
 if __name__ == "__main__":
     try:

@@ -20,7 +20,7 @@ def main():
 
     tfBuffer = tf2_ros.Buffer()
     listener = tf2_ros.TransformListener(tfBuffer)
-    rate = rospy.Rate(30.0)
+    rate = rospy.Rate(10.0)
 
     while not rospy.is_shutdown():
 
@@ -56,7 +56,8 @@ def main():
         Py =  float(t_foot_to_camera.transform.translation.y)
         Pz =  float(t_foot_to_camera.transform.translation.z)
         # Get the vector that points to the center of the ball
-        PQ = [Px - Qx, Py - Qy, Pz - Qz]
+        PzQz = Pz - Qz if Pz != Qz else 0.001 # To avoid zero-division in the next steps
+        PQ = [Px - Qx, Py - Qy, PzQz]
         # ball radius
         r = 0.08 / 2
         k = (r - Pz) / PQ[2]
