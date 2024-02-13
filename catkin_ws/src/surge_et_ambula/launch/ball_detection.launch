@@ -1,0 +1,6 @@
+<launch>
+    <node name = "camera_video_publisher" pkg = "camera" type = "camera_video_publisher.py"/>
+    <node name = "undistort_point_service" pkg = "undistort_point_service" type = "undistort_point_service"/>
+    <node name = "ball_detector" pkg = "ball_detector" type = "ball_detector.py" output="screen"/>
+    <!-- <node name = "ball_position_estimator" pkg = "ball_detector" type = "ball_position_estimator.py"/> -->
+</launch>

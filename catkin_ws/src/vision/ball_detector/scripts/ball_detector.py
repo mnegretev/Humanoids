@@ -2,7 +2,7 @@
 
 import cv2
 import numpy as np
-import geometry_msgs.msg
+from geometry_msgs.msg import *
 import math
 import rospy
 import tf2_msgs.msg
@@ -111,6 +111,8 @@ def publish_new_coordinate_frame(t, q):
     pub_tf.publish(tf2_msgs.msg.TFMessage([new_trans]))
 
 def callback_calculate_new_camera_frame(msg):
+    global pub_ball_img_coords
+
     bridge = CvBridge()
     distorted_image = bridge.imgmsg_to_cv2(msg)
     # Get color segmentation
@@ -119,8 +121,11 @@ def callback_calculate_new_camera_frame(msg):
                                           hsv_upper_limit = HSV_UPPER_LIMIT)
     # Get the ball distorted centroid in pixels
     distorted_centroid = get_centroid_px_from_binary_img(binary_img = binary_image)
+    if distorted_centroid == (0,0):
+        return
     # Get the ball undistorted centroid in pixels
     x_undistorted, y_undistorted = get_undistorted_px_by_service(distorted_point = distorted_centroid)
+    pub_ball_img_coords.publish(Point(x=x_undistorted, y=y_undistorted, z=0))
     # Get the angles roll, pitch and yaw that indicate the orientation of the new frame
     roll, pitch, yaw = get_roll_pitch_yaw(centroid_x = x_undistorted,
                                           centroid_y = y_undistorted,
@@ -160,9 +165,11 @@ def callback_calculate_new_camera_frame(msg):
     # == END: DEBUGGING SECTION ==
 
 def main():
+    global pub_ball_img_coords
     # Check: http://wiki.ros.org/rospy/Overview/Initialization%20and%20Shutdown
     rospy.init_node("ball_detector")
-    rospy.Subscriber("/hardware/camera/image", Image, callback_calculate_new_camera_frame)
+    pub_ball_img_coords = rospy.Publisher("/vision/ball_img_position", Point, queue_size=1)
+    rospy.Subscriber("/hardware/camera/image", Image, callback_calculate_new_camera_frame, queue_size=1)
     rospy.spin()
 
 if __name__ == "__main__":
