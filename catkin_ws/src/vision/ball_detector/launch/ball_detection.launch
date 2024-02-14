@@ -1,0 +1,9 @@
+<launch>
+        <node pkg="ball_detector" type="ball_detector.py" name="ball_detector_node" output="screen"/>
+
+        <!-- Publish diagnostics information from low-level MCU outputs -->
+        <node pkg="camera" name="camera_node" type="camera_video_publisher.py" />
+
+        <!-- Publish wheel odometry from MCU encoder data -->
+        <node pkg="undistort_point_service" name="vision_service" type="undistort_point_service" />
+</launch>
