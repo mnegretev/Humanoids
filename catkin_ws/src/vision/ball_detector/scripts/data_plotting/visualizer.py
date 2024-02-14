@@ -28,7 +28,7 @@ class Visualizer:
         self.ax.grid(True)
 
     def plot_init(self):
-        self.ax.set_xlim(0, 35)
+        self.ax.set_xlim(0, 50)
         self.ax.set_ylim(-2, 2)
 
     def plot_callback(self, msg):

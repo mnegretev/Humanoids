@@ -5,7 +5,7 @@ import rospy
 from geometry_msgs.msg import Point
 from pprint import pprint
 
-DATA_PATH = "/home/andres/Andres/humanoid_computer_vision/catkin_ws/src/experiments/scripts/data_plotting/data/test1_feb6.csv"
+DATA_PATH = "/home/andreslopez/data/test1_feb14.csv"
 
 def read_positions(path):
     # row[1] : measured x-position

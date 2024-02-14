@@ -35,7 +35,7 @@ R = np.identity(2) * 0.01
 kf = EKF(DT, Q, R)
 
 # == MEASUREMENTS COLLECTION ==
-MAX_MEASUREMENTS = 75 # Max number of measurements to be collected
+MAX_MEASUREMENTS = 80 # Max number of measurements to be collected
 measurements = 0 # Current number of collected measurements
 measurements_collected = False # Flag to indicate if the all measurements have been collected
 
