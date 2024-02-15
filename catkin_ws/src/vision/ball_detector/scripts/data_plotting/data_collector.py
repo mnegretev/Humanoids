@@ -5,7 +5,7 @@ import rospy
 import time
 from geometry_msgs.msg import Point
 
-PATH = '/home/andreslopez/data/test1_feb14.csv'
+PATH = '/home/andreslopez/data/test3_feb15.csv'
 time0 = None
 
 def callback_receive_data(data):

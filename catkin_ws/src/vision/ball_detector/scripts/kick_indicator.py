@@ -9,6 +9,7 @@ from pprint import pprint
 import numpy as np
 import rospy
 from kalman_filter import EKF
+from std_msgs.msg import Int8
 from std_msgs.msg import Float32MultiArray
 from geometry_msgs.msg import Point
 
@@ -20,13 +21,14 @@ time0 = None
 # The kick_indicator node uses the measured ball's position
 # along with the Kalman Filter to determine the moment when
 # the robot must kick the ball.
+ready_to_kick = False
 has_kicked = False
 kick_time = None
 KICK_DURATION = 0.1
-ROBOT_FOOT_Y_POS = -0.2
+ROBOT_FOOT_Y_POS = -0.3
 # When reached, the time to reach the ball will
 # no longer be updated
-Y_THRESHOLD = -0.4
+Y_THRESHOLD = -0.65
 
 # === KALMAN FILTER PARAMS ==
 DT = 0.1
@@ -35,7 +37,7 @@ R = np.identity(2) * 0.01
 kf = EKF(DT, Q, R)
 
 # == MEASUREMENTS COLLECTION ==
-MAX_MEASUREMENTS = 80 # Max number of measurements to be collected
+MAX_MEASUREMENTS = 75 # Max number of measurements to be collected
 measurements = 0 # Current number of collected measurements
 measurements_collected = False # Flag to indicate if the all measurements have been collected
 
@@ -128,6 +130,12 @@ def prepare_to_kick():
             t += DT
             rate.sleep()
         has_kicked = True
+        
+        msg = Int8()
+        # 1 means the robot will kick
+        msg.data = 1
+        kick_pub.publish(msg)
+
     else:
         print("COULDN'T KICK")
     
@@ -138,49 +146,62 @@ def callback_receive_measurement(data):
 
     global measurements
     global measurements_collected
+    global ready_to_kick
 
-    if not measurements_collected:
-        # data.x is the measured x-position
-        # data.y is the measured y-position
-        kf.predict() # Prediction stage of the Kalman filter
-        kf.update(Z = [data.x, data.y]) # Update stage of the Kalman filter
-        measurements += 1
-        measurements_collected = measurements >= MAX_MEASUREMENTS
-        rospy.loginfo(f'measurements: {measurements}')
+    if not ready_to_kick:
+        ready_to_kick = True
+        msg = Int8()
+        # 0 means the robot will acquire a position
+        # so it is ready to kick
+        msg.data = 0
+        kick_pub.publish(msg)
 
-        sent_data_to_plotter(
-            sampled_x_pos = data.x,
-            sampled_y_pos = data.y,
-            measured_x_pos = data.x,
-            measured_y_pos = data.y,
-            estimated_x_pos = kf.x[0][0],
-            estimated_y_pos = kf.x[1][0],
-            estimated_x_vel = kf.x[2][0],
-            estimated_y_vel = kf.x[3][0]
-        )
     else:
 
-        kf.x = kf.predict()
+        if not measurements_collected:
+            # data.x is the measured x-position
+            # data.y is the measured y-position
+            kf.predict() # Prediction stage of the Kalman filter
+            kf.update(Z = [data.x, data.y]) # Update stage of the Kalman filter
+            measurements += 1
+            measurements_collected = measurements >= MAX_MEASUREMENTS
+            rospy.loginfo(f'measurements: {measurements}')
 
-        sent_data_to_plotter(
-            sampled_x_pos = 1000,
-            sampled_y_pos = 1000,
-            measured_x_pos = data.x,
-            measured_y_pos = data.y,
-            estimated_x_pos = kf.x_hat[0][0],
-            estimated_y_pos = kf.x_hat[1][0],
-            estimated_x_vel = kf.x_hat[2][0],
-            estimated_y_vel = kf.x_hat[3][0]
-        )
+            sent_data_to_plotter(
+                sampled_x_pos = data.x,
+                sampled_y_pos = data.y,
+                measured_x_pos = data.x,
+                measured_y_pos = data.y,
+                estimated_x_pos = kf.x[0][0],
+                estimated_y_pos = kf.x[1][0],
+                estimated_x_vel = kf.x[2][0],
+                estimated_y_vel = kf.x[3][0]
+            )
+        else:
+
+            kf.x = kf.predict()
+
+            sent_data_to_plotter(
+                sampled_x_pos = 1000,
+                sampled_y_pos = 1000,
+                measured_x_pos = data.x,
+                measured_y_pos = data.y,
+                estimated_x_pos = kf.x_hat[0][0],
+                estimated_y_pos = kf.x_hat[1][0],
+                estimated_x_vel = kf.x_hat[2][0],
+                estimated_y_vel = kf.x_hat[3][0]
+            )
 
 
 def main():
     global data_pub # data publisher
+    global kick_pub
     # To know how to write publishers and subscribers
     # check: http://wiki.ros.org/ROS/Tutorials/WritingPublisherSubscriber%28python%29
     rospy.init_node("kick_indicator")
     rospy.Subscriber("vision/ball_detector/ball_position", Point, callback_receive_measurement)
-    data_pub = rospy.Publisher("vision/ball_detector/estimations", Float32MultiArray, queue_size = 10)
+    kick_pub = rospy.Publisher("vision/ball_detector/kick_ball_indicator", Int8, queue_size = 1)
+    data_pub = rospy.Publisher("vision/ball_detector/estimations", Float32MultiArray, queue_size = 1)
     # rospy.spin()
     while not rospy.is_shutdown():
         if measurements_collected: break

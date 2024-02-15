@@ -2,5 +2,6 @@
 
     <node name = "plotter" pkg = "ball_detector" type = "plotter.py"/>
     <node name = "data_collector" pkg = "ball_detector" type = "data_collector.py"/>
+    <node name = "ball_kicker" pkg = "ball_detector" type = "ball_kicker.py"/>
     <node name = "kick_indicator" pkg = "ball_detector" type = "kick_indicator.py"/>
 </launch>
