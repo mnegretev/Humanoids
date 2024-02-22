@@ -129,17 +129,17 @@ def callback_calculate_new_camera_frame(msg):
     # Get the angles roll, pitch and yaw that indicate the orientation of the new frame
     roll, pitch, yaw = get_roll_pitch_yaw(centroid_x = x_undistorted,
                                           centroid_y = y_undistorted,
-                                          img_x_center = 640,
-                                          img_y_center = 360,
+                                          img_x_center = 686,
+                                          img_y_center = 364,
                                           width_resolution = 1550,
-                                          height_resolution = 1290,
+                                          height_resolution = 1300,
                                           hfov_rad = 2.6180,
                                           vfov_rad = 2.2689)
     # Get the anglesr roll, pitch and yaw as a quaternion q
     q = get_quaternion_from_euler(roll = roll, pitch = pitch, yaw = yaw)
     # Publish new coordinate frame
     # The x-axis of the new frame goes through the center of the ball
-    publish_new_coordinate_frame(t = (0, 0, 0), q = q)
+    publish_new_coordinate_frame(t = (0.055, 0, 0.02), q = q)
 
     # == BEGIN: DEBUGGING SECTION ==
     undistorted_image = get_undistorted_image(distorted_image = distorted_image,

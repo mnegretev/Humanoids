@@ -24,11 +24,11 @@ time0 = None
 ready_to_kick = False
 has_kicked = False
 kick_time = None
-KICK_DURATION = 0.1
+KICK_DURATION = 0.3
 ROBOT_FOOT_Y_POS = -0.3
 # When reached, the time to reach the ball will
 # no longer be updated
-Y_THRESHOLD = -0.65
+Y_THRESHOLD = -0.5
 
 # === KALMAN FILTER PARAMS ==
 DT = 0.1
@@ -37,7 +37,7 @@ R = np.identity(2) * 0.01
 kf = EKF(DT, Q, R)
 
 # == MEASUREMENTS COLLECTION ==
-MAX_MEASUREMENTS = 75 # Max number of measurements to be collected
+MAX_MEASUREMENTS = 20 # Max number of measurements to be collected
 measurements = 0 # Current number of collected measurements
 measurements_collected = False # Flag to indicate if the all measurements have been collected
 
