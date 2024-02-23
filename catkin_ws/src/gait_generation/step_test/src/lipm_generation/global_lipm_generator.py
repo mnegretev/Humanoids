@@ -180,20 +180,16 @@ def main():
     final_right_foot_pos    = np.array([STEP_LENGTH, -Y_BODY_TO_FEET, 0])
 
     y_0 = -Y_BODY_TO_FEET
-    [dy0, x_0, dx0, single_support_time] = findInitialConditions(STEP_LENGTH,
+
+    #Initial conditions vector that guarantees symetric trajectories in LIPM
+    [dy0, x_0, dx0, single_support_time] = findInitialConditions(STEP_LENGTH/2,
                                                                  ROBOT_VEL_X,
                                                                  y_0,
                                                                  Z_ROBOT_WALK,
                                                                  G)
 
-    #Initial conditions vector that guarantees symetric trajectories in LIPM
-
-    # TODO: REVISAR EL VECTOR DE ESTADOS Y EL OUTPUT EN Y, EN X y Z estan bien
-
     state0 = [x_0, dx0, y_0, dy0]
-    print(state0)
     tFinal = single_support_time
-    print(single_support_time)
     steptimeVector = np.linspace(0, tFinal, math.floor(tFinal/SAMPLE_TIME))
     #Simulation loop
     nSteps = len(steptimeVector)
@@ -204,17 +200,71 @@ def main():
         dy_next = states[i][3] + SAMPLE_TIME*((states[i][2])*G/Z_ROBOT_WALK)
         y_next = states[i][2] + SAMPLE_TIME*states[i][3]
         states = np.concatenate((states, [[x_next, dx_next, y_next, dy_next]]), axis=0)
-    aux = zip(np.add(states[:,0],initial_left_foot_pos[0]), np.add(states[:,2],initial_left_foot_pos[0]), [Z_ROBOT_WALK for i in states])
+    aux = zip(np.add(states[:,0],initial_left_foot_pos[0]), np.add(states[:,2],initial_left_foot_pos[1]), [Z_ROBOT_WALK for i in states])
     
     body_position = np.concatenate((body_position,[list(i) for i in list(aux)]), axis=0)
-    [state0, initial_left_foot_pos[0], initial_left_foot_pos[1]] = changeLeg(states[-1], body_position)
-    # foot_position = np.concatenate((foot_position, [[initial_left_foot_pos[0]],[initial_left_foot_pos[1]],[0]]), axis=1)
+    # [state0, initial_left_foot_pos[0], initial_left_foot_pos[1]] = changeLeg(states[-1], body_position)
     
-    print(body_position)
+    ax.plot(body_position[:,0],body_position[:,1],body_position[:,2], "o")
+    
+    left_foot_swing = np.full((len(steptimeVector), 3), initial_left_foot_pos)
+    right_foot_swing = getFootSwingTraj(initial_right_foot_pos, final_right_foot_pos, stepHeight, steptimeVector)
+
+    ax.plot(right_foot_swing[:,0],
+            right_foot_swing[:,1],
+            right_foot_swing[:,2], "o")
+    
+
+
+    print(left_foot_swing)
+    print(right_foot_swing)
+
+    # NEXT STEP (LEFT MOVES, RIGHT STATIC)
+    #Right foot is the support foot
+    initial_right_foot_pos  = final_right_foot_pos
+
+    #Left foot moves forward
+    initial_left_foot_pos   = final_left_foot_pos
+    final_left_foot_pos    = np.array([STEP_LENGTH + 0.1, Y_BODY_TO_FEET, 0])
+
+    y_0 = Y_BODY_TO_FEET
+
+    #Initial conditions vector that guarantees symetric trajectories in LIPM
+    [dy0, x_0, dx0, single_support_time] = findInitialConditions(STEP_LENGTH/2,
+                                                                 ROBOT_VEL_X,
+                                                                 y_0,
+                                                                 Z_ROBOT_WALK,
+                                                                 G)
+
+    state0 = [x_0, dx0, y_0, dy0]
+    tFinal = single_support_time
+    steptimeVector = np.linspace(0, tFinal, math.floor(tFinal/SAMPLE_TIME))
+    #Simulation loop
+    nSteps = len(steptimeVector)
+    states = np.array([state0])
+    for i in range(0, nSteps-1):
+        dx_next = states[i][1] + SAMPLE_TIME*((states[i][0])*G/Z_ROBOT_WALK)
+        x_next = states[i][0] + SAMPLE_TIME*states[i][1]
+        dy_next = states[i][3] + SAMPLE_TIME*((states[i][2])*G/Z_ROBOT_WALK)
+        y_next = states[i][2] + SAMPLE_TIME*states[i][3]
+        states = np.concatenate((states, [[x_next, dx_next, y_next, dy_next]]), axis=0)
+    aux = zip(np.add(states[:,0],initial_right_foot_pos[0]), np.add(states[:,2],initial_right_foot_pos[1]), [Z_ROBOT_WALK for i in states])
+    
+    body_position = np.concatenate((body_position,[list(i) for i in list(aux)]), axis=0)
 
     ax.plot(body_position[:,0],body_position[:,1],body_position[:,2], "o")
-    # ax.plot(foot_position[0,:],foot_position[1,:], foot_position[2,:], "o")
-    
+
+    # [state0, initial_left_foot_pos[0], initial_left_foot_pos[1]] = changeLeg(states[-1], body_position)
+    print(body_position)
+    right_foot_swing = np.full((len(steptimeVector), 3), initial_right_foot_pos)
+    print(initial_left_foot_pos)
+    print(final_left_foot_pos)
+    left_foot_swing = getFootSwingTraj(initial_left_foot_pos, final_left_foot_pos, stepHeight, steptimeVector)
+
+    ax.plot(left_foot_swing[:,0],
+            left_foot_swing[:,1],
+            left_foot_swing[:,2], "o")
+
     plt.show()
 
     exit()
@@ -273,9 +323,10 @@ def getFootSwingTraj(initial_foot_position, final_foot_position, swing_height, t
     print(f"h = {h}")
     k = swing_height
     print(f"k = {k}")
-    a = -k/((-h)**2)
+    a = -k/((x_0-h)**2)
     print(f"a = {a}")
-    x_t = lambda t: x_0 + (x_1 - x_0) * t
+    m = (x_1 - x_0)/(timeVector[-1]- timeVector[0])
+    x_t = lambda t: x_0 + m*t
     z = lambda x: a*((x-h)**2) + k
     
     print(z(x_0))
@@ -290,7 +341,7 @@ def getFootSwingTraj(initial_foot_position, final_foot_position, swing_height, t
 
     return swingFootTrajectory
 
-def cubicPolyTraj():
+def getPolynomialCoefficients():
     pass
     
 if __name__ == "__main__":
