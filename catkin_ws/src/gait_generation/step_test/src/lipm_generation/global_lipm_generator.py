@@ -1,17 +1,23 @@
+#!/usr/bin/env python
 import numpy as np
 from scipy import signal, interpolate
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import math
 
+#ROS
+import rospy
+from std_msgs.msg import String, Float32MultiArray
+from ctrl_msgs.srv import CalculateIK, CalculateIKRequest
+
 G = 9.81 # [m/s^2]
 
-Y_BODY_TO_FEET  = 0.12 # [m]
-Z_ROBOT_WALK    = 0.68 # m
-Z_ROBOT_STATIC= 0.75 # m
+Y_BODY_TO_FEET  = 0.055 # [m]
+Z_ROBOT_WALK    = 0.55 # m
+Z_ROBOT_STATIC= 0.56 # m
 
-stepHeight = 0.2
-STEP_LENGTH = 0.2 # [m]
+stepHeight = 0.05
+STEP_LENGTH = 0.1 # [m]
 ROBOT_VEL_X = 0.1 # [m]
 
 # Tiempo de muestreo
@@ -37,7 +43,12 @@ class Step:
         self.transmatright = []
 
 
-def main():
+def main(args = None):
+
+    rospy.init_node('step_test_node', anonymous=True)
+    cltCalculateIKLegLeft = rospy.ServiceProxy('/control/ik_leg_left', CalculateIK)
+    cltCalculateIKLegRight = rospy.ServiceProxy('/control/ik_leg_right', CalculateIK)
+
     steps = []
     body_position = np.array([[0,0,0]])
     time_vector = np.array([])# [m]
@@ -75,40 +86,38 @@ def main():
         body_position = np.concatenate((body_position,aux), axis=0)
     body_position = np.delete(body_position, 0, axis=0)
 
-    rel_position = body_position - [0, -Y_BODY_TO_FEET, 0]
+    right_leg_relative_pos =  [0, -Y_BODY_TO_FEET, 0] - body_position
+    left_leg_relative_pos = [0, Y_BODY_TO_FEET, 0] - body_position
 
-    foot_right = np.array([[0,-Y_BODY_TO_FEET,0]])
-    foot_left = np.array([[0, Y_BODY_TO_FEET,0]])
-    
-    for i in np.arange(0, len(time_vector)-1):
-        foot_right = np.concatenate((foot_right, np.array([[0, -Y_BODY_TO_FEET, 0]])), axis=0)
-        foot_left = np.concatenate((foot_left, np.array([[0, Y_BODY_TO_FEET, 0]])), axis=0)
-    
-    print(f"Absolute COM shape is: {rel_position.shape}")
-    print(rel_position)
-    print(f"Right foot matrix shape: {foot_right.shape}")
-    print(foot_right)
-    print(f"Left foot matrix shape: {foot_left.shape}")
-    print(foot_left)
+    # INVERSE KINEMATICS
+    for vector in right_leg_relative_pos:
+        print(f"{vector}")
+        req = CalculateIKRequest(x=vector[0], y=vector[1], z=vector[2], roll=0, pitch=0, yaw=0)
+
+
+    print(right_leg_relative_pos)
+    print(left_leg_relative_pos)
 
     start_pose_step = Step(mode="DoubleSupport")
     start_pose_step.timevec = time_vector
-    start_pose_step.footleft = foot_left
-    start_pose_step.footright = foot_right
+    start_pose_step.footleft = right_leg_relative_pos
+    start_pose_step.footright = left_leg_relative_pos
 
     steps.append(start_pose_step)
-    
+
     ax = plt.figure().add_subplot(projection='3d')
     ax.axes.set_xlim3d(left=0, right=0.4) 
     ax.axes.set_ylim3d(bottom=-0.2, top=0.2) 
     ax.axes.set_zlim3d(bottom=0, top=0.8) 
+    
+    ax.plot(body_position[:,0],body_position[:,1],body_position[:,2], "o")
 
     #################################################################
     ## PART 2: MAKE A HALF STEP
     #################################################################
     # Store left and right foothold position (left:odd, right:even)
 
-    final_halfstep_position = np.array([[0.05],[0],[Z_ROBOT_WALK]])
+    final_halfstep_position = np.array([[0.025],[0],[Z_ROBOT_WALK]])
     starting_body_points = np.concatenate((starting_body_points, final_halfstep_position), axis=1)
 
     print(starting_body_points)
@@ -225,7 +234,7 @@ def main():
 
     #Left foot moves forward
     initial_left_foot_pos   = final_left_foot_pos
-    final_left_foot_pos    = np.array([STEP_LENGTH + 0.1, Y_BODY_TO_FEET, 0])
+    final_left_foot_pos    = np.array([STEP_LENGTH*1.5, Y_BODY_TO_FEET, 0])
 
     y_0 = Y_BODY_TO_FEET
 
