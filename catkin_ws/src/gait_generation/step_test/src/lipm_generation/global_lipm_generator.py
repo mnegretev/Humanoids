@@ -90,13 +90,28 @@ def main(args = None):
     left_leg_relative_pos = [0, Y_BODY_TO_FEET, 0] - body_position
 
     # INVERSE KINEMATICS
-    for vector in right_leg_relative_pos:
-        print(f"{vector}")
-        req = CalculateIKRequest(x=vector[0], y=vector[1], z=vector[2], roll=0, pitch=0, yaw=0)
+    try:
+        for vector in right_leg_relative_pos:
+            req = CalculateIKRequest(x=vector[0],
+                                     y=vector[1],
+                                     z=vector[2],
+                                     roll=0,
+                                     pitch=0,
+                                     yaw=0 )
+            x = cltCalculateIKLegRight(req)
 
-
-    print(right_leg_relative_pos)
-    print(left_leg_relative_pos)
+        for vector in left_leg_relative_pos:
+            req = CalculateIKRequest(x=vector[0],
+                                     y= vector[1],
+                                     z=vector[2],
+                                     roll=0,
+                                     pitch=0,
+                                     yaw=0)
+            print(f"{x}")
+    except rospy.ServiceException as e:
+        print("Service call failed: %s"%e)
+    # print(right_leg_relative_pos)
+    # print(left_leg_relative_pos)
 
     start_pose_step = Step(mode="DoubleSupport")
     start_pose_step.timevec = time_vector
@@ -119,8 +134,6 @@ def main(args = None):
 
     final_halfstep_position = np.array([[0.025],[0],[Z_ROBOT_WALK]])
     starting_body_points = np.concatenate((starting_body_points, final_halfstep_position), axis=1)
-
-    print(starting_body_points)
 
     m_x = (starting_body_points[0][2] - starting_body_points[0][1])/(timepoints[1]-timepoints[0])
     m_y = (starting_body_points[1][2] - starting_body_points[1][1])/(timepoints[1]-timepoints[0])
@@ -150,12 +163,12 @@ def main(args = None):
     first_step.footleft = getFootSwingTraj(initial_left_foot_pos, final_left_foot_pos, stepHeight, first_step.timevec)
     first_step.footright = np.full((len(first_step.timevec), 3), initial_right_foot_pos)
 
-    print(first_step.footleft)
-    print(first_step.footleft.shape)
-    print(first_step.footright)
-    print(first_step.footleft.shape)
-    print(body_position)
-    print(body_position.shape)
+    # print(first_step.footleft)
+    # print(first_step.footleft.shape)
+    # print(first_step.footright)
+    # print(first_step.footleft.shape)
+    # print(body_position)
+    # print(body_position.shape)
 
     ax.plot(body_position[:,0],body_position[:,1],body_position[:,2], "o")
     ax.plot([initial_left_foot_pos[0]],
@@ -222,11 +235,6 @@ def main(args = None):
     ax.plot(right_foot_swing[:,0],
             right_foot_swing[:,1],
             right_foot_swing[:,2], "o")
-    
-
-
-    print(left_foot_swing)
-    print(right_foot_swing)
 
     # NEXT STEP (LEFT MOVES, RIGHT STATIC)
     #Right foot is the support foot
@@ -264,10 +272,7 @@ def main(args = None):
     ax.plot(body_position[:,0],body_position[:,1],body_position[:,2], "o")
 
     # [state0, initial_left_foot_pos[0], initial_left_foot_pos[1]] = changeLeg(states[-1], body_position)
-    print(body_position)
     right_foot_swing = np.full((len(steptimeVector), 3), initial_right_foot_pos)
-    print(initial_left_foot_pos)
-    print(final_left_foot_pos)
     left_foot_swing = getFootSwingTraj(initial_left_foot_pos, final_left_foot_pos, stepHeight, steptimeVector)
 
     ax.plot(left_foot_swing[:,0],
@@ -295,7 +300,7 @@ def findInitialConditions(STEP_LENGTH, ROBOT_VEL_X, y_0, zModel, G):
     # we can find time it will take to reach midstance given final velocity
     # (dy = ROBOT_VEL_Y) and final position (which is y = 0 at midstance)
     singlesupport_t = 2*math.asinh( STEP_LENGTH/2/(s*ROBOT_VEL_X) ) * s
-    print("singlesupportTIme is ", singlesupport_t)
+    # print("singlesupportTIme is ", singlesupport_t)
 
     tf = singlesupport_t/2
 
@@ -329,17 +334,17 @@ def getFootSwingTraj(initial_foot_position, final_foot_position, swing_height, t
     x_1 = final_foot_position[0]
 
     h = x_0 + (x_1 - x_0)/2
-    print(f"h = {h}")
+    # print(f"h = {h}")
     k = swing_height
-    print(f"k = {k}")
+    # print(f"k = {k}")
     a = -k/((x_0-h)**2)
-    print(f"a = {a}")
+    # print(f"a = {a}")
     m = (x_1 - x_0)/(timeVector[-1]- timeVector[0])
     x_t = lambda t: x_0 + m*t
     z = lambda x: a*((x-h)**2) + k
     
-    print(z(x_0))
-    print(z(x_1))
+    # print(z(x_0))
+    # print(z(x_1))
 
     swingFootTrajectory = np.array([[0, 0, 0]])
 
