@@ -91,6 +91,7 @@ def main(args = None):
 
     # INVERSE KINEMATICS
     try:
+        right_leg_joint_values = np.array([[0,0,0,0,0,0]])
         for vector in right_leg_relative_pos:
             req = CalculateIKRequest(x=vector[0],
                                      y=vector[1],
@@ -99,7 +100,14 @@ def main(args = None):
                                      pitch=0,
                                      yaw=0 )
             x = cltCalculateIKLegRight(req)
-
+            if len(x.joint_values) == 6:
+                aux = np.array([list(x.joint_values)])
+                right_leg_joint_values = np.concatenate((right_leg_joint_values,aux), axis=0)
+            else:
+                raise Exception("Error calculating inverse kinematics")
+        right_leg_joint_values = np.delete(right_leg_joint_values, 0, axis=0)
+        
+        left_leg_joint_values = np.array([[0,0,0,0,0,0]])
         for vector in left_leg_relative_pos:
             req = CalculateIKRequest(x=vector[0],
                                      y= vector[1],
@@ -107,11 +115,18 @@ def main(args = None):
                                      roll=0,
                                      pitch=0,
                                      yaw=0)
-            print(f"{x}")
+            x = cltCalculateIKLegLeft(req)
+            if len(x.joint_values) == 6:
+                aux = np.array([list(x.joint_values)])
+                left_leg_joint_values = np.concatenate((left_leg_joint_values,aux), axis=0)
+            else:
+                raise Exception("Error calculating inverse kinematics")
+        right_leg_joint_values = np.delete(right_leg_joint_values, 0, axis=0)
+
+        np.savez("start_pose", right=right_leg_joint_values, left=left_leg_joint_values)
+
     except rospy.ServiceException as e:
-        print("Service call failed: %s"%e)
-    # print(right_leg_relative_pos)
-    # print(left_leg_relative_pos)
+        print(f"Service call failed: {e}")
 
     start_pose_step = Step(mode="DoubleSupport")
     start_pose_step.timevec = time_vector
@@ -138,11 +153,11 @@ def main(args = None):
     m_x = (starting_body_points[0][2] - starting_body_points[0][1])/(timepoints[1]-timepoints[0])
     m_y = (starting_body_points[1][2] - starting_body_points[1][1])/(timepoints[1]-timepoints[0])
 
-    q_x = interpolate.interp1d( time_vector, 
+    q_x = interpolate.interp1d( time_vector,
                                 starting_body_points[0][1] + time_vector*m_x*SAMPLE_TIME,
                                 fill_value="extrapolate")
     q_z = Z_ROBOT_WALK
-    q_y = interpolate.interp1d(time_vector, 
+    q_y = interpolate.interp1d(time_vector,
                                starting_body_points[1][1] + time_vector*m_y*SAMPLE_TIME,
                                fill_value="extrapolate")
 
@@ -163,12 +178,47 @@ def main(args = None):
     first_step.footleft = getFootSwingTraj(initial_left_foot_pos, final_left_foot_pos, stepHeight, first_step.timevec)
     first_step.footright = np.full((len(first_step.timevec), 3), initial_right_foot_pos)
 
-    # print(first_step.footleft)
-    # print(first_step.footleft.shape)
-    # print(first_step.footright)
-    # print(first_step.footleft.shape)
-    # print(body_position)
-    # print(body_position.shape)
+    right_leg_relative_pos =  first_step.footright - body_position
+    left_leg_relative_pos = first_step.footleft - body_position
+
+    # INVERSE KINEMATICS
+    try:
+        right_leg_joint_values = np.array([[0,0,0,0,0,0]])
+        for vector in right_leg_relative_pos:
+            req = CalculateIKRequest(x=vector[0],
+                                     y=vector[1],
+                                     z=vector[2],
+                                     roll=0,
+                                     pitch=0,
+                                     yaw=0 )
+            x = cltCalculateIKLegRight(req)
+            if len(x.joint_values) == 6:
+                aux = np.array([list(x.joint_values)])
+                right_leg_joint_values = np.concatenate((right_leg_joint_values,aux), axis=0)
+            else:
+                raise Exception("Error calculating inverse kinematics")
+        right_leg_joint_values = np.delete(right_leg_joint_values, 0, axis=0)
+        
+        left_leg_joint_values = np.array([[0,0,0,0,0,0]])
+        for vector in left_leg_relative_pos:
+            req = CalculateIKRequest(x=vector[0],
+                                     y= vector[1],
+                                     z=vector[2],
+                                     roll=0,
+                                     pitch=0,
+                                     yaw=0)
+            x = cltCalculateIKLegLeft(req)
+            if len(x.joint_values) == 6:
+                aux = np.array([list(x.joint_values)])
+                left_leg_joint_values = np.concatenate((left_leg_joint_values,aux), axis=0)
+            else:
+                raise Exception("Error calculating inverse kinematics")
+        right_leg_joint_values = np.delete(right_leg_joint_values, 0, axis=0)
+
+        np.savez("first_half_step", right=right_leg_joint_values, left=left_leg_joint_values)
+
+    except rospy.ServiceException as e:
+        print(f"Service call failed: {e}")
 
     ax.plot(body_position[:,0],body_position[:,1],body_position[:,2], "o")
     ax.plot([initial_left_foot_pos[0]],
@@ -224,7 +274,9 @@ def main(args = None):
         states = np.concatenate((states, [[x_next, dx_next, y_next, dy_next]]), axis=0)
     aux = zip(np.add(states[:,0],initial_left_foot_pos[0]), np.add(states[:,2],initial_left_foot_pos[1]), [Z_ROBOT_WALK for i in states])
     
+    body_position = np.array([[0,0,0]])
     body_position = np.concatenate((body_position,[list(i) for i in list(aux)]), axis=0)
+    body_position = np.delete(body_position, 0, axis=0)
     # [state0, initial_left_foot_pos[0], initial_left_foot_pos[1]] = changeLeg(states[-1], body_position)
     
     ax.plot(body_position[:,0],body_position[:,1],body_position[:,2], "o")
@@ -235,6 +287,49 @@ def main(args = None):
     ax.plot(right_foot_swing[:,0],
             right_foot_swing[:,1],
             right_foot_swing[:,2], "o")
+
+    right_leg_relative_pos =  right_foot_swing - body_position
+    left_leg_relative_pos = left_foot_swing - body_position
+
+    # INVERSE KINEMATICS
+    try:
+        right_leg_joint_values = np.array([[0,0,0,0,0,0]])
+        for vector in right_leg_relative_pos:
+            req = CalculateIKRequest(x=vector[0],
+                                     y=vector[1],
+                                     z=vector[2],
+                                     roll=0,
+                                     pitch=0,
+                                     yaw=0 )
+            x = cltCalculateIKLegRight(req)
+            if len(x.joint_values) == 6:
+                aux = np.array([list(x.joint_values)])
+                right_leg_joint_values = np.concatenate((right_leg_joint_values,aux), axis=0)
+            else:
+                raise Exception("Error calculating inverse kinematics")
+        right_leg_joint_values = np.delete(right_leg_joint_values, 0, axis=0)
+        
+        left_leg_joint_values = np.array([[0,0,0,0,0,0]])
+        for vector in left_leg_relative_pos:
+            req = CalculateIKRequest(x=vector[0],
+                                     y= vector[1],
+                                     z=vector[2],
+                                     roll=0,
+                                     pitch=0,
+                                     yaw=0)
+            x = cltCalculateIKLegLeft(req)
+            if len(x.joint_values) == 6:
+                aux = np.array([list(x.joint_values)])
+                left_leg_joint_values = np.concatenate((left_leg_joint_values,aux), axis=0)
+            else:
+                raise Exception("Error calculating inverse kinematics")
+        right_leg_joint_values = np.delete(right_leg_joint_values, 0, axis=0)
+
+        np.savez("second_step", right=right_leg_joint_values, left=left_leg_joint_values)
+
+    except rospy.ServiceException as e:
+        print(f"Service call failed: {e}")
+
 
     # NEXT STEP (LEFT MOVES, RIGHT STATIC)
     #Right foot is the support foot
@@ -267,7 +362,9 @@ def main(args = None):
         states = np.concatenate((states, [[x_next, dx_next, y_next, dy_next]]), axis=0)
     aux = zip(np.add(states[:,0],initial_right_foot_pos[0]), np.add(states[:,2],initial_right_foot_pos[1]), [Z_ROBOT_WALK for i in states])
     
+    body_position = np.array([[0,0,0]])
     body_position = np.concatenate((body_position,[list(i) for i in list(aux)]), axis=0)
+    body_position = np.delete(body_position, 0, axis=0)
 
     ax.plot(body_position[:,0],body_position[:,1],body_position[:,2], "o")
 
@@ -275,11 +372,53 @@ def main(args = None):
     right_foot_swing = np.full((len(steptimeVector), 3), initial_right_foot_pos)
     left_foot_swing = getFootSwingTraj(initial_left_foot_pos, final_left_foot_pos, stepHeight, steptimeVector)
 
+    right_leg_relative_pos =  right_foot_swing - body_position
+    left_leg_relative_pos = left_foot_swing - body_position
+
+    # INVERSE KINEMATICS
+    try:
+        right_leg_joint_values = np.array([[0,0,0,0,0,0]])
+        for vector in right_leg_relative_pos:
+            req = CalculateIKRequest(x=vector[0],
+                                     y=vector[1],
+                                     z=vector[2],
+                                     roll=0,
+                                     pitch=0,
+                                     yaw=0 )
+            x = cltCalculateIKLegRight(req)
+            if len(x.joint_values) == 6:
+                aux = np.array([list(x.joint_values)])
+                right_leg_joint_values = np.concatenate((right_leg_joint_values,aux), axis=0)
+            else:
+                raise Exception("Error calculating inverse kinematics")
+        right_leg_joint_values = np.delete(right_leg_joint_values, 0, axis=0)
+        
+        left_leg_joint_values = np.array([[0,0,0,0,0,0]])
+        for vector in left_leg_relative_pos:
+            req = CalculateIKRequest(x=vector[0],
+                                     y= vector[1],
+                                     z=vector[2],
+                                     roll=0,
+                                     pitch=0,
+                                     yaw=0)
+            x = cltCalculateIKLegLeft(req)
+            if len(x.joint_values) == 6:
+                aux = np.array([list(x.joint_values)])
+                left_leg_joint_values = np.concatenate((left_leg_joint_values,aux), axis=0)
+            else:
+                raise Exception("Error calculating inverse kinematics")
+        right_leg_joint_values = np.delete(right_leg_joint_values, 0, axis=0)
+
+        np.savez("third_step", right=right_leg_joint_values, left=left_leg_joint_values)
+
+    except rospy.ServiceException as e:
+        print(f"Service call failed: {e}")
+
     ax.plot(left_foot_swing[:,0],
             left_foot_swing[:,1],
             left_foot_swing[:,2], "o")
 
-    plt.show()
+    #plt.show()
 
     exit()
 
