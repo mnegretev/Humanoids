@@ -1,0 +1,4 @@
+<launch>
+    <include file="$(find surge_et_ambula)/launch/humanoid_simul.launch"/>
+    <node name="test_node_goal_detection" pkg="goal_detection" type="goal_detection_node.py" output="screen"/>
+</launch>
