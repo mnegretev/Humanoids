@@ -250,7 +250,6 @@ def main(args = None):
             first_step.footleft[:,1],
             first_step.footleft[:,2], "o")
 
-    plt.show()
     #################################################################
     ## PART 3: MAKE CONSECUTIVE STEPS
     #################################################################
@@ -343,7 +342,7 @@ def main(args = None):
     except rospy.ServiceException as e:
         print(f"Service call failed: {e}")
 
-
+    plt.show()
     # NEXT STEP (LEFT MOVES, RIGHT STATIC)
     #Right foot is the support foot
     initial_right_foot_pos  = final_right_foot_pos
