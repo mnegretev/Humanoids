@@ -2,7 +2,7 @@
 import rospy
 import numpy
 import cv2
-import ros_numpy
+# import ros_numpy
 import math
 import random
 import argparse
@@ -55,7 +55,7 @@ def callback_image (msg):
     #contours, hierarchy = cv2.findContours(image=thresh, mode=cv2.INTERSECT_FULL, method=cv2.CHAIN_APPROX_NONE)
     #-----------draw contours on the original image--------------
     contour_image = cv2.cvtColor(gray, cv2.COLOR_GRAY2BGR)
-    cv2.drawContours(image=contour_image, contours=contours, contourIdx=-1, color=(0, 255, 0), thickness=2, lineType=cv2.LINE_AA)
+    cv2.drawContours(image=contour_image, contours=contours, contourIdx=-1, color=(0, 0, 250), thickness=2, lineType=cv2.LINE_AA)
     #print("Number of contours found:", len(contours)) 
     target_contour=None
 
@@ -79,7 +79,7 @@ def callback_image (msg):
         print("Target contour:", len(target_contour)) 
         print("Number of contours found:", len(real_contours))
         print("Hu moments:",hu_moments)
-        cv2.drawContours(image=contour_image, contours=[target_contour], contourIdx=-1, color=(0, 255, 0), thickness=2, lineType=cv2.LINE_AA)
+        cv2.drawContours(image=contour_image, contours=[target_contour], contourIdx=-1, color=(255, 0, 0), thickness=2, lineType=cv2.LINE_AA)
         error_x = cx-320
         error_y = cy - 240
         goal_pan = -1/10000.0 * error_x
@@ -96,7 +96,7 @@ def callback_image (msg):
 
         if goal_tilt < -1:
            goal_tilt = -1
-
+        contour_image=cv2.circle(contour_image, (cx,cy), radius=0, color=(0, 255, 0), thickness=-1)
     # head_goal_pose = Float32MultiArray()
     # head_goal_pose.data = [goal_pan, goal_tilt]
     # print(head_goal_pose.data)
@@ -105,31 +105,31 @@ def callback_image (msg):
         centroid_pub_msg = Point32()
         centroid_pub_msg.x=cx
         centroid_pub_msg.y=cy
-
         centroid_pub.publish(centroid_pub_msg)
         # Convert Hu moments to a list for easier comparison
     
     #print(f"Area of contour: {area,hu_moments}")
     # Detect lines using Hough Line Transform
     #---------------------------Head movement----------------------------------#
-    
+    pub_contours.publish(bridge.cv2_to_imgmsg(contour_image, encoding = "rgb8"))
     # see the results
     #cv2.imshow('None approximation', image_copy)
     #cv2.waitKey(10)
     #cv2.imwrite('contours_none_image1.jpg', image_copy)
     # Display images
-    cv2.imshow("imagen",cv_image) #source file
-    cv2.imshow('HLS image', hls_image) #hls image
-    cv2.imshow("blur image",blur) #Blur image
-    cv2.imshow("image mask",image_mask) #Masked image
-    cv2.imshow('Canny Edge Detection', edges)#*Canny edge detection
-    cv2.imshow("Contours", contour_image)#contours found
-    cv2.imshow("Detected Lines-Probabilistic Line Transform", cdstP)
-    cv2.waitKey(10)
+    # cv2.imshow("imagen",cv_image) #source file
+    # cv2.imshow('HLS image', hls_image) #hls image
+    # cv2.imshow("blur image",blur) #Blur image
+    # cv2.imshow("image mask",image_mask) #Masked image
+    # cv2.imshow('Canny Edge Detection', edges)#*Canny edge detection
+    # cv2.imshow("Contours", contour_image)#contours found
+    # cv2.imshow("Detected Lines-Probabilistic Line Transform", cdstP)
+    # cv2.waitKey(10)
 
 
 def main ():
-    global pub_head_goal,centroid_pub
+    global pub_head_goal,centroid_pub, pub_contours
+    pub_contours = rospy.Publisher("/contours_found", Image, queue_size = 1)
     pub_head_goal = rospy.Publisher("/hardware/head_goal_pose", Float32MultiArray, queue_size=1)
     centroid_pub = rospy.Publisher("/centroid_publisher", Point32, queue_size=1)
     rospy.init_node("goal_detection_node")  
