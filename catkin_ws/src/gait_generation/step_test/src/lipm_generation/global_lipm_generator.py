@@ -46,6 +46,8 @@ def calculate_ik(P, service_client):
 def calculate_cartesian_right_start_pose(duration, y_body_to_feet_percent, ik_client_left, ik_client_right):
     p_start = [0, 0, Z_ROBOT_STATIC]
     p_end = [0, -y_body_to_feet_percent*Y_BODY_TO_FEET, Z_ROBOT_WALK]
+
+    
     P_CoM, T = trajectory_planner.get_polynomial_trajectory_multi_dof(p_start, p_end, duration=duration, time_step=SERVO_SAMPLE_TIME)
     
     left_leg_relative_pos = [0, Y_BODY_TO_FEET, 0] - P_CoM
