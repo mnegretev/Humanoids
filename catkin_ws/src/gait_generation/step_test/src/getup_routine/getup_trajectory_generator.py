@@ -42,23 +42,23 @@ def calculate_cartesian_arms_pose1(duration):
 #--------------------------------------POSE 2---------------------------------------------------------------------
 def calculate_cartesian_legs_pose2(duration):
     #legs
-    q_right_inicial     = [-0.250,-0.014,0.091,0.189,0.242,-0.006]
-    q_right_final       = [-0.181, -0.064, -0.513, 1.077, -0.256, 0.009]
+    q_right_inicial     = [-0.250,-0.014,0.091,0.189,0.242,-0.007]
+    q_right_final       = [-0.181, -0.064, -0.514, 1.077, -0.256, 0.009]
     leg_right_q, T = trajectory_planner.get_polynomial_trajectory_multi_dof(q_right_inicial,q_right_final,  duration=duration, time_step=SERVO_SAMPLE_TIME)
     
-    q_left_inicial  =[0.025, 0.044, 0.061, 0.291, 0.041, -0.013]
-    q_left_final    = [-0.046,0.193,-0.538,1.095,-0.225,-0.06]
+    q_left_inicial  =[0.025, 0.044, 0.061, 0.291, 0.041, -0.014]
+    q_left_final    = [-0.046,0.193,-0.538,1.095,-0.225,-0.05]
     leg_left_q,T = trajectory_planner.get_polynomial_trajectory_multi_dof(q_left_inicial, q_left_final, duration=duration, time_step=SERVO_SAMPLE_TIME)
  
     return leg_left_q,leg_right_q
 def calculate_cartesian_arms_pose2(duration):
     #arms
-    q_arm_right_inicial=[0.923,-0.370,-0.943]
-    q_arm_right_final=[0.311,-0.642,-0.916]
+    q_arm_right_inicial=[0.923,-0.371,-0.943]
+    q_arm_right_final=[0.311,-0.642,-0.915]
     arm_right_q, T = trajectory_planner.get_polynomial_trajectory_multi_dof(q_arm_right_inicial, q_arm_right_final, duration=duration, time_step=SERVO_SAMPLE_TIME)
 
     q_arm_left_inicial=[0.867,0.298,-0.927]
-    q_arm_left_final=[0.196,0.52,-1.052]
+    q_arm_left_final=[0.196,0.52,-1.054]
     arm_left_q, T = trajectory_planner.get_polynomial_trajectory_multi_dof(q_arm_left_inicial, q_arm_left_final, duration=duration, time_step=SERVO_SAMPLE_TIME)
 
     return arm_left_q, arm_right_q
