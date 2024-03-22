@@ -24,6 +24,7 @@ def main():
     for right_leg, left_leg, right_arm, left_arm in zip(start_pose_legs["right_leg"], start_pose_legs["left_leg"],start_pose_arms["right_arm"], start_pose_arms["left_arm"]):
         print(right_leg)
         print(left_leg)
+      
         right_leg_goal_pose = Float32MultiArray()
         right_leg_goal_pose.data = right_leg
         pub_leg_right_goal_pose.publish(right_leg_goal_pose)
