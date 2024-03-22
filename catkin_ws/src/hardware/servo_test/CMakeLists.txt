@@ -141,6 +141,7 @@ include_directories(
  add_executable(read2byte src/read2byte.cpp)
  add_executable(write1byte src/write1byte.cpp)
  add_executable(write2byte src/write2byte.cpp)
+ add_executable(position_test src/position_test.cpp)
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
@@ -153,6 +154,7 @@ include_directories(
  add_dependencies(read2byte ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
  add_dependencies(write1byte ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
  add_dependencies(write2byte ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+ add_dependencies(position_test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
  target_link_libraries(read1byte
@@ -165,6 +167,9 @@ include_directories(
    ${catkin_LIBRARIES}
  )
  target_link_libraries(write2byte
+   ${catkin_LIBRARIES}
+ )
+ target_link_libraries(position_test
    ${catkin_LIBRARIES}
  )
 #############

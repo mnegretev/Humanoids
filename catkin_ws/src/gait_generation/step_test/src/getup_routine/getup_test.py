@@ -26,6 +26,7 @@ def main():
 
         print(right_leg)
         print(left_leg)
+      
         right_leg_goal_pose = Float32MultiArray()
         right_leg_goal_pose.data = right_leg
         pub_leg_right_goal_pose.publish(right_leg_goal_pose)
