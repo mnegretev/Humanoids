@@ -19,7 +19,9 @@ def main():
     start_pose_legs2 = np.load("legs_start_pose2.npz")
 
     timstep = start_pose_legs["timestep"]
-    rate = rospy.Rate(int(1/(timstep*3)))
+    rate = rospy.Rate(int(1/(timstep*2)))
+    rate_pose = rospy.Rate(int(1/(timstep)))
+
     #--------------------------pose 1-------------------------------------------------
     for right_leg, left_leg, right_arm, left_arm in zip(start_pose_legs["right_leg"], start_pose_legs["left_leg"],start_pose_arms["right_arm"], start_pose_arms["left_arm"]):
         rate.sleep()      
@@ -58,7 +60,7 @@ def main():
         left_leg_goal_pose.data = left_leg
         pub_leg_left_goal_pose.publish(left_leg_goal_pose)
     
-        rate.sleep()
+        rate_pose.sleep()
         print(right_arm)
         print(left_arm)
         right_arm_goal_pose = Float32MultiArray()
