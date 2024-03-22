@@ -37,10 +37,10 @@ def main():
         left_leg_goal_pose.data = left
         pub_leg_left_goal_pose.publish(left_leg_goal_pose)
         rate.sleep()
-    return
-    time.sleep(2)
+    # time.sleep(2)
+    
     print("Second")
-    second_step = np.load("second_step.npz")
+    second_step = np.load("right_full_step_pose.npz")
     for right, left in zip(second_step["right"], second_step["left"]):
         print(right)
         print(left)
@@ -54,7 +54,7 @@ def main():
         rate.sleep()
 
     # time.sleep(2)
-    third_step = np.load("third_step.npz")
+    third_step = np.load("left_full_step_pose.npz")
     for right, left in zip(third_step["right"], third_step["left"]):
         print(right)
         print(left)

@@ -24,7 +24,7 @@ STEP_LENGTH = 0.1 # [m]
 ROBOT_VEL_X = 0.1 # [m]
 
 # Tiempo de muestreo para resolver la ecuación diferencial del LIPM (debe ser pequeño)
-SAMPLE_TIME = 0.0001 # [s]
+LIPM_SAMPLE_TIME = 0.0001 # [s]
 
 # Tiempo de muestreo maximo para escribir a los servomotores
 SERVO_SAMPLE_TIME = 0.025 # [s]
@@ -76,40 +76,89 @@ def calculate_cartesian_left_half_step_pose(duration, p_start, p_end, ik_client_
     left_q = calculate_ik(l_leg_relative_pos, ik_client_left)
     right_q = calculate_ik(r_leg_relative_pos, ik_client_right)
 
-    return left_q, right_q, P_CoM[-1]
+    return left_q, right_q, l_leg_abs_pos[-1]
 
-def calculate_cartesian_right_step_pose(duration, step_length, initial_r_foot_pos, initial_l_foot_pos):
-    final_right_foot_pos    = np.array([STEP_LENGTH, -Y_BODY_TO_FEET, 0])
-
-
+def calculate_cartesian_right_step_pose(initial_l_foot_pos, ik_client_left, ik_client_right):
+    #Left foot is the support foot
     y_0 = -Y_BODY_TO_FEET
-    [dy0, x_0, dx0, single_support_time] = findInitialConditions(STEP_LENGTH/2,
-                                                                 ROBOT_VEL_X,
-                                                                 y_0,
-                                                                 Z_ROBOT_WALK,
-                                                                 G)
+
+    [dy0, x_0, dx0, single_support_time] = findInitialConditions(STEP_LENGTH/2, ROBOT_VEL_X, y_0, Z_ROBOT_WALK, G)
 
     state0 = [x_0, dx0, y_0, dy0]
     tFinal = single_support_time
-    steptimeVector = np.linspace(0, tFinal, math.floor(tFinal/SAMPLE_TIME))
+    steptimeVector = np.linspace(0, tFinal, math.floor(tFinal/LIPM_SAMPLE_TIME))
 
-    #Solve differential equation (sample time must be as small as possible)
     nSteps = len(steptimeVector)
     states = np.array([state0])
+    #Solve differential equation (sample time must be as small as possible)
     for i in range(0, nSteps-1):
-        dx_next = states[i][1] + SAMPLE_TIME*((states[i][0])*G/Z_ROBOT_WALK)
-        x_next = states[i][0] + SAMPLE_TIME*states[i][1]
-        dy_next = states[i][3] + SAMPLE_TIME*((states[i][2])*G/Z_ROBOT_WALK)
-        y_next = states[i][2] + SAMPLE_TIME*states[i][3]
+        dx_next = states[i][1] + LIPM_SAMPLE_TIME * ((states[i][0])*G/Z_ROBOT_WALK)
+        x_next  = states[i][0] + LIPM_SAMPLE_TIME * states[i][1]
+        dy_next = states[i][3] + LIPM_SAMPLE_TIME * ((states[i][2])*G/Z_ROBOT_WALK)
+        y_next  = states[i][2] + LIPM_SAMPLE_TIME * states[i][3]
         states = np.concatenate((states, [[x_next, dx_next, y_next, dy_next]]), axis=0)
-    aux = zip(np.add(states[:,0],initial_l_foot_pos[0]), np.add(states[:,2],initial_l_foot_pos[1]), [Z_ROBOT_WALK for i in states])
+    
+    body_position = zip(np.add(states[:,0],initial_l_foot_pos[0]), np.add(states[:,2],initial_l_foot_pos[1]), [Z_ROBOT_WALK for i in states])
 
-    body_position = np.array([[0,0,0]])
-    body_position = np.concatenate((body_position,[list(i) for i in list(aux)]), axis=0)
-    body_position = np.delete(body_position, 0, axis=0)
-    #TODO AQUI ME QUEDÉ
-def lipm_
+    P_CoM = np.array([list(i) for i in list(body_position)])
 
+    initial_r_foot_pos  = [0, -Y_BODY_TO_FEET, 0]
+    final_r_foot_pos    = [STEP_LENGTH, -Y_BODY_TO_FEET,0]
+    
+    l_foot_abs_pos = np.full((len(steptimeVector), 3), initial_l_foot_pos)
+    r_foot_abs_pos = getFootSwingTraj(initial_r_foot_pos, final_r_foot_pos, stepHeight, steptimeVector)
+
+    l_leg_relative_pos  = l_foot_abs_pos - P_CoM
+    r_leg_relative_pos  = r_foot_abs_pos - P_CoM
+
+    l_leg_relative_pos = l_leg_relative_pos[::int(SERVO_SAMPLE_TIME/LIPM_SAMPLE_TIME)]
+    r_leg_relative_pos = r_leg_relative_pos[::int(SERVO_SAMPLE_TIME/LIPM_SAMPLE_TIME)]
+
+    left_q = calculate_ik(l_leg_relative_pos, ik_client_left)
+    right_q = calculate_ik(r_leg_relative_pos, ik_client_right)
+
+    return left_q, right_q, r_foot_abs_pos[-1]
+
+def calculate_cartesian_left_step_pose(initial_r_foot_pos, ik_client_left, ik_client_right):
+    #Left foot is the support foot
+    y_0 = Y_BODY_TO_FEET
+
+    [dy0, x_0, dx0, single_support_time] = findInitialConditions(STEP_LENGTH/2, ROBOT_VEL_X, y_0, Z_ROBOT_WALK, G)
+
+    state0 = [x_0, dx0, y_0, dy0]
+    tFinal = single_support_time
+    steptimeVector = np.linspace(0, tFinal, math.floor(tFinal/LIPM_SAMPLE_TIME))
+
+    nSteps = len(steptimeVector)
+    states = np.array([state0])
+    #Solve differential equation (sample time must be as small as possible)
+    for i in range(0, nSteps-1):
+        dx_next = states[i][1] + LIPM_SAMPLE_TIME * ((states[i][0])*G/Z_ROBOT_WALK)
+        x_next  = states[i][0] + LIPM_SAMPLE_TIME * states[i][1]
+        dy_next = states[i][3] + LIPM_SAMPLE_TIME * ((states[i][2])*G/Z_ROBOT_WALK)
+        y_next  = states[i][2] + LIPM_SAMPLE_TIME * states[i][3]
+        states = np.concatenate((states, [[x_next, dx_next, y_next, dy_next]]), axis=0)
+    
+    body_position = zip(np.add(states[:,0],initial_r_foot_pos[0]), np.add(states[:,2],initial_r_foot_pos[1]), [Z_ROBOT_WALK for i in states])
+
+    P_CoM = np.array([list(i) for i in list(body_position)])
+
+    initial_l_foot_pos  = [0, Y_BODY_TO_FEET, 0]
+    final_l_foot_pos    = [STEP_LENGTH, Y_BODY_TO_FEET,0]
+    
+    l_foot_abs_pos = getFootSwingTraj(initial_l_foot_pos, final_l_foot_pos, stepHeight, steptimeVector)
+    r_foot_abs_pos = np.full((len(steptimeVector), 3), initial_r_foot_pos)
+
+    l_leg_relative_pos  = l_foot_abs_pos - P_CoM
+    r_leg_relative_pos  = r_foot_abs_pos - P_CoM
+
+    l_leg_relative_pos = l_leg_relative_pos[::int(SERVO_SAMPLE_TIME/LIPM_SAMPLE_TIME)]
+    r_leg_relative_pos = r_leg_relative_pos[::int(SERVO_SAMPLE_TIME/LIPM_SAMPLE_TIME)]
+
+    left_q  = calculate_ik(l_leg_relative_pos, ik_client_left)
+    right_q = calculate_ik(r_leg_relative_pos, ik_client_right)
+
+    return left_q, right_q, l_foot_abs_pos[-1]
 
 def findInitialConditions(STEP_LENGTH, ROBOT_VEL_X, y_0, zModel, G):
     #Desired midstance and state
@@ -166,19 +215,16 @@ def main(args = None):
     initial_halfstep_pos = last_p_com
     final_halfstep_pos = [STEP_LENGTH/4, 0, Z_ROBOT_WALK]
 
-    left_q, right_q, last_p_com = calculate_cartesian_left_half_step_pose(1, initial_halfstep_pos, final_halfstep_pos, left_leg_client, right_leg_client)
+    left_q, right_q, final_l_foot_pos = calculate_cartesian_left_half_step_pose(1, initial_halfstep_pos, final_halfstep_pos, left_leg_client, right_leg_client)
     np.savez("left_first_halfstep_pose", right=right_q, left=left_q, timstep=SERVO_SAMPLE_TIME)
 
-    first_step_inital_pos = last_p_com
-    
-    y_0 = -Y_BODY_TO_FEET
+    left_q, right_q, final_r_foot_pos = calculate_cartesian_right_step_pose(final_l_foot_pos, left_leg_client, right_leg_client)
+    np.savez("right_full_step_pose", right=right_q, left=left_q, timstep=SERVO_SAMPLE_TIME)
 
-    #Initial conditions vector that guarantees symetric trajectories in LIPM
-    [dy0, x_0, dx0, single_support_time] = findInitialConditions(STEP_LENGTH/2,
-                                                                 ROBOT_VEL_X,
-                                                                 y_0,
-                                                                 Z_ROBOT_WALK,
-                                                                 G)
+    left_q, right_q, final_l_foot_pos = calculate_cartesian_left_step_pose(final_r_foot_pos, left_leg_client, right_leg_client)
+    np.savez("left_full_step_pose", right=right_q, left=left_q, timstep=SERVO_SAMPLE_TIME)
+
+
 
 if __name__ == "__main__":
     main()
