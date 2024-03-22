@@ -406,14 +406,14 @@ int main(int argc, char** argv)
 	ros::spinOnce();
 	loop.sleep();
     }
-	printf("hola");
+	printf("Starting servos 1-20");
 	for(int i=0; i < 20; i++)
 	{
 	    dxl_comm_result = packetHandler->write2ByteTxRx(portHandler, servos_ids[i], ADDR_CM730_DYNAMIXEL_POWER,0, &dxl_error);
     	if(dxl_error != 0)
         std::cout << "CM730.-> Status error after turning off dynamixel power: " << int(dxl_error) << std::endl;
         }
-	printf("MOTORS OFF :)");
+	printf("MOTORS OFF");
     portHandler->closePort();
 
     return 0;
