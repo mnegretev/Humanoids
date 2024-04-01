@@ -13,10 +13,11 @@ from ctrl_msgs.srv import CalculateIK, CalculateIKRequest
 G = 9.81 # [m/s^2]
 
 # Y_BODY_TO_FEET  = 0.0555 # [m]
-Y_BODY_TO_FEET  = 0.075
+Y_BODY_TO_FEET  = 0.1
 # Z_ROBOT_WALK    = 0.55 # m
 Z_ROBOT_WALK    = 0.50
-Z_ROBOT_STATIC= 0.56 # m
+# Z_ROBOT_STATIC= 0.56 # m
+Z_ROBOT_STATIC= 0.60 # m
 
 stepHeight = 0.1
 STEP_LENGTH = 0.1 # [m]

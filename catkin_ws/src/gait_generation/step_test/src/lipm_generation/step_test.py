@@ -11,7 +11,7 @@ def main():
     pub_leg_right_goal_pose = rospy.Publisher("/hardware/leg_right_goal_pose", Float32MultiArray , queue_size=1)
     start_pose = np.load("right_start_pose.npz")
     timstep = start_pose["timestep"]
-    rate = rospy.Rate(int(1/timstep)*2)
+    rate = rospy.Rate(int(1/timstep)/5)
     for right, left in zip(start_pose["right"], start_pose["left"]):
         print(right)
         print(left)

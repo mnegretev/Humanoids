@@ -14,10 +14,10 @@ from trajectory_planner import trajectory_planner
 G = 9.81 # [m/s^2]
 
 # Y_BODY_TO_FEET  = 0.0555 # [m]
-Y_BODY_TO_FEET  = 0.0555
+Y_BODY_TO_FEET  = 0.08
 # Z_ROBOT_WALK    = 0.55 # m
 Z_ROBOT_WALK    = 0.50
-Z_ROBOT_STATIC= 0.56 # m
+Z_ROBOT_STATIC= 0.57 # m
 
 stepHeight = 0.1
 STEP_LENGTH = 0.1 # [m]
