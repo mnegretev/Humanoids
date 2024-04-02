@@ -14,32 +14,32 @@ def main():
     rate = rospy.Rate(int(1/(timstep)))
     middle_rate = rospy.Rate(int(1/(timstep)))
     fast_rate = rospy.Rate(int(1/(timstep/3)))
-    # for right, left in zip(start_pose["right"], start_pose["left"]):
-    #     print(right)
-    #     print(left)
-    #     right_leg_goal_pose = Float32MultiArray()
-    #     right_leg_goal_pose.data = right
-    #     pub_leg_right_goal_pose.publish(right_leg_goal_pose)
+    for right, left in zip(start_pose["right"], start_pose["left"]):
+        print(right)
+        print(left)
+        right_leg_goal_pose = Float32MultiArray()
+        right_leg_goal_pose.data = right
+        pub_leg_right_goal_pose.publish(right_leg_goal_pose)
 
-    #     left_leg_goal_pose = Float32MultiArray()
-    #     left_leg_goal_pose.data = left
-    #     pub_leg_left_goal_pose.publish(left_leg_goal_pose)
-    #     rate.sleep()
+        left_leg_goal_pose = Float32MultiArray()
+        left_leg_goal_pose.data = left
+        pub_leg_left_goal_pose.publish(left_leg_goal_pose)
+        rate.sleep()
     
-    # time.sleep(2)
-    # first_half_step = np.load("left_first_halfstep_pose.npz")
-    # for right, left in zip(first_half_step["right"], first_half_step["left"]):
-    #     print(right)
-    #     print(left)
-    #     right_leg_goal_pose = Float32MultiArray()
-    #     right_leg_goal_pose.data = right
-    #     pub_leg_right_goal_pose.publish(right_leg_goal_pose)
+    time.sleep(2)
+    first_half_step = np.load("left_first_halfstep_pose.npz")
+    for right, left in zip(first_half_step["right"], first_half_step["left"]):
+        print(right)
+        print(left)
+        right_leg_goal_pose = Float32MultiArray()
+        right_leg_goal_pose.data = right
+        pub_leg_right_goal_pose.publish(right_leg_goal_pose)
 
-    #     left_leg_goal_pose = Float32MultiArray()
-    #     left_leg_goal_pose.data = left
-    #     pub_leg_left_goal_pose.publish(left_leg_goal_pose)
-    #     fast_rate.sleep()
-    # time.sleep(2)
+        left_leg_goal_pose = Float32MultiArray()
+        left_leg_goal_pose.data = left
+        pub_leg_left_goal_pose.publish(left_leg_goal_pose)
+        fast_rate.sleep()
+    time.sleep(2)
     
     while not rospy.is_shutdown():
         second_step = np.load("right_full_step_pose.npz")
