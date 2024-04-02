@@ -34,14 +34,14 @@
 #define ID_CM730                         200
 
 
-#define ZERO_LEG_LEFT_HIP_YAW           2070
+#define ZERO_LEG_LEFT_HIP_YAW           2085
 #define ZERO_LEG_LEFT_HIP_ROLL          2070
 #define ZERO_LEG_LEFT_HIP_PITCH         2048
 #define ZERO_LEG_LEFT_KNEE_PITCH        2400
 #define ZERO_LEG_LEFT_ANKLE_PITCH       2150
 #define ZERO_LEG_LEFT_ANKLE_ROLL        2048
 
-#define ZERO_LEG_RIGHT_HIP_YAW          2019
+#define ZERO_LEG_RIGHT_HIP_YAW          2185
 #define ZERO_LEG_RIGHT_HIP_ROLL         1067
 #define ZERO_LEG_RIGHT_HIP_PITCH        3084
 #define ZERO_LEG_RIGHT_KNEE_PITCH       2890
