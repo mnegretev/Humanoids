@@ -14,14 +14,16 @@ from trajectory_planner import trajectory_planner
 G = 9.81 # [m/s^2]
 
 # Y_BODY_TO_FEET  = 0.0555 # [m]
-Y_BODY_TO_FEET  = 0.08
+Y_BODY_TO_FEET  = 0.075
 # Z_ROBOT_WALK    = 0.55 # m
 Z_ROBOT_WALK    = 0.50
 Z_ROBOT_STATIC= 0.57 # m
 
-stepHeight = 0.1
+stepHeight = 0.075
 STEP_LENGTH = 0.1 # [m]
 ROBOT_VEL_X = 0.1 # [m]
+
+com_x_offset = 0.03
 
 # Tiempo de muestreo para resolver la ecuación diferencial del LIPM (debe ser pequeño)
 LIPM_SAMPLE_TIME = 0.0001 # [s]
@@ -44,8 +46,8 @@ def calculate_ik(P, service_client):
     return joint_values
 
 def calculate_cartesian_right_start_pose(duration, y_body_to_feet_percent, ik_client_left, ik_client_right):
-    p_start = [0, 0, Z_ROBOT_STATIC]
-    p_end = [0, -y_body_to_feet_percent*Y_BODY_TO_FEET, Z_ROBOT_WALK]
+    p_start = [0 + com_x_offset, 0, Z_ROBOT_STATIC]
+    p_end = [0 + com_x_offset, -y_body_to_feet_percent*Y_BODY_TO_FEET, Z_ROBOT_WALK]
 
     
     P_CoM, T = trajectory_planner.get_polynomial_trajectory_multi_dof(p_start, p_end, duration=duration, time_step=SERVO_SAMPLE_TIME)
@@ -98,7 +100,7 @@ def calculate_cartesian_right_step_pose(initial_l_foot_pos, ik_client_left, ik_c
         y_next  = states[i][2] + LIPM_SAMPLE_TIME * states[i][3]
         states = np.concatenate((states, [[x_next, dx_next, y_next, dy_next]]), axis=0)
     
-    body_position = zip(np.add(states[:,0],initial_l_foot_pos[0]), np.add(states[:,2],initial_l_foot_pos[1]), [Z_ROBOT_WALK for i in states])
+    body_position = zip(np.add(states[:,0] + com_x_offset, initial_l_foot_pos[0]), np.add(states[:,2],initial_l_foot_pos[1]), [Z_ROBOT_WALK for i in states])
 
     P_CoM = np.array([list(i) for i in list(body_position)])
 
@@ -139,7 +141,7 @@ def calculate_cartesian_left_step_pose(initial_r_foot_pos, ik_client_left, ik_cl
         y_next  = states[i][2] + LIPM_SAMPLE_TIME * states[i][3]
         states = np.concatenate((states, [[x_next, dx_next, y_next, dy_next]]), axis=0)
     
-    body_position = zip(np.add(states[:,0],initial_r_foot_pos[0]), np.add(states[:,2],initial_r_foot_pos[1]), [Z_ROBOT_WALK for i in states])
+    body_position = zip(np.add(states[:,0] + com_x_offset,initial_r_foot_pos[0]), np.add(states[:,2],initial_r_foot_pos[1]), [Z_ROBOT_WALK for i in states])
 
     P_CoM = np.array([list(i) for i in list(body_position)])
 
@@ -213,7 +215,7 @@ def main(args = None):
     np.savez("right_start_pose", right=right_q, left=left_q, timestep=SERVO_SAMPLE_TIME)
 
     initial_halfstep_pos = last_p_com
-    final_halfstep_pos = [STEP_LENGTH/4, 0, Z_ROBOT_WALK]
+    final_halfstep_pos = [STEP_LENGTH/4 + com_x_offset, 0, Z_ROBOT_WALK]
 
     left_q, right_q, final_l_foot_pos = calculate_cartesian_left_half_step_pose(1, initial_halfstep_pos, final_halfstep_pos, left_leg_client, right_leg_client)
     np.savez("left_first_halfstep_pose", right=right_q, left=left_q, timstep=SERVO_SAMPLE_TIME)
