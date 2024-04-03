@@ -11,7 +11,8 @@ def main():
     rospy.init_node("step_test_node")
     pub_leg_left_goal_pose = rospy.Publisher("/hardware/leg_left_goal_pose", Float32MultiArray, queue_size=1)
     pub_leg_right_goal_pose = rospy.Publisher("/hardware/leg_right_goal_pose", Float32MultiArray , queue_size=1)
-    start_pose = np.load("right_start_pose.npz")
+    start_pose_file = rospy.get_param("~start_pose")
+    start_pose = np.load(start_pose_file)
     timstep = start_pose["timestep"]
     rate = rospy.Rate(int(1/(timstep)))
     middle_rate = rospy.Rate(int(1/(timstep)))
@@ -29,7 +30,8 @@ def main():
         rate.sleep()
     
     time.sleep(2)
-    first_half_step = np.load("left_first_halfstep_pose.npz")
+    first_half_step_file = rospy.get_param("~left_first_halfstep")
+    first_half_step = np.load(first_half_step_file)
     for right, left in zip(first_half_step["right"], first_half_step["left"]):
         print(right)
         print(left)
@@ -44,7 +46,9 @@ def main():
     time.sleep(2)
     
     while not rospy.is_shutdown():
-        second_step = np.load("right_full_step_pose.npz")
+
+        right_full_step_file = rospy.get_param("~right_full_step")
+        second_step = np.load(right_full_step_file)
         for right, left in zip(second_step["right"], second_step["left"]):
             print(right)
             print(left)
@@ -58,7 +62,8 @@ def main():
             middle_rate.sleep()
 
         # time.sleep(2)
-        third_step = np.load("left_full_step_pose.npz")
+        left_full_step_file = rospy.get_param("~left_full_step")
+        third_step = np.load(left_full_step_file)
         for right, left in zip(third_step["right"], third_step["left"]):
             print(right)
             print(left)
