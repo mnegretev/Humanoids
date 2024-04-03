@@ -20,7 +20,7 @@ def main():
 
     timstep = start_pose_legs["timestep"]
     rate = rospy.Rate(int(1/(timstep*2)))
-    rate_pose = rospy.Rate(int(1/(timstep*1.5)))
+    rate_pose = rospy.Rate(int(1/(timstep/2)))
 
     #--------------------------pose 1-------------------------------------------------
     for right_leg, left_leg, right_arm, left_arm in zip(start_pose_legs["right_leg"], start_pose_legs["left_leg"],start_pose_arms["right_arm"], start_pose_arms["left_arm"]):

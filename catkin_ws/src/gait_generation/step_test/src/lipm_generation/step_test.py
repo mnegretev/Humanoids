@@ -4,6 +4,8 @@ import rospy
 from std_msgs.msg import Float32MultiArray
 import numpy as np
 import time
+#subscribe to a boolean topic
+#make launch with global parameter 
 
 def main():
     rospy.init_node("step_test_node")

@@ -14,20 +14,16 @@ from trajectory_planner import trajectory_planner
 G = 9.81 # [m/s^2]
 
 # Y_BODY_TO_FEET  = 0.0555 # [m]
-Y_BODY_TO_FEET  = 0.075
+Y_BODY_TO_FEET  = 0.09
 # Z_ROBOT_WALK    = 0.55 # m
-Z_ROBOT_WALK    = 0.50
+Z_ROBOT_WALK    = 0.55
 Z_ROBOT_STATIC= 0.57 # m
 
-stepHeight = 0.075
+stepHeight = 0.045
 STEP_LENGTH = 0.1 # [m]
 ROBOT_VEL_X = 0.1 # [m]
 
-<<<<<<< HEAD
-com_x_offset = 0.03
-=======
-com_x_offset = 0.07
->>>>>>> 64eeb77f475719186657eddab591e0878d31b46f
+com_x_offset = 0.02
 
 # Tiempo de muestreo para resolver la ecuación diferencial del LIPM (debe ser pequeño)
 LIPM_SAMPLE_TIME = 0.0001 # [s]
