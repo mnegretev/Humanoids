@@ -22,9 +22,9 @@ def main():
     # Check: http://wiki.ros.org/rospy/Overview/Initialization%20and%20Shutdown
     rospy.init_node(PUBL_NAME)
     video_capture = cv2.VideoCapture(CAMERA)
-    # video_capture.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-    # video_capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
-    # video_capture.set(cv2.CAP_PROP_FPS, 30)
+    video_capture.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+    video_capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+    video_capture.set(cv2.CAP_PROP_FPS, 30)
     bridge = CvBridge()
     rate = rospy.Rate(RATE)
     while not rospy.is_shutdown():
