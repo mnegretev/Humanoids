@@ -25,7 +25,7 @@ catkin_ws/src/vision/ball_position/scripts/kalman_data_y.txt
 # Ignore generated docs
 *.dox
 *.wikidoc
-
+*.vscode
 # eclipse stuff
 .project
 .cproject

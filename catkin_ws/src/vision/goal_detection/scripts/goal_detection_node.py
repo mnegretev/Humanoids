@@ -108,7 +108,7 @@ def callback_image (msg):
 
         centroid_pub.publish(centroid_pub_msg)
         # Convert Hu moments to a list for easier comparison
-    
+
     #print(f"Area of contour: {area,hu_moments}")
     # Detect lines using Hough Line Transform
     #---------------------------Head movement----------------------------------#
@@ -118,7 +118,12 @@ def callback_image (msg):
     #cv2.waitKey(10)
     #cv2.imwrite('contours_none_image1.jpg', image_copy)
     # Display images
-    cv2.imshow("imagen",cv_image) #source file
+    #Transform img to message with cv_bridge
+
+    #cv2.imshow("imagen",cv_image) #source file
+    msg = bridge.cv2_to_imgmsg(cv_image, encoding='rgb8')
+    original_cv_image_pub.publish(msg)
+
     cv2.imshow('HLS image', hls_image) #hls image
     cv2.imshow("blur image",blur) #Blur image
     cv2.imshow("image mask",image_mask) #Masked image
@@ -129,9 +134,10 @@ def callback_image (msg):
 
 
 def main ():
-    global pub_head_goal,centroid_pub
+    global pub_head_goal,centroid_pub, original_cv_image_pub
     pub_head_goal = rospy.Publisher("/hardware/head_goal_pose", Float32MultiArray, queue_size=1)
     centroid_pub = rospy.Publisher("/centroid_publisher", Point32, queue_size=1)
+    original_cv_image_pub = rospy.Publisher("/original_image", Image, queue_size=1)
     rospy.init_node("goal_detection_node")  
     rospy.Subscriber("/hardware/camera/image", Image, callback_image)
     rospy.spin()
