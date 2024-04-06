@@ -2,7 +2,7 @@
 import rospy
 import numpy
 import cv2
-# import ros_numpy
+#import ros_numpy
 import math
 import random
 import argparse
@@ -111,13 +111,12 @@ def callback_image (msg):
     #print(f"Area of contour: {area,hu_moments}")
     # Detect lines using Hough Line Transform
     #---------------------------Head movement----------------------------------#
-    pub_contours.publish(bridge.cv2_to_imgmsg(contour_image, encoding = "rgb8"))
+    #pub_contours.publish(bridge.cv2_to_imgmsg(contour_image, encoding = "rgb8"))
     # see the results
     #cv2.imshow('None approximation', image_copy)
     #cv2.waitKey(10)
     #cv2.imwrite('contours_none_image1.jpg', image_copy)
     # Display images
-<<<<<<< HEAD
     #Transform img to message with cv_bridge
 
     #cv2.imshow("imagen",cv_image) #source file
@@ -135,21 +134,6 @@ def callback_image (msg):
 
 def main ():
     global pub_head_goal,centroid_pub, original_cv_image_pub
-=======
-    # cv2.imshow("imagen",cv_image) #source file
-    # cv2.imshow('HLS image', hls_image) #hls image
-    # cv2.imshow("blur image",blur) #Blur image
-    # cv2.imshow("image mask",image_mask) #Masked image
-    # cv2.imshow('Canny Edge Detection', edges)#*Canny edge detection
-    # cv2.imshow("Contours", contour_image)#contours found
-    # cv2.imshow("Detected Lines-Probabilistic Line Transform", cdstP)
-    # cv2.waitKey(10)
-
-
-def main ():
-    global pub_head_goal,centroid_pub, pub_contours
-    pub_contours = rospy.Publisher("/contours_found", Image, queue_size = 1)
->>>>>>> 3eb6350516c8ff681f6041bf1cf530c7bfd41d29
     pub_head_goal = rospy.Publisher("/hardware/head_goal_pose", Float32MultiArray, queue_size=1)
     centroid_pub = rospy.Publisher("/centroid_publisher", Point32, queue_size=1)
     original_cv_image_pub = rospy.Publisher("/original_image", Image, queue_size=1)

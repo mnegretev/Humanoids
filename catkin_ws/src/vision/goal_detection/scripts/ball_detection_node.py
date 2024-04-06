@@ -2,7 +2,7 @@
 import rospy
 import numpy
 import cv2
-import ros_numpy
+#import ros_numpy
 import math
 import random
 import argparse
@@ -35,18 +35,35 @@ def callback_image (msg):
     # Combine the mask from HSV filtering with the mask from S & L thresholding
     # using bitwise AND to refine the result
     refined_mask = cv2.bitwise_and(mask, hue_mask)
-
+ 
     blur=cv2.GaussianBlur(refined_mask,(7,7),0)
-    
-    ball_detected=bool
-    return ball_detected
+    minDist = 100
+    param1 = 30 
+    param2 = 100 #smaller value-> more false circles
+    minRadius = 5
+    maxRadius = 100 
+
+    # docstring of HoughCircles: HoughCircles(image, method, dp, minDist[, circles[, param1[, param2[, minRadius[, maxRadius]]]]]) -> circles
+    circles = cv2.HoughCircles(blur, cv2.HOUGH_GRADIENT, 1, minDist, param1=param1, param2=param2, minRadius=minRadius, maxRadius=maxRadius)
+
+    if circles is not None:
+        circles = np.uint16(np.around(circles))
+        for i in circles[0,:]:
+            cv2.circle(cv_image, (i[0], i[1]), i[2], (0, 255, 0), 2)
+            
+    msg = bridge.cv2_to_imgmsg(cv_image, encoding='rgb8')
+    ball_image_pub.publish(msg)
+
+    #cv2.imshow('detected circles',img)
+    #return ball_detected
 
 def main ():
     #if ball_detected=True :
         
-    global pub_head_goal,centroid_pub
+    global pub_head_goal,centroid_pub, ball_image_pub
     pub_head_goal = rospy.Publisher("/hardware/head_goal_pose", Float32MultiArray, queue_size=1)
     centroid_pub = rospy.Publisher("/centroid_publisher", Point32, queue_size=1)
+    ball_image_pub= rospy.Publisher("/ball_image", Image, queue_size=1)  
     rospy.init_node("ball_detection_node")  
     rospy.Subscriber("/hardware/camera/image", Image, callback_image)
     rospy.spin()
