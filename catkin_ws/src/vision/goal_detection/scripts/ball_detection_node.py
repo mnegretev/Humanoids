@@ -11,9 +11,12 @@ from sensor_msgs.msg import *
 from geometry_msgs.msg import *
 from cv_bridge import CvBridge   
 from matplotlib import pyplot as plt
+from geometry_msgs.msg import Point32
+
+def calculate_distance(center1, center2):
+    return math.sqrt((center1[0] - center2[0])**2 + (center1[1] - center2[1])**2)
 
 def callback_image (msg):
-
     bridge = CvBridge()     
     cv_image = bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')#source file
     hls_image= cv2.cvtColor(cv_image, cv2.COLOR_BGR2HLS)
@@ -42,34 +45,63 @@ def callback_image (msg):
     param2 = 20 #smaller value-> more false circles
     minRadius = 10
     maxRadius = 200
+    ball_detected=False
+    prev_center=None
+    distance_threshold = 50 
+    j=0
     # docstring of HoughCircles: HoughCircles(image, method, dp, minDist[, circles[, param1[, param2[, minRadius[, maxRadius]]]]]) -> circles
     circles = cv2.HoughCircles(blur, cv2.HOUGH_GRADIENT, 1, minDist, param1=param1, param2=param2, minRadius=minRadius, maxRadius=maxRadius)
     if circles is not None:
         for i in circles[0,:]:
+            j+=1
+            center = (i[0], i[1])
+            #centers.append(center) 
             # draw the outer circle
             cv2.circle(cv_image,(i[0],i[1]),i[2],(0,255,0),2)
             # draw the center of the circle
             cv2.circle(cv_image,(i[0],i[1]),2,(0,0,255),3)
-
+            if j==1:
+                prev_center = center
+                #print(prev_center)
+                if j==3:
+                    print(center)
+        if prev_center is not None:
+            #print(prev_center)
+            #print(center)
+            distance = calculate_distance(prev_center, center)        
+            #print("Distance = ",distance)
+            if distance < distance_threshold:
+                ball_detected=True
+                #print("Ball detected.")
+                # Publish the center coordinates as a Point32 message
+                centroid_msg = Point32()  # Create a Point32 message object
+                centroid_msg.x = center[0]
+                centroid_msg.y = center[1]
+                centroid_pub.publish(centroid_msg)  # **This line publishes the center**
+            if distance > distance_threshold:
+                ball_detected=False
     msg = bridge.cv2_to_imgmsg(cv_image, encoding='rgb8')
     ball_image_pub.publish(msg)
     msg2=bridge.cv2_to_imgmsg(blur,encoding='8UC1')
     hue_image_pub.publish(msg2)
+    #print(ball_detected)
 
-    #cv2.imshow('detected circles',img)
-    #return ball_detected
+
 
 def main ():
-    #if ball_detected=True :
-        
     global pub_head_goal,centroid_pub, ball_image_pub,hue_image_pub
-    pub_head_goal = rospy.Publisher("/hardware/head_goal_pose", Float32MultiArray, queue_size=1)
-    hue_image_pub= rospy.Publisher("/hue_image", Image, queue_size=1)
-    centroid_pub = rospy.Publisher("/centroid_publisher", Point32, queue_size=1)
-    ball_image_pub= rospy.Publisher("/ball_image", Image, queue_size=1)  
     rospy.init_node("ball_detection_node")  
     rospy.Subscriber("/hardware/camera/image", Image, callback_image)
+    while not rospy.is_shutdown():
+        centroid_pub = rospy.Publisher("/centroid_publisher", Point32, queue_size=1)
+        hue_image_pub= rospy.Publisher("/hue_image", Image, queue_size=1)
+        pub_head_goal = rospy.Publisher("/hardware/head_goal_pose", Float32MultiArray, queue_size=1)
+        ball_image_pub= rospy.Publisher("/ball_image", Image, queue_size=1)  
+
     rospy.spin()
 
 if __name__=="__main__":
-    main()
+    try:
+        main()
+    except rospy.ROSInterruptException:
+        pass
