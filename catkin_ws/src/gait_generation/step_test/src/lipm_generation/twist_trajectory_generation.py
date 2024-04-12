@@ -13,16 +13,17 @@ from ctrl_msgs.srv import CalculateIK, CalculateIKRequest
 from trajectory_planner import trajectory_planner
 
 # Y_BODY_TO_FEET  = 0.0555 # [m]
-Y_BODY_TO_FEET  = 0.065
+Y_BODY_TO_FEET  = 0.075
 # Z_ROBOT_WALK    = 0.55 # m
-Z_ROBOT_WALK    = 0.55
+Z_ROBOT_WALK    = 0.50
 Z_ROBOT_STATIC= 0.57 # m
 
-stepHeight = 0.045
+stepHeight = 0.1
 STEP_LENGTH = 0.1 # [m]
 ROBOT_VEL_X = 0.1 # [m]
 
 com_x_offset = 0.02
+com_y_offset = 0.025
 
 # Tiempo de muestreo para resolver la ecuación diferencial del LIPM (debe ser pequeño)
 LIPM_SAMPLE_TIME = 0.0001 # [s]
@@ -48,7 +49,7 @@ def calculate_ik(P, service_client):
 
 def get_twist_trajectory_start_pose(duration, stepHeight, ik_client_left, ik_client_right):
     com_start   = [0 + com_x_offset, 0, Z_ROBOT_STATIC]
-    com_end     =   [0 + com_x_offset, -Y_BODY_TO_FEET, Z_ROBOT_WALK]
+    com_end     =   [0 + com_x_offset, -(Y_BODY_TO_FEET + com_y_offset), Z_ROBOT_WALK]
 
     P_CoM, T = trajectory_planner.get_polynomial_trajectory_multi_dof(com_start, com_end, duration=duration, time_step=SERVO_SAMPLE_TIME)
     
@@ -78,7 +79,7 @@ def get_twist_trajectory_left_first_step(p_start, duration, twist_angle, ik_clie
     O, T = trajectory_planner.get_polynomial_trajectory_multi_dof(initial_l_foot_orientation, final_l_foot_orientation, duration=duration, time_step=SERVO_SAMPLE_TIME)
     
     #final_r_foot_pos    = initial_r_foot_pos
-    final_l_foot_pos = np.array([0,  Y_BODY_TO_FEET*2, 0])
+    final_l_foot_pos = np.array([0,  Y_BODY_TO_FEET*2.5, 0])
     
     r_leg_abs_pos = np.full((len(T), 3), initial_r_foot_pos)
     l_leg_abs_pos = getFootSwingTraj(initial_l_foot_pos, final_l_foot_pos, stepHeight, T)
