@@ -1,6 +1,8 @@
 <launch>
         <node pkg="step_test" type="twist_test.py" name="step_test_node" output="screen" required="true"> 
             <param name="twist_start_pose"            value="$(find step_test)/src/lipm_generation/twist_right_start_pose.npz"/>
-            <param name="twist_left_first_step"       value="$(find step_test)/src/lipm_generation/twist_left_first_step.npz"/>  
+            <param name="twist_left_first_step"       value="$(find step_test)/src/lipm_generation/twist_left_first_step.npz"/>
+            <param name="twist_move_com_left"         value="$(find step_test)/src/lipm_generation/twist_move_com_left.npz"/>
+            <param name="twist_right_third_step"      value="$(find step_test)/src/lipm_generation/twist_right_third_step.npz"/>
         </node>
 </launch>

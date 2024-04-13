@@ -39,5 +39,33 @@ def main():
         pub_leg_left_goal_pose.publish(left_leg_goal_pose)
         rate.sleep()
 
+    twist_move_com_left_file = rospy.get_param("~twist_move_com_left")
+    twist_move_com_left = np.load(twist_move_com_left_file)
+    timstep = twist_move_com_left["timestep"]
+    rate = rospy.Rate(int(1/(timstep*3)))
+    for right, left in zip(twist_move_com_left["right"], twist_move_com_left["left"]):
+        right_leg_goal_pose = Float32MultiArray()
+        right_leg_goal_pose.data = right
+        pub_leg_right_goal_pose.publish(right_leg_goal_pose)
+
+        left_leg_goal_pose = Float32MultiArray()
+        left_leg_goal_pose.data = left
+        pub_leg_left_goal_pose.publish(left_leg_goal_pose)
+        rate.sleep()
+    
+    twist_right_third_step_file = rospy.get_param("~twist_right_third_step")
+    twist_right_third_step = np.load(twist_right_third_step_file)
+    timstep = twist_right_third_step["timestep"]
+    rate = rospy.Rate(int(1/(timstep*3)))
+    for right, left in zip(twist_right_third_step["right"], twist_right_third_step["left"]):
+        right_leg_goal_pose = Float32MultiArray()
+        right_leg_goal_pose.data = right
+        pub_leg_right_goal_pose.publish(right_leg_goal_pose)
+
+        left_leg_goal_pose = Float32MultiArray()
+        left_leg_goal_pose.data = left
+        pub_leg_left_goal_pose.publish(left_leg_goal_pose)
+        rate.sleep()
+
 if __name__ == '__main__':
     exit(main())
