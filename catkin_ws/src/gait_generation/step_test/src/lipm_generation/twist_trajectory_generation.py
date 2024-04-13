@@ -24,6 +24,8 @@ ROBOT_VEL_X = 0.1 # [m]
 
 com_x_offset = 0.02
 com_y_offset = 0.025
+y_com_left_offset = 0.03
+x_com_left_offset = -0.03 
 
 # Tiempo de muestreo para resolver la ecuación diferencial del LIPM (debe ser pequeño)
 LIPM_SAMPLE_TIME = 0.0001 # [s]
@@ -99,7 +101,7 @@ def get_twist_trajectory_left_first_step(p_start, duration, twist_angle, ik_clie
 def get_twist_trajectory_move_com_left(com_start, duration,  ik_client_left, ik_client_right):
     
     com_start_pose = np.concatenate((com_start, [[0,0,0]]), axis=None)
-    com_end_pose = [0 + com_x_offset, Y_BODY_TO_FEET*2.5, Z_ROBOT_WALK, 0, 0, 0]
+    com_end_pose = [0 + x_com_left_offset, Y_BODY_TO_FEET*2.5 + y_com_left_offset, Z_ROBOT_WALK, 0, 0, 0]
 
     P_CoM, T = trajectory_planner.get_polynomial_trajectory_multi_dof(com_start_pose, com_end_pose, duration=duration, time_step=SERVO_SAMPLE_TIME)
 
