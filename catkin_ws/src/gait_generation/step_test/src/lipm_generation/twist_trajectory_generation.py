@@ -103,8 +103,16 @@ def get_twist_trajectory_move_com_left(com_start, duration,  ik_client_left, ik_
 
     P_CoM, T = trajectory_planner.get_polynomial_trajectory_multi_dof(com_start_pose, com_end_pose, duration=duration, time_step=SERVO_SAMPLE_TIME)
 
-    r_foot_pose = np.full((len(T), 6), [0, -Y_BODY_TO_FEET,  0, 0, 0, 0])
-    l_foot_pose = np.full((len(T), 6), [0, Y_BODY_TO_FEET*2.5, 0, 0, 0, math.pi/6])
+    initial_r_foot_pose  = [0, -Y_BODY_TO_FEET,    0, 0, 0, 0]
+    initial_l_foot_pose  = [0, Y_BODY_TO_FEET*2.5, 0, 0, 0, math.pi/6]
+
+    final_r_foot_pose    = [0, -Y_BODY_TO_FEET,    0, 0, 0, -math.pi/6]
+    final_l_foot_pose    = [0, Y_BODY_TO_FEET*2.5, 0, 0, 0, 0]
+
+    r_foot_pose, T = trajectory_planner.get_polynomial_trajectory_multi_dof(initial_r_foot_pose, final_r_foot_pose, duration=duration, time_step=SERVO_SAMPLE_TIME)
+    l_foot_pose, T = trajectory_planner.get_polynomial_trajectory_multi_dof(initial_l_foot_pose, final_l_foot_pose, duration=duration, time_step=SERVO_SAMPLE_TIME)
+    # r_foot_pose = np.full((len(T), 6), [0, -Y_BODY_TO_FEET,    0, 0, 0, 0])
+    # l_foot_pose = np.full((len(T), 6), [0, Y_BODY_TO_FEET*2.5, 0, 0, 0, math.pi/6])
 
     r_leg_relative_pose = r_foot_pose - P_CoM
     l_leg_relative_pose = l_foot_pose - P_CoM
@@ -123,10 +131,10 @@ def get_twist_trajectory_right_third_step(p_start, duration, ik_client_left, ik_
     initial_r_foot_pos  = np.array([0, -Y_BODY_TO_FEET, 0])
     initial_l_foot_pos  = np.array([0,  Y_BODY_TO_FEET*2.5, 0])
     
-    initial_l_foot_orientation  = np.array([0,0,math.pi/6])
-    final_l_foot_orientation    = np.array([0,0,0])
+    initial_r_foot_orientation  = np.array([0,0,-math.pi/6])
+    final_r_foot_orientation    = np.array([0,0,0])
     
-    O, T = trajectory_planner.get_polynomial_trajectory_multi_dof(initial_l_foot_orientation, final_l_foot_orientation, duration=duration, time_step=SERVO_SAMPLE_TIME)
+    O, T = trajectory_planner.get_polynomial_trajectory_multi_dof(initial_r_foot_orientation, final_r_foot_orientation, duration=duration, time_step=SERVO_SAMPLE_TIME)
     
     final_r_foot_pos    = np.array([0,  Y_BODY_TO_FEET, 0])
     #final_l_foot_pos    = inital_l_foos_pos
@@ -135,8 +143,8 @@ def get_twist_trajectory_right_third_step(p_start, duration, ik_client_left, ik_
     l_leg_abs_pos = np.full((len(T), 3), initial_l_foot_pos)
     #print(r_leg_abs_pos)
 
-    r_leg_pose = np.concatenate((r_leg_abs_pos, np.full((len(T), 3), [0,0,0])), axis=1)
-    l_leg_pose = np.concatenate((l_leg_abs_pos, O), axis=1)
+    r_leg_pose = np.concatenate((r_leg_abs_pos, O), axis=1)
+    l_leg_pose = np.concatenate((l_leg_abs_pos, np.full((len(T), 3), [0,0,0])), axis=1)
 
     r_leg_relative_pos  = r_leg_pose - P_CoM
     l_leg_relative_pos  = l_leg_pose - P_CoM
