@@ -24,6 +24,8 @@ ROBOT_VEL_X = 0.1 # [m]
 
 com_x_offset = 0.02
 com_y_offset = 0.025
+y_com_left_offset = 0.03
+x_com_left_offset = -0.03 
 
 # Tiempo de muestreo para resolver la ecuación diferencial del LIPM (debe ser pequeño)
 LIPM_SAMPLE_TIME = 0.0001 # [s]
@@ -99,12 +101,20 @@ def get_twist_trajectory_left_first_step(p_start, duration, twist_angle, ik_clie
 def get_twist_trajectory_move_com_left(com_start, duration,  ik_client_left, ik_client_right):
     
     com_start_pose = np.concatenate((com_start, [[0,0,0]]), axis=None)
-    com_end_pose = [0 + com_x_offset, Y_BODY_TO_FEET*2.5, Z_ROBOT_WALK, 0, 0, 0]
+    com_end_pose = [0 + x_com_left_offset, Y_BODY_TO_FEET*2.5 + y_com_left_offset, Z_ROBOT_WALK, 0, 0, 0]
 
     P_CoM, T = trajectory_planner.get_polynomial_trajectory_multi_dof(com_start_pose, com_end_pose, duration=duration, time_step=SERVO_SAMPLE_TIME)
 
-    r_foot_pose = np.full((len(T), 6), [0, -Y_BODY_TO_FEET,  0, 0, 0, 0])
-    l_foot_pose = np.full((len(T), 6), [0, Y_BODY_TO_FEET*2.5, 0, 0, 0, math.pi/6])
+    initial_r_foot_pose  = [0, -Y_BODY_TO_FEET,    0, 0, 0, 0]
+    initial_l_foot_pose  = [0, Y_BODY_TO_FEET*2.5, 0, 0, 0, math.pi/6]
+
+    final_r_foot_pose    = [0, -Y_BODY_TO_FEET,    0, 0, 0, -math.pi/6]
+    final_l_foot_pose    = [0, Y_BODY_TO_FEET*2.5, 0, 0, 0, 0]
+
+    r_foot_pose, T = trajectory_planner.get_polynomial_trajectory_multi_dof(initial_r_foot_pose, final_r_foot_pose, duration=duration, time_step=SERVO_SAMPLE_TIME)
+    l_foot_pose, T = trajectory_planner.get_polynomial_trajectory_multi_dof(initial_l_foot_pose, final_l_foot_pose, duration=duration, time_step=SERVO_SAMPLE_TIME)
+    # r_foot_pose = np.full((len(T), 6), [0, -Y_BODY_TO_FEET,    0, 0, 0, 0])
+    # l_foot_pose = np.full((len(T), 6), [0, Y_BODY_TO_FEET*2.5, 0, 0, 0, math.pi/6])
 
     r_leg_relative_pose = r_foot_pose - P_CoM
     l_leg_relative_pose = l_foot_pose - P_CoM
@@ -123,10 +133,10 @@ def get_twist_trajectory_right_third_step(p_start, duration, ik_client_left, ik_
     initial_r_foot_pos  = np.array([0, -Y_BODY_TO_FEET, 0])
     initial_l_foot_pos  = np.array([0,  Y_BODY_TO_FEET*2.5, 0])
     
-    initial_l_foot_orientation  = np.array([0,0,math.pi/6])
-    final_l_foot_orientation    = np.array([0,0,0])
+    initial_r_foot_orientation  = np.array([0,0,-math.pi/6])
+    final_r_foot_orientation    = np.array([0,0,0])
     
-    O, T = trajectory_planner.get_polynomial_trajectory_multi_dof(initial_l_foot_orientation, final_l_foot_orientation, duration=duration, time_step=SERVO_SAMPLE_TIME)
+    O, T = trajectory_planner.get_polynomial_trajectory_multi_dof(initial_r_foot_orientation, final_r_foot_orientation, duration=duration, time_step=SERVO_SAMPLE_TIME)
     
     final_r_foot_pos    = np.array([0,  Y_BODY_TO_FEET, 0])
     #final_l_foot_pos    = inital_l_foos_pos
@@ -135,8 +145,8 @@ def get_twist_trajectory_right_third_step(p_start, duration, ik_client_left, ik_
     l_leg_abs_pos = np.full((len(T), 3), initial_l_foot_pos)
     #print(r_leg_abs_pos)
 
-    r_leg_pose = np.concatenate((r_leg_abs_pos, np.full((len(T), 3), [0,0,0])), axis=1)
-    l_leg_pose = np.concatenate((l_leg_abs_pos, O), axis=1)
+    r_leg_pose = np.concatenate((r_leg_abs_pos, O), axis=1)
+    l_leg_pose = np.concatenate((l_leg_abs_pos, np.full((len(T), 3), [0,0,0])), axis=1)
 
     r_leg_relative_pos  = r_leg_pose - P_CoM
     l_leg_relative_pos  = l_leg_pose - P_CoM
