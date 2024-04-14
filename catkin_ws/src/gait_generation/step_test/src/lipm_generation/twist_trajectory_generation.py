@@ -18,14 +18,14 @@ Y_BODY_TO_FEET  = 0.075
 Z_ROBOT_WALK    = 0.50
 Z_ROBOT_STATIC= 0.57 # m
 
-stepHeight = 0.1
+stepHeight = 0.2
 STEP_LENGTH = 0.1 # [m]
 ROBOT_VEL_X = 0.1 # [m]
 
-com_x_offset = 0.02
-com_y_offset = 0.025
-y_com_left_offset = 0.03
-x_com_left_offset = -0.03 
+com_x_offset = 0.03
+com_y_offset = 0.03
+y_com_left_offset = 0.01
+x_com_left_offset = 0.02 
 
 # Tiempo de muestreo para resolver la ecuación diferencial del LIPM (debe ser pequeño)
 LIPM_SAMPLE_TIME = 0.0001 # [s]
@@ -203,13 +203,13 @@ def main(args = None):
     left_q, right_q, last_p_com = get_twist_trajectory_start_pose(duration=1, stepHeight=Z_ROBOT_WALK, ik_client_left=left_leg_client, ik_client_right=right_leg_client)
     np.savez(os.path.join(trajectory_dir, "twist_right_start_pose"), right=right_q, left=left_q, timestep=SERVO_SAMPLE_TIME)
 
-    left_q, right_q, last_p_com = get_twist_trajectory_left_first_step(last_p_com, duration=2, twist_angle=math.pi/4, ik_client_left=left_leg_client, ik_client_right=right_leg_client)
+    left_q, right_q, last_p_com = get_twist_trajectory_left_first_step(last_p_com, duration=1, twist_angle=math.pi/4, ik_client_left=left_leg_client, ik_client_right=right_leg_client)
     np.savez(os.path.join(trajectory_dir, "twist_left_first_step"), right=right_q, left=left_q, timestep=SERVO_SAMPLE_TIME)
 
     left_q, right_q, last_p_com = get_twist_trajectory_move_com_left(last_p_com, duration=1, ik_client_left=left_leg_client, ik_client_right=right_leg_client)
     np.savez(os.path.join(trajectory_dir, "twist_move_com_left"), right=right_q, left=left_q, timestep=SERVO_SAMPLE_TIME)
 
-    left_q, right_q, last_p_com = get_twist_trajectory_right_third_step(last_p_com, duration=2, ik_client_left=left_leg_client, ik_client_right=right_leg_client)
+    left_q, right_q, last_p_com = get_twist_trajectory_right_third_step(last_p_com, duration=1, ik_client_left=left_leg_client, ik_client_right=right_leg_client)
     np.savez(os.path.join(trajectory_dir, "twist_right_third_step"), right=right_q, left=left_q, timestep=SERVO_SAMPLE_TIME)
 
 

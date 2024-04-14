@@ -12,9 +12,10 @@ from geometry_msgs.msg import *
 from cv_bridge import CvBridge   
 from matplotlib import pyplot as plt
 from geometry_msgs.msg import Point32
+
 def calculate_distance(center1, center2):
     return math.sqrt((center1[0] - center2[0])**2 + (center1[1] - center2[1])**2)
-    
+ 
 center=None
 def callback_image (msg):
     global center, prev_center
@@ -44,7 +45,8 @@ def callback_image (msg):
     # using bitwise AND to refine the result
     refined_mask = cv2.bitwise_and(mask, hue_mask)
     blur=cv2.GaussianBlur(refined_mask,(7,7),0)
-
+    centroid_msg.x = 0
+    centroid_msg.y = 0
     minDist =500
     param1 = 50
     param2 = 30 #smaller value-> more false circles
@@ -71,22 +73,17 @@ def callback_image (msg):
         if prev_center is not None:
             #print("*********",prev_center)
             distance = calculate_distance(prev_center, center)        
-            print("Distance = ",distance)
             if distance < distance_threshold:
                 ball_detected=True
                 #print("Ball detected.")
                 # Publish the center coordinates as a Point32 message
                 centroid_msg.x = center[0]
                 centroid_msg.y = center[1]
-                print("previous center: ",prev_center)
-                print("center: ",center)
             if distance > distance_threshold:
                 ball_detected=False
                 centroid_msg.x = 0
                 centroid_msg.y = 0
-
-
-    centroid_pub.publish(centroid_msg) 
+    centroid_pub.publish(centroid_msg)
     msg = bridge.cv2_to_imgmsg(cv_image, encoding='rgb8')
     ball_image_pub.publish(msg)
     msg2=bridge.cv2_to_imgmsg(blur,encoding='8UC1')
