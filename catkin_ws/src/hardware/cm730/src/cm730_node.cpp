@@ -34,27 +34,27 @@
 #define ID_CM730                         200
 
 
-#define ZERO_LEG_LEFT_HIP_YAW           2070
-#define ZERO_LEG_LEFT_HIP_ROLL          2070
-#define ZERO_LEG_LEFT_HIP_PITCH         2048
-#define ZERO_LEG_LEFT_KNEE_PITCH        2400
-#define ZERO_LEG_LEFT_ANKLE_PITCH       2150
-#define ZERO_LEG_LEFT_ANKLE_ROLL        2048
+#define ZERO_LEG_LEFT_HIP_YAW           2060
+#define ZERO_LEG_LEFT_HIP_ROLL          2090
+#define ZERO_LEG_LEFT_HIP_PITCH         2192
+#define ZERO_LEG_LEFT_KNEE_PITCH        2273
+#define ZERO_LEG_LEFT_ANKLE_PITCH       2062
+#define ZERO_LEG_LEFT_ANKLE_ROLL        2070
 
-#define ZERO_LEG_RIGHT_HIP_YAW          2019
-#define ZERO_LEG_RIGHT_HIP_ROLL         1067
-#define ZERO_LEG_RIGHT_HIP_PITCH        3084
-#define ZERO_LEG_RIGHT_KNEE_PITCH       2890
-#define ZERO_LEG_RIGHT_ANKLE_PITCH      2048
-#define ZERO_LEG_RIGHT_ANKLE_ROLL       2048
+#define ZERO_LEG_RIGHT_HIP_YAW          2154
+#define ZERO_LEG_RIGHT_HIP_ROLL         1083
+#define ZERO_LEG_RIGHT_HIP_PITCH        1373
+#define ZERO_LEG_RIGHT_KNEE_PITCH       3065
+#define ZERO_LEG_RIGHT_ANKLE_PITCH      2098
+#define ZERO_LEG_RIGHT_ANKLE_ROLL       2033
 
-#define ZERO_ARM_LEFT_SHOULDER_PITCH    2048
-#define ZERO_ARM_LEFT_SHOULDER_ROLL     2440
-#define ZERO_ARM_LEFT_ELBOW_PITCH       2048
+#define ZERO_ARM_LEFT_SHOULDER_PITCH    2112
+#define ZERO_ARM_LEFT_SHOULDER_ROLL     2447
+#define ZERO_ARM_LEFT_ELBOW_PITCH       1702
 
-#define ZERO_ARM_RIGHT_SHOULDER_PITCH   1905
-#define ZERO_ARM_RIGHT_SHOULDER_ROLL     880 
-#define ZERO_ARM_RIGHT_ELBOW_PITCH      2505
+#define ZERO_ARM_RIGHT_SHOULDER_PITCH   2050
+#define ZERO_ARM_RIGHT_SHOULDER_ROLL     944 
+#define ZERO_ARM_RIGHT_ELBOW_PITCH      2906
 
 #define ZERO_NECK_YAW                   2048
 #define ZERO_HEAD_PITCH                 3072
@@ -406,14 +406,14 @@ int main(int argc, char** argv)
 	ros::spinOnce();
 	loop.sleep();
     }
-	printf("hola");
+	printf("Starting servos 1-20");
 	for(int i=0; i < 20; i++)
 	{
 	    dxl_comm_result = packetHandler->write2ByteTxRx(portHandler, servos_ids[i], ADDR_CM730_DYNAMIXEL_POWER,0, &dxl_error);
     	if(dxl_error != 0)
         std::cout << "CM730.-> Status error after turning off dynamixel power: " << int(dxl_error) << std::endl;
         }
-	printf("MOTORS OFF :)");
+	printf("MOTORS OFF");
     portHandler->closePort();
 
     return 0;

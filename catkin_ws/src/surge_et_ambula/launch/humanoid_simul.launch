@@ -1,9 +1,12 @@
 <launch>
-    <include file="$(find surge_et_ambula)/launch/humanoid_hardware_simul.launch"/>
+	<arg name="fixed" default="false"/>
+    <include file="$(find surge_et_ambula)/launch/humanoid_hardware_simul.launch">
+		<arg name="fixed" value="$(arg fixed)"/>
+	</include>
 
-    <!-- <group ns="hri">
+    <group ns="hri">
         <node name="rviz" pkg="rviz" type="rviz" args="-d $(find config_files)/rviz/config.rviz" required="true"/>
-    </group> -->
+    </group>
 
 	<node name="humanoid_gui" pkg="humanoid_gui" type="humanoid_gui" output="screen"/>
 
