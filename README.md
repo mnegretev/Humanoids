@@ -7,20 +7,22 @@ This repository contains the software developed for the humanoid robot of the Bi
 
 ### Prerrequisites
 
-* Ubuntu 18.04
-* ROS Melodic
-* Gazebo
+* [Ubuntu 20.04](https://releases.ubuntu.com/focal/)
+* [ROS Noetic](http://wiki.ros.org/noetic/Installation/Ubuntu) (`ros-noetic-desktop-full` required)
+* Gazebo (included in `ros-noetic-desktop-full`)
+* RViz (included in `ros-noetic-desktop-full`)
 * A lot of patience
 
 ### Installation
 
 ```
- cd ~/Humanoids
+ cd Humanoids
  ./Setup.sh -i
  cd catkin_ws
  catkin_make -j1 -l1
 ```
 ## Testing
 ```
+ source devel/setup.bash
  roslaunch surge_et_ambula humanoid_simul.launch
 ```
