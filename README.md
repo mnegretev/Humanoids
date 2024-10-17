@@ -13,16 +13,43 @@ This repository contains the software developed for the humanoid robot of the Bi
 * RViz (included in `ros-noetic-desktop-full`)
 * A lot of patience
 
-### Installation
+## Installation
 
-```
+```sh
+ git clone https://github.com/mnegretev/Humanoids.git 
  cd Humanoids
- ./Setup.sh -i
+ cd setup/workspace/
+ ./SetupDraft.sh
  cd catkin_ws
  catkin_make -j1 -l1
 ```
-## Testing
-```
+### Testing in Desktop
+```sh
  source devel/setup.bash
  roslaunch surge_et_ambula humanoid_simul.launch
 ```
+Then, in Gazebo click `Play` down below.
+
+![Humanoid photo](/Documentation/Images/launch_surge_desktop.png)
+---
+### Testing in Humanoid
+```sh
+source devel/setup.bash
+roslaunch surge_et_ambula humanoid_hardware.launch
+```
+
+### Configure remote ssh to Raspberry PI
+To setup a static ip in the raspberry Ethernet port, run:
+```sh
+cd setup/raspberry/
+sudo cp 01-static-ip.yaml /etc/netplan/01-static-ip.yaml
+sudo netplan apply
+```
+The static IP is now set to `192.168.0.11`
+
+In order to connect from your Linux PC, go to `Settings -> Network -> Wired`, the open settings. In IPv4, type: `192.168.0.x` with submask `255.255.255.0`. Make sure the IP from desktop is different from Raspberry PI.
+
+![Humanoid photo](/Documentation/Images/config_ip_desktop.png)
+
+You can now do `ssh humanoid@192.168.0.11` to connect with Ethernet cable directly to the humanoid.
+

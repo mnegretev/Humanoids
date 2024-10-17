@@ -1,0 +1,1 @@
+echo "source ~/Humanoids/catkin_ws/devel/setup.bash" >> ~/.bashrc

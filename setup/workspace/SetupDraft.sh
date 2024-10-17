@@ -9,3 +9,6 @@ sudo apt-get install ros-noetic-moveit-kinematics -y
 sudo apt-get install ros-noetic-dynamixel-sdk -y
 sudo apt-get install ros-noetic-moveit-core -y
 sudo apt-get install ros-noetic-moveit-ros-planning-interface -y
+
+# ROS utils
+sudo apt-get install python-is-python3 -y
