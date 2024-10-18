@@ -1,0 +1,119 @@
+# LEFT SIDE
+left:
+  arm:
+    shoulder:
+      pitch:
+        id:   2 # SERVOMOTOR ID
+        cw:   0 # IS CLOCKWISE?
+        zero: 0 # NATURAL ZERO POSE OF HUMANOID IN DYNAMIXEL BITS (0-4095)
+        enabled: true
+      roll:
+        id:   4
+        cw:   0
+        zero: 0
+        enabled: true
+    elbow:
+      pitch:
+        id:   6
+        cw:   0
+        zero: 0
+        enabled: true
+  leg:
+    hip:
+      yaw:
+        id:   8
+        cw:   0
+        zero: 0
+        enabled: true
+      roll:
+        id:   10
+        cw:   0
+        zero: 0
+        enabled: true
+      pitch:
+        id:   12
+        cw:   0
+        zero: 0
+        enabled: true
+    knee:
+      pitch: 
+        id:   14
+        cw:   0
+        zero: 0
+        enabled: true
+    ankle:
+      pitch: 
+        id:   16
+        cw:   0
+        zero: 0
+        enabled: true
+      roll:
+        id:   18
+        cw:   0
+        zero: 0
+        enabled: true
+
+ # RIGHT SIDE  
+right:
+  arm:
+    shoulder:
+      pitch:
+        id:   1
+        cw:   0
+        zero: 0
+        enabled: true
+      roll:
+        id:   3
+        cw:   0
+        zero: 0
+        enabled: true
+    elbow:
+      pitch:
+        id:   5
+        cw:   0
+        zero: 0
+        enabled: true
+  leg:
+    hip:
+      yaw:
+        id:   7
+        cw:   0
+        zero: 0
+        enabled: true
+      roll:
+        id:   9
+        cw:   0
+        zero: 0
+      pitch:
+        id:   11
+        cw:   0
+        zero: 0
+        enabled: true
+    knee:
+      pitch: 
+        id:   13
+        cw:   0
+        zero: 0
+        enabled: true
+    ankle:
+      pitch:
+        id:   15
+        cw:   0
+        zero: 0
+        enabled: true
+      roll:
+        id:   17
+        cw:   0
+        zero: 0
+        enabled: true
+head:
+  yaw:
+    id:   19
+    cw:   0
+    zero: 0
+    enabled: true
+  pitch:
+    id:   20
+    cw:   0
+    zero: 0
+    enabled: true
