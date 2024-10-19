@@ -1,18 +1,7 @@
 #include "ros/ros.h"
 #include "std_msgs/Float32MultiArray.h"
-#include "std_msgs/UInt16.h"
-#include "std_msgs/Int16MultiArray.h"
-#include "dynamixel_sdk/dynamixel_sdk.h"
 #include "sensor_msgs/JointState.h"
-#include "tf/transform_broadcaster.h"
-#include "std_msgs/String.h"
-#include <sstream>
-
-/*---------------------------------------
-|      DEFINE SERVO ID'S AND NAMING     |
------------------------------------------*/
-
-#define ID_CM730    200                    //-> ROS THINKS CM730 IS A SERVO
+#include "servo_utils.h"
 
 /*---------------------------------------
 |            UPPER BODY                  |
@@ -23,7 +12,7 @@
 #define ID_ARM_LEFT_ELBOW_PITCH     6
 
 
-#define ID_ARM_RIGHT_SHOULDER_PITCH 1      // --> RIGHT SHOULDER
+#define ID_ARM_RIGHT_SHOULDER_PITCH 1      // --> RIGHT ARM
 #define ID_ARM_RIGHT_SHOULDER_ROLL  3
 #define ID_ARM_RIGHT_ELBOW_PITCH    5
 
@@ -112,34 +101,6 @@
                       
 #define CW_NECK_YAW                        1
 #define CW_HEAD_PITCH                     -1
-
-#define SERVO_MX_BITS_PER_RAD       651.898646904   // Servos have 4096 different positions, 
-                                                    // since there are 2  PI radians in a circumference, 
-                                                    // each radian has 4096/2*PI = 651.898646904 BITS PER RADIAN
-
-#define SERVO_MX_RADS_PER_BIT       0.001533981     // Inverse of SERVO_MX_BITS_PER_RAD
-
-#define SERVO_PROTOCOL_VERSION      1.0             //  SERVOS USED BY THE HUMANOID USE PROTOCOL 1.0
-
-/*
-    DYNAMIXEL SERVOS HAVE UP TO 70 DIFFERENT CONTROL OPTIONS
-    EITHER TO READ DATA OR WRITE DATA. THE NUMBERS SHOWN BELOW
-    ARE THE ACTUAL ADDRESSES THAT WE WILL BE USING. FOR THIS NODE
-    WE WILL NEED TO TURN ON THE MOTOR (24), REVIEW THE CURRENT
-    POSITION OF THE MOTOR (36) AND SEND A DESIRED GOAL POSITION (30)
-
-    TO SEE THE COMPLETE LIST OF CONTROL OPTIONS VISIT:
-    https://emanual.robotis.com/docs/en/dxl/mx/mx-64/#control-table-of-eeprom-area
-
-*/
-
-#define ADDR_MX_CURRENT_POSITION    36      // PRESENT POSITION
-#define ADDR_LEN_CURRENT_POSITION   2       // SIZE OF ADDRESS = 2 BYTES
-
-#define ADDR_MX_GOAL_POSITION       30      // GOAL POSITION
-#define ADDR_LEN_GOAL_POSITION      2       // SIZE OF ADDRESS = 2 BYTES
-
-#define ADDR_CM730_DYNAMIXEL_POWER  24      // TORQUE ENABLE ADDRESS
 
 uint8_t servos_ids[20] =   // --> SETTING UP THE ARRAY OF ID'S
 {
@@ -303,10 +264,6 @@ void callback_head_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg)
             servos_position_zero[j]);
 }
 
-/*------------------------------------------*\
-|               CALLBACKS                    |
-|-------------------------------------------*/
-
 int main(int argc, char** argv)
 {   
     // --> INITIALIZING ROS  
@@ -374,199 +331,44 @@ int main(int argc, char** argv)
 
     msg_joint_states.name[18] = "neck_yaw";   
     msg_joint_states.name[19] = "head_pitch";
-    
-    /*----------------------------------------------*\
-    |               PORT AND PACKET HANDLER          |
-    |-----------------------------------------------*/
 
-    dynamixel::PortHandler   *portHandler   = dynamixel::PortHandler::getPortHandler("/dev/ttyUSB0");
-    dynamixel::PacketHandler *packetHandler = dynamixel::PacketHandler::getPacketHandler(SERVO_PROTOCOL_VERSION);
+    Servo::CommHandler comm("/dev/ttyUSB0");
 
-    if(portHandler->openPort())
-        std::cout << "CM730.->Serial port successfully openned on port " << std::endl;
-    else
+    {int counter{0};
+    while( !comm.startComm() )
     {
-        std::cout << "CM730.->Cannot open serial port" << std::endl;
-        return -1;
-    }
-
-    /*----------------------------------------------*\
-    |               BAUDRATE                         |
-    |-----------------------------------------------*/
-    
-    if(portHandler->setBaudRate(1000000))
-        std::cout << "CM730.->Baudrate successfully set to " << std::endl;
-    else
-    {
-        std::cout << "CM730.->Cannot set baud rate" << std::endl;
-        return -1;
-    }
-
-    dynamixel::GroupBulkRead groupRead(portHandler, packetHandler);     // SyncRead is not supported for protocol 1.0, only for protocol 2.0,
-                                                                        // instead we use GroupBulkRead
-                                                                        // BulkRead allows us to read data from multiple addreses
-                                                                        // but for the moment we only need to read position
-    
-    dynamixel::GroupSyncWrite groupSyncWrite(portHandler,               // We don't need BulkWrite since we are only writing to a single address
-                                             packetHandler,             // SyncWrite is enough because we are only reading at the same address in
-                                             ADDR_MX_GOAL_POSITION,     // all ID's
-                                             ADDR_LEN_GOAL_POSITION);
-
-    bool dxl_addparam_result = false;                                   // Verify if the ID was succesfully added to the list of BulkRead
-    bool dxl_getdata_result = false;                                    // Verify if data result is succesful
-
-    uint8_t  dxl_error       = 0;                                       // Shows any error returned by the servo
-    int      dxl_comm_result = COMM_TX_FAIL;                            // Communication Status
-    uint16_t dxl_current_pos;                                           // STORES THE VALUE FROM SERVO
-    uint8_t param_goal_position[2];                                     // SyncWrite requires to store 16-bit int into an array of 8-bit
+        counter++;
+        ros::Duration(1.0).sleep();
+        if(counter > 10)
+        {
+            ROS_ERROR("Shutting down after attempting to open port. Shutting down");
+            return -1;
+        };
+    }}
 
     /*---------------------------------------
     |      WAKE UP CM730 (ADDR 24)          |
     -----------------------------------------*/
-
-    std::cout << "\n\tCM730 -> WAKE UP!!\n" << std::endl;
-
-    dxl_comm_result = packetHandler->write1ByteTxRx(portHandler,
-                                                    ID_CM730,
-                                                    ADDR_CM730_DYNAMIXEL_POWER,
-                                                    1,
-                                                    &dxl_error);
-    
-    if(dxl_comm_result != COMM_SUCCESS)
-        std::cout << "CM730.-> Commnunication problem while trying to wake up CM730" << std::endl;
-    
-    if(dxl_error != 0)
-        std::cout << "CM730.-> Status error after turning on dynamixel power: " << int(dxl_error) << std::endl;
-
-    ros::Duration(1.0).sleep();
-   
-    /*---------------------------------------
-    |      READ ALL POSITIONS (ADDR 36)      |
-    -----------------------------------------*/
-
-    for(int i=0; i<20; ++i)
-    {
-        dxl_addparam_result = groupRead.addParam(servos_ids[i],                 // Pushes ID, ADDR and DATA_LENGHT to the list
-                                                 ADDR_MX_CURRENT_POSITION,      // Returns false when ID already exists in the list
-                                                 ADDR_LEN_CURRENT_POSITION);
-
-        if(dxl_addparam_result != true)
-            std::cout << "CM730 -> Failed to add id " << servos_ids[i] << " to the list of groupBulkRead (First process)" << std::endl;
-
-    } 
-
-    dxl_comm_result = groupRead.txRxPacket();       // Transmits and receives the packet
-
-    if(dxl_comm_result != COMM_SUCCESS){
-        std::cout << "\nCommunication error with Bulk Read Instruction (dxl_comm_result)\n" << std::endl;
-        return 0;
-    }
-
-    for(int i=0; i<20; ++i)
-    {
-        dxl_getdata_result = groupRead.isAvailable(servos_ids[i],               // Checks wether there is available data in the storage. 
-                                                   ADDR_MX_CURRENT_POSITION,    // Returns false if there is no data from target address
-                                                   ADDR_LEN_CURRENT_POSITION);
-
-        if (dxl_getdata_result != true)
-        {
-            std::cout << "CM730 -> FAILED TO OBTAIN DATA FROM SERVO " << servos_ids[i] << " in groupRead.isAvailable()";
-        }
-        else
-        {
-            dxl_current_pos = groupRead.getData(servos_ids[i],                  // Gets data from received packet at specific address
-                                                ADDR_MX_CURRENT_POSITION,
-                                                ADDR_LEN_CURRENT_POSITION);
-
-            servos_goal_position[i] = dxl_current_pos;          
-
-            msg_joint_states.position[i] = (int(dxl_current_pos) - int(servos_position_zero[i]))
-                                            * SERVO_MX_RADS_PER_BIT * servos_is_clockwise[i];
-        }
-    }
-
-    groupRead.clearParam();     // This function clears the groupRead ID list. If we miss this instruction, the list will
-                                // not be cleared and the id's will keep adding up.
-    
-    ros::Duration(1.0).sleep();
-
-    /*---------------------------------------\
-    |      HUMANOID IS ALIVE, NOW            |
-    -----------------------------------------*/
+    comm.wakeupAllServos();
 
     while(ros::ok())
     {
-
-        /*---------------------------------------\
-        |      READ ALL POSITIONS                |
-        -----------------------------------------*/
-
-        for(int i=0; i<20; ++i)
+        uint16_t dxl_current_pos;
+        // Read all positions
+        for(int id=0; id<20; ++id)
         {
-            dxl_addparam_result = groupRead.addParam(servos_ids[i], 
-                                                     ADDR_MX_CURRENT_POSITION, 
-                                                     ADDR_LEN_CURRENT_POSITION);
-            if(dxl_addparam_result != true){
-                std::cout << "CM730 -> Failed to add id " << (int)servos_ids[i] << " to the list of groupBulkRead" << std::endl;
-            }
-        }
-
-        dxl_comm_result = groupRead.txRxPacket();
-        
-        if(dxl_comm_result != COMM_SUCCESS)
-        {
-            std::cout << "\n\tCommunication error with Bulk Read Instruction (Second Process)\n" << std::endl;
-        }
-
-        for(int i=0; i<20; ++i)
-        {
-            dxl_getdata_result = groupRead.isAvailable(servos_ids[i],
-                                                       ADDR_MX_CURRENT_POSITION,
-                                                       ADDR_LEN_CURRENT_POSITION);
-            if (dxl_getdata_result != true)
-            {
-            std::cout << "CM730 -> FAILED TO OBTAIN DATA FROM SERVO " << (int)servos_ids[i] << " IN groupRead.isAvailable()";
-            }
-            else
-            {
-                dxl_current_pos = groupRead.getData(servos_ids[i],
-                                                ADDR_MX_CURRENT_POSITION,
-                                                ADDR_LEN_CURRENT_POSITION);
-                msg_joint_states.position[i] = (int(dxl_current_pos) - int(servos_position_zero[i]))
+            dxl_current_pos = comm.getPosition(id);
+            msg_joint_states.position[id] = (int(dxl_current_pos) - int(servos_position_zero[id]))
                                             * SERVO_MX_RADS_PER_BIT 
-                                            * servos_is_clockwise[i];
-                msg_joint_current_angles.data[i] = msg_joint_states.position[i];
-            }
-
+                                            * servos_is_clockwise[id];
+            msg_joint_current_angles.data[id] = msg_joint_states.position[id];
         }
 
-        groupRead.clearParam();
-
-
-        /*---------------------------------------\
-        |      WRITE ALL POSITIONS (addr 30)     |
-        -----------------------------------------*/
-        
-        for(int i=0; i<20; ++i)
+        // Write all positions
+        for(int id=0; id<20; ++id)
         {
-            param_goal_position[0] = DXL_LOBYTE(servos_goal_position[i]);           // SyncWrite can only receive uint8_t arrays
-            param_goal_position[1] = DXL_HIBYTE(servos_goal_position[i]);           // since position is uint16_t, we split it with LOBYTE() AND HIBYTE()
-
-            dxl_addparam_result = groupSyncWrite.addParam(servos_ids[i], 
-                                                          param_goal_position);     // Pushes Id to the SyncWrite list, and initializes storage
-
-            if (dxl_addparam_result != true)
-                std::cout << "CM730 -> ERROR ADDING ID TO GROUP SYNC WRITE (dxl_addparam_result)" << std::endl;
+            bool ret = comm.setPosition(id, dxl_current_pos);
         }
-
-        dxl_comm_result = groupSyncWrite.txPacket();      // Transmits packet to the number of servos
-
-        if (dxl_comm_result != COMM_SUCCESS){
-            std::cout << "CM730 -> Communication error while writing positions (groupSyncWrite.txPacket())" << std::endl;
-            return 0;
-        }
-
-        groupSyncWrite.clearParam();
 
         msg_joint_states.header.stamp = ros::Time::now();
         pub_joint_states.publish(msg_joint_states);
@@ -574,24 +376,10 @@ int main(int argc, char** argv)
         ros::spinOnce();
         loop.sleep();
     }
-    /*---------------------------------------\
-    |  KILLING PROCESS, SHUTTING DOWN MOTORS |
-    -----------------------------------------*/
-     dxl_comm_result = packetHandler->write1ByteTxRx(portHandler,
-                                                    ID_CM730,
-                                                    ADDR_CM730_DYNAMIXEL_POWER,
-                                                    0,
-                                                    &dxl_error);
 
+    //After killing the node, shutdown all servos
+    comm.shutdownAllServos();
 
-    if(dxl_comm_result != COMM_SUCCESS)
-        std::cout << "CM730.-> Commnunication problem while trying to killing process CM730" << std::endl;
-    
-    if(dxl_error != 0)
-        std::cout << "CM730.-> Status error after turning off dynamixel power: " << int(dxl_error) << std::endl;
-
-    portHandler->closePort();
     return 0;
-    //DONE MOTORS OFF
     
 }
