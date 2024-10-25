@@ -1,0 +1,4 @@
+<launch>
+  <node name="cm730_v2" pkg="cm730" type="cm730v2" required="true"/>
+  <rosparam command="load" file="$(find config_files)/hardware/chuy_servos_config.yaml" />
+</launch>

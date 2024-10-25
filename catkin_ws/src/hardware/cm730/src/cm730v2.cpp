@@ -175,131 +175,95 @@ int servos_is_clockwise[20] = // --> Setting up the array of cw info for each se
 };
 
 uint16_t servos_goal_position[20];  // PENDING TO BE READ
+std::vector<Servo::servo_t> left_arm_servos;
+std::vector<Servo::servo_t> right_arm_servos;
+std::vector<Servo::servo_t> left_leg_servos;
+std::vector<Servo::servo_t> right_leg_servos;
+std::vector<Servo::servo_t> head_servos;
 
-/*------------------------------------------*\
-|               CALLBACKS                    |
-|-------------------------------------------*/
-
-void callback_legs_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg)
+std::vector<std::string> left_arm_names
 {
-    if(msg->data.size() != 12)
+    "/left/arm/shoulder/pitch",
+    "/left/arm/shoulder/roll",
+    "/left/arm/elbow/pitch"
+};
+
+std::vector<std::string> right_arm_names
+{
+    "/right/arm/shoulder/pitch",
+    "/right/arm/shoulder/roll",
+    "/right/arm/elbow/pitch"
+};
+
+std::vector<std::string> left_leg_names
+{
+    "/left/leg/hip/yaw",
+    "/left/leg/hip/roll",
+    "/left/leg/hip/pitch",
+    "/left/leg/knee/pitch",
+    "/left/leg/ankle/pitch",
+    "/left/leg/ankle/roll",
+};
+
+std::vector<std::string> right_leg_names
+{
+    "/right/leg/hip/yaw",
+    "/right/leg/hip/roll",
+    "/right/leg/hip/pitch",
+    "/right/leg/knee/pitch"
+    "/right/leg/ankle/pitch",
+    "/right/leg/ankle/roll",
+};
+
+std::vector<std::string> head_names
+{
+    "/head/yaw",
+    "/head/pitch"
+};
+
+bool fillServoParameters(std::vector<std::string>& servo_names, std::vector<Servo::servo_t>& servo_list)
+{
+    for(auto name: servo_names)
     {
-       std::cout << "CM730.->Error!!: goal position for both legs must be a 12-value array." << std::endl;
-       return;
+        Servo::servo_t servo;
+        std::string param_id_str    {name + "/id"};
+        std::string param_cw_str    {name + "/cw"};
+        std::string param_zero_str  {name + "/zero"};
+        std::string param_enabled_str {name + "/enabled"};
+
+        int id, zero;
+        if (!ros::param::get(param_id_str, id))
+        {
+            ROS_ERROR("Missing param in config file: %s", param_id_str.c_str());
+            return false;
+        }
+        servo.id = id;
+        if (!ros::param::get(param_cw_str, servo.cw))
+        {
+            ROS_ERROR("Missing param in config file: %s", param_cw_str.c_str());
+            return false;
+        }
+        if (!ros::param::get(param_zero_str, zero))
+        {
+            ROS_ERROR("Missing param in config file: %s", param_zero_str.c_str());
+            return false;
+        }
+        servo.zero = zero;
+        if (!ros::param::get(param_enabled_str, servo.enabled))
+        {
+            ROS_ERROR("Missing param in config file: %s", param_enabled_str.c_str());
+            return false;
+        }
+        servo_list.push_back(servo);
     }
-    for(int i=0, j=0; i < 12; i++, j++)
-        servos_goal_position[j] = uint16_t(msg->data[i] * SERVO_MX_BITS_PER_RAD * servos_is_clockwise[j] +
-            servos_position_zero[j]);
+    return true;
 }
 
-void callback_leg_left_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg)
-{
-    if(msg->data.size() != 6)
-    {
-       std::cout << "CM730.->Error!!: goal position for left leg must be a 6-value array." << std::endl;
-       return;
-    }
-    for(int i=0, j=0; i < 6; i++, j++)
-        servos_goal_position[j] = uint16_t(msg->data[i] * SERVO_MX_BITS_PER_RAD * servos_is_clockwise[j] + 
-            servos_position_zero[j]);
-}
 
-void callback_leg_right_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg)
-{
-    if(msg->data.size() != 6)
-    {
-        std::cout << "CM730.->Error!!: goal position for right leg must be a 6-value array." << std::endl;
-        return;
-    }
-    for(int i=0, j=6; i < 6; i++, j++)
-        servos_goal_position[j] = uint16_t(msg->data[i] * SERVO_MX_BITS_PER_RAD * servos_is_clockwise[j] +
-            servos_position_zero[j]);
-}
-
-void callback_arms_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg)
-{
-    if(msg->data.size() != 6)
-    {
-        std::cout << "CM730.->Error!!: goal position for both arms must be a 6-value array." << std::endl;
-        return;
-    }
-    for(int i=0, j=12; i < 6; i++, j++)
-        servos_goal_position[j] = uint16_t(msg->data[i] * SERVO_MX_BITS_PER_RAD * servos_is_clockwise[j] +
-            servos_position_zero[j]);
-}
-
-void callback_arm_left_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg)
-{
-    if(msg->data.size() != 3)
-    {
-        std::cout << "CM730.->Error!!: goal position for left arm must be a 3-value array." << std::endl;
-        return;
-    }
-    for(int i=0, j=12; i < 3; i++, j++)
-        servos_goal_position[j] = uint16_t(msg->data[i] * SERVO_MX_BITS_PER_RAD * servos_is_clockwise[j] +
-            servos_position_zero[j]);
-}
-
-void callback_arm_right_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg)
-{
-    if(msg->data.size() != 3)
-    {
-        std::cout << "CM730.->Error!!: goal position for right leg must be a 3-value array." << std::endl;
-        return;
-    }
-    for(int i=0, j=15; i < 3; i++, j++)
-        servos_goal_position[j] = uint16_t(msg->data[i] * SERVO_MX_BITS_PER_RAD * servos_is_clockwise[j] +
-            servos_position_zero[j]);
-}
-
-void callback_head_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg)
-{
-    if(msg->data.size() != 2)
-    {
-        std::cout << "CM730.->Error!! goal position for head must be a 2-value array" << std::endl;
-        return;
-    }
-    for(int i=0, j=18; i < 2; i++, j++)
-        servos_goal_position[j] = uint16_t(msg->data[i] * SERVO_MX_BITS_PER_RAD * servos_is_clockwise[j] +
-            servos_position_zero[j]);
-}
 
 int main(int argc, char** argv)
 {   
-    // --> INITIALIZING ROS  
-    std::cout << "INITIALIZING CM730 NODE BY MARCOSOFT..." << std::endl;
-    ros::init(argc, argv, "cm730v2");
-    ros::NodeHandle n;
-    ros::Rate loop(30);
-    // --> OBTAINING USB PORT NAME
-    system("echo 1 | sudo tee /sys/bus/usb-serial/devices/ttyUSB0/latency_timer");
-
-    /*----------------------------------------------*\
-    |               ROS SUBSCRIBERS                  |
-    |-----------------------------------------------*/
-
-    ros::Subscriber sub_legs_goal_pose      = n.subscribe("legs_goal_pose",      1, callback_legs_goal_pose);
-    ros::Subscriber sub_leg_left_goal_pose  = n.subscribe("leg_left_goal_pose",  1, callback_leg_left_goal_pose);
-    ros::Subscriber sub_leg_right_goal_pose = n.subscribe("leg_right_goal_pose", 1, callback_leg_right_goal_pose);
-    ros::Subscriber sub_arms_goal_pose      = n.subscribe("arms_goal_pose",      1, callback_arms_goal_pose);
-    ros::Subscriber sub_arm_left_goal_pose  = n.subscribe("arm_left_goal_pose",  1, callback_arm_left_goal_pose);
-    ros::Subscriber sub_arm_right_goal_pose = n.subscribe("arm_right_goal_pose", 1, callback_arm_right_goal_pose);
-    ros::Subscriber sub_head_goal_pose      = n.subscribe("head_goal_pose",      1, callback_head_goal_pose);     
-
-    /*----------------------------------------------*\
-    |               ROS PUBLISHERS                   |
-    |-----------------------------------------------*/
-
-    ros::Publisher pub_legs_current_pose      = n.advertise<std_msgs::Float32MultiArray>("legs_current_pose",       1);
-    ros::Publisher pub_leg_left_current_pose  = n.advertise<std_msgs::Float32MultiArray>("leg_left_current_pose",   1);
-    ros::Publisher pub_leg_right_current_pose = n.advertise<std_msgs::Float32MultiArray>("leg_right_current_pose",  1);
-    ros::Publisher pub_arms_current_pose      = n.advertise<std_msgs::Float32MultiArray>("arms_current_pose",       1);
-    ros::Publisher pub_arm_left_current_pose  = n.advertise<std_msgs::Float32MultiArray>("arm_left_current_pose",   1);
-    ros::Publisher pub_arm_right_current_pose = n.advertise<std_msgs::Float32MultiArray>("arm_right_current_pose",  1);
-    ros::Publisher pub_head_current_pose      = n.advertise<std_msgs::Float32MultiArray>("head_current_pose",       1);
-    ros::Publisher pub_joint_current_angles   = n.advertise<std_msgs::Float32MultiArray>("joint_current_angles",    1);
-    ros::Publisher pub_joint_states           = n.advertise<sensor_msgs::JointState>("/joint_states", 1);
-
+    CM730::Node cm730_handler;
     sensor_msgs::JointState msg_joint_states;
     std_msgs::Float32MultiArray msg_joint_current_angles;
 
@@ -331,6 +295,12 @@ int main(int argc, char** argv)
 
     msg_joint_states.name[18] = "neck_yaw";   
     msg_joint_states.name[19] = "head_pitch";
+    
+    if(!fillServoParameters(left_arm_names, left_arm_servos)) return 0;
+    if(!fillServoParameters(right_arm_names, right_arm_servos)) return 0;
+    if(!fillServoParameters(left_leg_names, left_leg_servos)) return 0;
+    if(!fillServoParameters(right_leg_names, right_leg_servos)) return 0;
+    if(!fillServoParameters(head_names, head_servos)) return 0;
 
     Servo::CommHandler comm("/dev/ttyUSB0");
 

@@ -58,6 +58,14 @@ enum MX64
 
 namespace Servo
 {
+    struct servo_t
+    {
+        uint8_t id;
+        int     cw;
+        uint16_t zero;
+        bool    enabled;
+    };
+
     class CommHandler
     {
     private:

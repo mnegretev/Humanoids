@@ -3,54 +3,54 @@ left:
   arm:
     shoulder:
       pitch:
-        id:   2 # SERVOMOTOR ID
-        cw:   0 # IS CLOCKWISE?
-        zero: 0 # NATURAL ZERO POSE OF HUMANOID IN DYNAMIXEL BITS (0-4095)
+        id:   2 # SERVOMOTOR ID (from 0 to 255)
+        cw:   1 # IS CLOCKWISE? (The only values accepted are 1 and -1)
+        zero: 2048 # NATURAL ZERO POSE OF HUMANOID IN DYNAMIXEL BITS (0-4095)
         enabled: true
       roll:
         id:   4
-        cw:   0
-        zero: 0
-        enabled: true
+        cw:   -1
+        zero: 2440
+        enabled: false # Needs to change
     elbow:
       pitch:
         id:   6
-        cw:   0
-        zero: 0
+        cw:   -1
+        zero: 2048
         enabled: true
   leg:
     hip:
       yaw:
         id:   8
-        cw:   0
-        zero: 0
+        cw:   -1
+        zero: 2070
         enabled: true
       roll:
         id:   10
-        cw:   0
-        zero: 0
+        cw:   1
+        zero: 2070
         enabled: true
       pitch:
         id:   12
-        cw:   0
-        zero: 0
+        cw:   1
+        zero: 2048
         enabled: true
     knee:
       pitch: 
         id:   14
-        cw:   0
-        zero: 0
+        cw:   1
+        zero: 2400
         enabled: true
     ankle:
       pitch: 
         id:   16
-        cw:   0
-        zero: 0
+        cw:   -1
+        zero: 2150
         enabled: true
       roll:
         id:   18
-        cw:   0
-        zero: 0
+        cw:   -1
+        zero: 2048
         enabled: true
 
  # RIGHT SIDE  
@@ -59,61 +59,62 @@ right:
     shoulder:
       pitch:
         id:   1
-        cw:   0
-        zero: 0
+        cw:   -1
+        zero: 1905
         enabled: true
       roll:
         id:   3
-        cw:   0
-        zero: 0
+        cw:   -1
+        zero: 880
         enabled: true
     elbow:
       pitch:
         id:   5
-        cw:   0
-        zero: 0
+        cw:   1
+        zero: 2505
         enabled: true
   leg:
     hip:
       yaw:
         id:   7
-        cw:   0
-        zero: 0
+        cw:   -1
+        zero: 2019
         enabled: true
       roll:
         id:   9
-        cw:   0
-        zero: 0
+        cw:   1
+        zero: 1067
+        enabled: true
       pitch:
         id:   11
-        cw:   0
-        zero: 0
+        cw:   -1
+        zero: 3048
         enabled: true
     knee:
       pitch: 
         id:   13
-        cw:   0
-        zero: 0
+        cw:   -1
+        zero: 2890
         enabled: true
     ankle:
       pitch:
         id:   15
-        cw:   0
-        zero: 0
+        cw:   1
+        zero: 2048
         enabled: true
       roll:
         id:   17
-        cw:   0
-        zero: 0
+        cw:   -1
+        zero: 2048
         enabled: true
 head:
   yaw:
     id:   19
-    cw:   0
-    zero: 0
+    cw:   1
+    zero: 2048
     enabled: true
   pitch:
     id:   20
-    cw:   0
-    zero: 0
+    cw:   -1
+    zero: 3072
     enabled: true
