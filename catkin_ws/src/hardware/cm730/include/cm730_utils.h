@@ -31,7 +31,7 @@ namespace CM730
         Servo::CommHandler comm{"/dev/ttyUSB0"};
 
     public:
-        CM730Node(std::string node_name);
+        Node(std::string node_name);
         bool startNode(std::string port_name);
         void callback_legs_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg);
         void callback_leg_left_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg);

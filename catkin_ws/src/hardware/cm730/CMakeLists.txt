@@ -138,7 +138,7 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(${PROJECT_NAME}_node src/cm730_node.cpp)
-add_executable(${PROJECT_NAME}v2 src/cm730v2.cpp src/servo_utils.cpp)
+add_executable(${PROJECT_NAME}v2 src/cm730v2.cpp src/servo_utils.cpp src/cm730_utils.cpp)
 
 
 ## Rename C++ executable without prefix

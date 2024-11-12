@@ -2,6 +2,7 @@
 #include "std_msgs/Float32MultiArray.h"
 #include "sensor_msgs/JointState.h"
 #include "servo_utils.h"
+#include "cm730_utils.h"
 
 /*---------------------------------------
 |            UPPER BODY                  |

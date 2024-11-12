@@ -1,4 +1,5 @@
 #include "servo_utils.h"
+#include "ros/ros.h"
 
 namespace CM730
 {
