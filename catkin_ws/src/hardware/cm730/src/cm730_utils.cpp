@@ -1,10 +1,12 @@
 #include "servo_utils.h"
+#include "cm730_utils.h"
 #include "ros/ros.h"
 
 namespace CM730
 {
-    Node::Node(std::string node_name)
+    Node::Node(std::string port_name): comm{port_name}
     {
+        
         sub_legs_goal_pose          = n.subscribe("legs_goal_pose",      1, callback_legs_goal_pose);
         sub_leg_left_goal_pose      = n.subscribe("leg_left_goal_pose",  1, callback_leg_left_goal_pose);
         sub_leg_right_goal_pose     = n.subscribe("leg_right_goal_pose", 1, callback_leg_right_goal_pose);
@@ -24,15 +26,13 @@ namespace CM730
         pub_joint_states            = n.advertise<sensor_msgs::JointState>("/joint_states", 1);
     }
 
-    bool Node::startNode(std::string port_name)
+    bool Node::startNode()
     {
-        if(!fillServoParameters(left_arm_names, left_arm_servos)) return false;
+        if(!fillServoParameters(left_arm_names, left_arm_servos))   return false;
         if(!fillServoParameters(right_arm_names, right_arm_servos)) return false;
-        if(!fillServoParameters(left_leg_names, left_leg_servos)) return false;
+        if(!fillServoParameters(left_leg_names, left_leg_servos))   return false;
         if(!fillServoParameters(right_leg_names, right_leg_servos)) return false;
-        if(!fillServoParameters(head_names, head_servos)) return 0;
-        
-        Servo::CommHandler comm("/dev/ttyUSB0");
+        if(!fillServoParameters(head_names, head_servos))           return false;
 
         {int counter{0};
         while( !comm.startComm() )
@@ -42,9 +42,11 @@ namespace CM730
             if(counter > 10)
             {
                 ROS_ERROR("Shutting down after attempting to open port. Shutting down");
-                return -1;
+                return false;
             };
         }}
+
+        return true;
     }
 
     void Node::callback_legs_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg)

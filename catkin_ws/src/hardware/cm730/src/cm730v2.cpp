@@ -175,96 +175,10 @@ int servos_is_clockwise[20] = // --> Setting up the array of cw info for each se
     CW_HEAD_PITCH,
 };
 
-uint16_t servos_goal_position[20];  // PENDING TO BE READ
-std::vector<Servo::servo_t> left_arm_servos;
-std::vector<Servo::servo_t> right_arm_servos;
-std::vector<Servo::servo_t> left_leg_servos;
-std::vector<Servo::servo_t> right_leg_servos;
-std::vector<Servo::servo_t> head_servos;
-
-std::vector<std::string> left_arm_names
-{
-    "/left/arm/shoulder/pitch",
-    "/left/arm/shoulder/roll",
-    "/left/arm/elbow/pitch"
-};
-
-std::vector<std::string> right_arm_names
-{
-    "/right/arm/shoulder/pitch",
-    "/right/arm/shoulder/roll",
-    "/right/arm/elbow/pitch"
-};
-
-std::vector<std::string> left_leg_names
-{
-    "/left/leg/hip/yaw",
-    "/left/leg/hip/roll",
-    "/left/leg/hip/pitch",
-    "/left/leg/knee/pitch",
-    "/left/leg/ankle/pitch",
-    "/left/leg/ankle/roll",
-};
-
-std::vector<std::string> right_leg_names
-{
-    "/right/leg/hip/yaw",
-    "/right/leg/hip/roll",
-    "/right/leg/hip/pitch",
-    "/right/leg/knee/pitch"
-    "/right/leg/ankle/pitch",
-    "/right/leg/ankle/roll",
-};
-
-std::vector<std::string> head_names
-{
-    "/head/yaw",
-    "/head/pitch"
-};
-
-bool fillServoParameters(std::vector<std::string>& servo_names, std::vector<Servo::servo_t>& servo_list)
-{
-    for(auto name: servo_names)
-    {
-        Servo::servo_t servo;
-        std::string param_id_str    {name + "/id"};
-        std::string param_cw_str    {name + "/cw"};
-        std::string param_zero_str  {name + "/zero"};
-        std::string param_enabled_str {name + "/enabled"};
-
-        int id, zero;
-        if (!ros::param::get(param_id_str, id))
-        {
-            ROS_ERROR("Missing param in config file: %s", param_id_str.c_str());
-            return false;
-        }
-        servo.id = id;
-        if (!ros::param::get(param_cw_str, servo.cw))
-        {
-            ROS_ERROR("Missing param in config file: %s", param_cw_str.c_str());
-            return false;
-        }
-        if (!ros::param::get(param_zero_str, zero))
-        {
-            ROS_ERROR("Missing param in config file: %s", param_zero_str.c_str());
-            return false;
-        }
-        servo.zero = zero;
-        if (!ros::param::get(param_enabled_str, servo.enabled))
-        {
-            ROS_ERROR("Missing param in config file: %s", param_enabled_str.c_str());
-            return false;
-        }
-        servo_list.push_back(servo);
-    }
-    return true;
-}
-
-
 
 int main(int argc, char** argv)
 {   
-    CM730::Node cm730_handler;
+    CM730::Node node("/dev/ttyUSB0");
     sensor_msgs::JointState msg_joint_states;
     std_msgs::Float32MultiArray msg_joint_current_angles;
 
@@ -296,32 +210,11 @@ int main(int argc, char** argv)
 
     msg_joint_states.name[18] = "neck_yaw";   
     msg_joint_states.name[19] = "head_pitch";
-    
-    if(!fillServoParameters(left_arm_names, left_arm_servos)) return 0;
-    if(!fillServoParameters(right_arm_names, right_arm_servos)) return 0;
-    if(!fillServoParameters(left_leg_names, left_leg_servos)) return 0;
-    if(!fillServoParameters(right_leg_names, right_leg_servos)) return 0;
-    if(!fillServoParameters(head_names, head_servos)) return 0;
-
-    Servo::CommHandler comm("/dev/ttyUSB0");
-
-    {int counter{0};
-    while( !comm.startComm() )
-    {
-        counter++;
-        ros::Duration(1.0).sleep();
-        if(counter > 10)
-        {
-            ROS_ERROR("Shutting down after attempting to open port. Shutting down");
-            return -1;
-        };
-    }}
 
     /*---------------------------------------
     |      WAKE UP CM730 (ADDR 24)          |
     -----------------------------------------*/
-    comm.wakeupAllServos();
-
+    
     while(ros::ok())
     {
         uint16_t dxl_current_pos;
@@ -342,14 +235,11 @@ int main(int argc, char** argv)
         }
 
         msg_joint_states.header.stamp = ros::Time::now();
-        pub_joint_states.publish(msg_joint_states);
+        node.pub_joint_states.publish(msg_joint_states);
         pub_joint_current_angles.publish(msg_joint_current_angles);
         ros::spinOnce();
         loop.sleep();
     }
-
-    //After killing the node, shutdown all servos
-    comm.shutdownAllServos();
 
     return 0;
     

@@ -1,0 +1,12 @@
+services:
+  ros-noetic:
+    image: humanoids
+    volumes:
+      - /etc/group:/etc/group:ro
+      - /etc/passwd:/etc/passwd:ro
+      - /etc/shadow:/etc/shadow:ro
+      - /etc/sudoers.d:/etc/sudoers.d:ro
+      - ~/fun/Humanoids:/home/miguel:rw
+      - ~/Volumes:/home/usr
+    network_mode: "host"
+    user: "1000:1000"
