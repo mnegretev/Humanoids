@@ -1,54 +1,12 @@
+#ifndef _CM730_UTILS_H_
+#define _CM730_UTILS_H_
+#pragma once
+
 #include "ros/ros.h"
 #include "std_msgs/Float32MultiArray.h"
 #include "sensor_msgs/JointState.h"
 #include "servo_utils.h"
-
-uint16_t servos_goal_position[20];  // PENDING TO BE READ
-std::vector<Servo::servo_t> left_arm_servos;
-std::vector<Servo::servo_t> right_arm_servos;
-std::vector<Servo::servo_t> left_leg_servos;
-std::vector<Servo::servo_t> right_leg_servos;
-std::vector<Servo::servo_t> head_servos;
-
-std::vector<std::string> left_arm_names
-{
-    "/left/arm/shoulder/pitch",
-    "/left/arm/shoulder/roll",
-    "/left/arm/elbow/pitch"
-};
-
-std::vector<std::string> right_arm_names
-{
-    "/right/arm/shoulder/pitch",
-    "/right/arm/shoulder/roll",
-    "/right/arm/elbow/pitch"
-};
-
-std::vector<std::string> left_leg_names
-{
-    "/left/leg/hip/yaw",
-    "/left/leg/hip/roll",
-    "/left/leg/hip/pitch",
-    "/left/leg/knee/pitch",
-    "/left/leg/ankle/pitch",
-    "/left/leg/ankle/roll",
-};
-
-std::vector<std::string> right_leg_names
-{
-    "/right/leg/hip/yaw",
-    "/right/leg/hip/roll",
-    "/right/leg/hip/pitch",
-    "/right/leg/knee/pitch"
-    "/right/leg/ankle/pitch",
-    "/right/leg/ankle/roll",
-};
-
-std::vector<std::string> head_names
-{
-    "/head/yaw",
-    "/head/pitch"
-};
+#include <map>
 
 namespace CM730
 {
@@ -56,7 +14,7 @@ namespace CM730
     {
     private: 
         ros::NodeHandle n;
-        ros::Rate       loop{30};
+        ros::Rate       rate{30};
         ros::Subscriber sub_legs_goal_pose; 
         ros::Subscriber sub_leg_left_goal_pose;  
         ros::Subscriber sub_leg_right_goal_pose;
@@ -74,19 +32,39 @@ namespace CM730
         ros::Publisher pub_head_current_pose;
         ros::Publisher pub_joint_current_angles;
         ros::Publisher pub_joint_states;
+        
+        sensor_msgs::JointState     msg_joint_states;
+        std_msgs::Float32MultiArray msg_joint_current_angles;
+
+        std::vector<Servo::servo_t> all_servos;
 
         Servo::CommHandler comm;
 
+        std::vector<uint16_t> present_position; //In Dynamixel bits
+        std::vector<uint16_t> goal_position;    //In Dynamixel bits
+
     public:
+        //Constructor
         Node(std::string port_name);
-        bool startNode();
-        static void callback_legs_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg);
-        static void callback_leg_left_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg);
-        static void callback_leg_right_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg); 
-        static void callback_arms_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg);
-        static void callback_arm_left_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg);
-        static void callback_arm_right_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg);
-        static void callback_head_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg);
-        bool fillServoParameters(std::vector<std::string>& servo_names, std::vector<Servo::servo_t>& servo_list);
+
+        //Methods
+        bool start();
+        void stop();
+        
+        bool fillServoParameters(const std::vector<std::string>& servo_names, std::vector<Servo::servo_t>& servo_list);
+        bool readAndPublishAllPositions();
+        bool writePresentPositions();
+        bool writePositions(const std::vector<Servo::servo_t>& servos);
+
+        //Callbacks
+        void callback_legs_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg);
+        void callback_leg_left_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg);
+        void callback_leg_right_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg); 
+        void callback_arms_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg);
+        void callback_arm_left_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg);
+        void callback_arm_right_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg);
+        void callback_head_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg);
     };
 }
+
+#endif

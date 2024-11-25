@@ -2,14 +2,16 @@
 #include "dynamixel_sdk/dynamixel_sdk.h"
 #include <iostream>
 
+
 namespace Servo
 {
-    CommHandler::CommHandler(const std::string & portName):
-    portName(portName.c_str()), baudrate(baudrate)
-    {
-        port_h   =  dynamixel::PortHandler::getPortHandler(this->portName);
-        packet_h =  dynamixel::PacketHandler::getPacketHandler(SERVO_PROTOCOL_VERSION);
-    }
+    CommHandler::CommHandler(const std::string& portName):
+    portName(portName.c_str()),
+    port_h(dynamixel::PortHandler::getPortHandler(this->portName)),
+    packet_h(dynamixel::PacketHandler::getPacketHandler(SERVO_PROTOCOL_VERSION)),
+    bulk_read_current_position(dynamixel::GroupBulkRead(port_h, packet_h)),
+    sync_write_goal_position(dynamixel::GroupSyncWrite(port_h, packet_h, MX64::GOAL_POSITION, 2))
+    {}
 
     bool CommHandler::portIsActive()
     {
@@ -102,5 +104,68 @@ namespace Servo
         return false; 
     }
 
+    bool CommHandler::registerIDs(std::vector<Servo::servo_t>& servo_list)
+    {
+        if(servo_list.empty())
+        {
+            std::cout << "[SERVO_UTILS] ERROR, unable to register ids. Servo list is empty" << std::endl;
+            return false;
+        }
+        for(auto servo: servo_list)
+        {
+            
+            int comm_result = bulk_read_current_position.addParam(servo.id, MX64::PRESENT_POSITION, 2);
+            if(comm_result != true)
+            {
+                std::cout << "CM730 -> Failed to add id " << servo.id << " to the list of groupBulkRead" << std::endl;
+            }
+            registered_ids.push_back(servo.id);
+        }
+        
+        return true;
+    }
+
+    bool CommHandler::getAllPositions(std::vector<uint16_t>& present_position)
+    {
+        int dxl_comm_result = bulk_read_current_position.txRxPacket();
+        if(dxl_comm_result != COMM_SUCCESS)
+        {
+            std::cout << "[SERVO_UTILS] Communication error with Bulk Read Instruction" << std::endl;
+            return false;
+        }
+        for(auto id: registered_ids)
+        {
+            if(bulk_read_current_position.isAvailable(id, MX64::PRESENT_POSITION, 2))
+            {
+                present_position[id] = bulk_read_current_position.getData(id, MX64::PRESENT_POSITION, 2);
+            }
+            else
+            {
+                std::cout << "[SERVO_UTILS] Could not fetch data from servo: " << id << std::endl;
+            }
+        }
+        return true;
+    }
     
+    bool CommHandler::setPositions(const std::vector<uint16_t>& position_vector, const std::vector<Servo::servo_t>& servos)
+    {
+        sync_write_goal_position.clearParam();
+        for(auto servo: servos)
+        {
+            uint8_t param_goal_position[2];
+            param_goal_position[0] = DXL_LOBYTE(position_vector[servo.id]);
+            param_goal_position[1] = DXL_HIBYTE(position_vector[servo.id]);
+            bool dxl_addparam_result = sync_write_goal_position.addParam(servo.id, param_goal_position);
+            if(dxl_addparam_result != true){
+                std::cout << "[SERVO_UTILS]Failed to add id " << servo.id << " to the list of SyncWrite" << std::endl;
+            }
+        }
+        int dxl_comm_result = bulk_read_current_position.txRxPacket();
+        if(dxl_comm_result != COMM_SUCCESS)
+        {
+            std::cout << "Communication error with Sync Write Instruction" << std::endl;
+            return false;
+        }
+        return true;
+    }
 };

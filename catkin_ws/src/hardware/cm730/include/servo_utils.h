@@ -1,4 +1,7 @@
+#ifndef _SERVO_UTILS_H_
+#define _SERVO_UTILS_H_
 #pragma once
+
 #include "dynamixel_sdk/dynamixel_sdk.h"
 #include <string>
 #define ID_CM730    200                    //-> ROS THINKS CM730 IS A SERVO
@@ -61,6 +64,7 @@ namespace Servo
     struct servo_t
     {
         uint8_t id;
+        std::string name;
         int     cw;
         uint16_t zero;
         bool    enabled;
@@ -71,12 +75,16 @@ namespace Servo
     private:
         dynamixel::PortHandler   *port_h   ; 
         dynamixel::PacketHandler *packet_h ;
-
+        dynamixel::GroupBulkRead  bulk_read_current_position ;
+        dynamixel::GroupSyncWrite sync_write_goal_position ;
+        
         const char * portName;
         long baudrate {1000000};
 
-
     public:
+        //Public registered ids
+        std::vector<uint8_t> registered_ids;
+        
         // Set Constructor
         CommHandler(const std::string& portName);
 
@@ -87,6 +95,13 @@ namespace Servo
         uint16_t getPosition(const int& id);
         bool    setPosition(const int& id, const uint16_t& pos);
         bool    shutdownAllServos();
+        bool    getAllPositions(std::vector<uint16_t>& present_position);
+        bool    setPositions(const std::vector<uint16_t>& position_vector, const std::vector<Servo::servo_t>& all_servos);
 
+        //Create and configure bulkRead and SyncWrite
+        bool    registerIDs(std::vector<Servo::servo_t>& servo_list);
+        
     };
 }
+
+#endif
