@@ -42,3 +42,4 @@ qtcreator-*
 logs/
 .catkin_tools/
 .vscode/
+.bash_history

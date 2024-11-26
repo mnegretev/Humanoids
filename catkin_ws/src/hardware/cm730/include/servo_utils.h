@@ -63,11 +63,12 @@ namespace Servo
 {
     struct servo_t
     {
-        uint8_t id;
+        int id;
         std::string name;
         int     cw;
         uint16_t zero;
         bool    enabled;
+        bool    is4Pin;
     };
 
     class CommHandler
@@ -75,7 +76,8 @@ namespace Servo
     private:
         dynamixel::PortHandler   *port_h   ; 
         dynamixel::PacketHandler *packet_h ;
-        dynamixel::GroupBulkRead  bulk_read_current_position ;
+        dynamixel::GroupBulkRead  bulk_read_current_position_3pin;
+        dynamixel::GroupBulkRead  bulk_read_current_position_4pin;
         dynamixel::GroupSyncWrite sync_write_goal_position ;
         
         const char * portName;
@@ -83,7 +85,7 @@ namespace Servo
 
     public:
         //Public registered ids
-        std::vector<uint8_t> registered_ids;
+        std::vector<Servo::servo_t> registered_servos;
         
         // Set Constructor
         CommHandler(const std::string& portName);

@@ -4,7 +4,7 @@
 
 #include <algorithm>
 
-uint16_t servos_goal_position[20];  // PENDING TO BE READ
+uint16_t servos_goal_position[21];  // PENDING TO BE READ
 std::vector<Servo::servo_t> left_arm_servos;
 std::vector<Servo::servo_t> right_arm_servos;
 std::vector<Servo::servo_t> left_leg_servos;
@@ -54,7 +54,7 @@ std::vector<std::string> head_names
 namespace CM730
 {
     Node::Node(std::string port_name): comm{port_name}
-    {
+	    {
         sub_legs_goal_pose          = n.subscribe("legs_goal_pose",      1, &Node::callback_legs_goal_pose,        this);
         sub_leg_left_goal_pose      = n.subscribe("leg_left_goal_pose",  1, &Node::callback_leg_left_goal_pose,    this);
         sub_leg_right_goal_pose     = n.subscribe("leg_right_goal_pose", 1, &Node::callback_leg_right_goal_pose,   this);
@@ -73,9 +73,9 @@ namespace CM730
         pub_joint_current_angles    = n.advertise<std_msgs::Float32MultiArray>("joint_current_angles",    1);
         pub_joint_states            = n.advertise<sensor_msgs::JointState>("/joint_states", 1);
 
-        msg_joint_current_angles.data.resize(20);
-        msg_joint_states.name.resize(20);
-        msg_joint_states.position.resize(20);
+        msg_joint_current_angles.data.resize(21);
+        msg_joint_states.name.resize(21);
+        msg_joint_states.position.resize(21);
 
     }
 
@@ -99,17 +99,19 @@ namespace CM730
             };
         }}
         
+
         std::copy(left_arm_servos.begin(), left_arm_servos.end(), std::back_inserter(all_servos));
         std::copy(right_arm_servos.begin(), right_arm_servos.end(), std::back_inserter(all_servos));
         std::copy(left_leg_servos.begin(), left_leg_servos.end(), std::back_inserter(all_servos));
         std::copy(right_leg_servos.begin(), right_leg_servos.end(), std::back_inserter(all_servos));
         std::copy(head_servos.begin(), head_servos.end(), std::back_inserter(all_servos));
 
-        if(!comm.wakeupAllServos()) return false;
         if(!comm.registerIDs(all_servos))  return false;
-
-        present_position.resize(20);
-        goal_position.resize(20);
+        bool ret = comm.wakeupAllServos();
+        ros::Duration(1.0).sleep();
+        
+        present_position.resize(21);
+        goal_position.resize(21);
 
         return true;
     }
@@ -251,14 +253,13 @@ namespace CM730
             std::string param_cw_str      {name + "/cw"};
             std::string param_zero_str    {name + "/zero"};
             std::string param_enabled_str {name + "/enabled"};
-
-            int id, zero;
-            if (!ros::param::get(param_id_str, id))
+            std::string param_is4pin_str  {name + "/is4pin"};
+            int zero;
+            if (!ros::param::get(param_id_str, servo.id))
             {
                 ROS_ERROR("Missing param in config file: %s", param_id_str.c_str());
                 return false;
             }
-            servo.id = id;
             if (!ros::param::get(param_cw_str, servo.cw))
             {
                 ROS_ERROR("Missing param in config file: %s", param_cw_str.c_str());
@@ -275,9 +276,22 @@ namespace CM730
                 ROS_ERROR("Missing param in config file: %s", param_enabled_str.c_str());
                 return false;
             }
+            if (!ros::param::get(param_is4pin_str, servo.is4Pin))
+            {
+                ROS_ERROR("Missing param in config file: %s", param_is4pin_str.c_str());
+                return false;
+            }
             std::string str = name;
             std::replace(str.begin(), str.end(), '/', '_');
             servo.name = str;
+
+            std::cout << "[CM730_UTILS] Servo added. ID: " << servo.id 
+                      << "\t CW: " << servo.cw 
+                      << "\t ZERO: " << servo.zero 
+                      << "\t NAME: " << servo.name
+                      << "\t is4Pin: " << servo.is4Pin 
+                      << std::endl;
+
             servo_list.push_back(servo);
         }
         return true;

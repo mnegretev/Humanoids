@@ -9,17 +9,15 @@ int main(int argc, char** argv)
     
     if(!node.start()) return -1;
 
-    if(node.writePresentPositions())
-    {
-        return -1;
-    }
     while(ros::ok())
-    {   
-        node.readAndPublishAllPositions();
-        ros::spinOnce();
+    {
+        if(!node.writePresentPositions()) break;
+        while(ros::ok())
+        {
+            node.readAndPublishAllPositions();
+            ros::spinOnce();
+        }
     }
-
     node.stop();
-    
     return 0;
 }
