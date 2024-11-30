@@ -5,20 +5,20 @@ left:
       pitch:
         id:   2 # SERVOMOTOR ID (from 0 to 255)
         cw:   1 # IS CLOCKWISE? (The only values accepted are 1 and -1)
-        zero: 2048 # NATURAL ZERO POSE OF HUMANOID IN DYNAMIXEL BITS (0-4095)
+        zero: 2070 # NATURAL ZERO POSE OF HUMANOID IN DYNAMIXEL BITS (0-4095)
         enabled: true
         is4pin: false
       roll:
         id:   4
         cw:   -1
-        zero: 2440
+        zero: 3177
         enabled: false # Needs to change
         is4pin: true
     elbow:
       pitch:
         id:   6
         cw:   -1
-        zero: 2048
+        zero: 440
         enabled: true
         is4pin: false
   leg:
@@ -32,33 +32,33 @@ left:
       roll:
         id:   10
         cw:   1
-        zero: 2070
+        zero: 2116
         enabled: true
         is4pin: false
       pitch:
         id:   12
         cw:   1
-        zero: 2048
+        zero: 2172
         enabled: true
         is4pin: false
     knee:
       pitch: 
         id:   14
         cw:   1
-        zero: 2400
+        zero: 2188
         enabled: true
         is4pin: false
     ankle:
       pitch: 
         id:   16
         cw:   -1
-        zero: 2150
+        zero: 1967
         enabled: true
         is4pin: false
       roll:
         id:   18
         cw:   -1
-        zero: 2048
+        zero: 2105
         enabled: true
         is4pin: false
 
@@ -69,20 +69,20 @@ right:
       pitch:
         id:   1
         cw:   -1
-        zero: 1905
+        zero: 2113
         enabled: true
         is4pin: false
       roll:
         id:   3
         cw:   -1
-        zero: 880
+        zero: 926
         enabled: true
         is4pin: false
     elbow:
       pitch:
         id:   5
         cw:   1
-        zero: 2505
+        zero: 2905
         enabled: true
         is4pin: false
   leg:
@@ -90,39 +90,39 @@ right:
       yaw:
         id:   7
         cw:   -1
-        zero: 2019
+        zero: 1730
         enabled: true
         is4pin: false
       roll:
         id:   9
         cw:   1
-        zero: 1067
+        zero: 1020
         enabled: true
         is4pin: false
       pitch:
         id:   11
         cw:   -1
-        zero: 3048
+        zero: 1399
         enabled: true
         is4pin: false
     knee:
       pitch: 
         id:   13
         cw:   -1
-        zero: 2890
+        zero: 3143
         enabled: true
         is4pin: false
     ankle:
       pitch:
         id:   15
         cw:   1
-        zero: 2048
+        zero: 2174
         enabled: true
         is4pin: false
       roll:
         id:   17
         cw:   -1
-        zero: 2048
+        zero: 2057
         enabled: true
         is4pin: false
 head:
