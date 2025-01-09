@@ -45,7 +45,7 @@ left:
       pitch: 
         id:   14
         cw:   1
-        zero: 2188
+        zero: 2195
         enabled: true
         is4pin: false
     ankle:
@@ -109,7 +109,7 @@ right:
       pitch: 
         id:   13
         cw:   -1
-        zero: 3143
+        zero: 3130
         enabled: true
         is4pin: false
     ankle:
