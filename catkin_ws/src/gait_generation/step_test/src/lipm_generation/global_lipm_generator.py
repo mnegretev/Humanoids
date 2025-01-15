@@ -11,6 +11,7 @@ import rospy
 from std_msgs.msg import String, Float32MultiArray
 from ctrl_msgs.srv import CalculateIK, CalculateIKRequest
 from trajectory_planner import trajectory_planner
+from manip_msgs.srv import *
 
 G = 9.81 # [m/s^2]
 
@@ -37,6 +38,7 @@ def calculate_ik(P, service_client):
     for i, vector in enumerate(P):
         req = CalculateIKRequest(x = vector[0], y = vector[1], z = vector[2],
                                  roll = 0, pitch = 0, yaw = 0)
+        print(req)
         response = service_client(req)
         if len(response.joint_values) == 6:
             aux = np.array([list(response.joint_values)])
@@ -210,8 +212,8 @@ def main(args = None):
     rospy.init_node('step_test_node')
 
     trajectory_dir = rospy.get_param("~trajectory_dir")
-    right_leg_client = rospy.ServiceProxy('/control/ik_leg_right', CalculateIK)
-    left_leg_client = rospy.ServiceProxy('/control/ik_leg_left', CalculateIK)
+    right_leg_client = rospy.ServiceProxy('/manipulation/ik_leg_right_pose', CalculateIK)
+    left_leg_client = rospy.ServiceProxy('/manipulation/ik_leg_left_pose', CalculateIK)
 
     left_q, right_q, last_p_com = calculate_cartesian_right_start_pose(1, 0.67, left_leg_client, right_leg_client)
     np.savez(os.path.join(trajectory_dir, "right_start_pose"), right=right_q, left=left_q, timestep=SERVO_SAMPLE_TIME)

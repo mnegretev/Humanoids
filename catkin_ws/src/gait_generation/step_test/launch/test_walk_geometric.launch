@@ -1,0 +1,8 @@
+<launch>
+        <node pkg="step_test" type="step_test.py" name="step_test_node" output="screen" required="true"> 
+            <param name="start_pose"            value="$(find step_test)/src/lipm_generation/geometric/right_start_pose.npz"/>
+            <param name="left_first_halfstep"   value="$(find step_test)/src/lipm_generation/geometric/left_first_halfstep_pose.npz"/>
+            <param name="right_full_step"       value="$(find step_test)/src/lipm_generation/geometric/right_full_step_pose.npz"/>
+            <param name="left_full_step"        value="$(find step_test)/src/lipm_generation/geometric/left_full_step_pose.npz"/>
+        </node>
+</launch>
