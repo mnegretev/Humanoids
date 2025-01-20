@@ -225,12 +225,12 @@ def main():
     end_pose_file = rospy.get_param("~end_pose")
     end_pose = numpy .load(end_pose_file)
     timstep = start_pose["timestep"]
-    rate = rospy.Rate(10)
-    middle_rate = rospy.Rate(20)
-    fast_rate=rospy.Rate(30)
-    # rate = rospy.Rate(int(1/(timstep)))
-    # middle_rate = rospy.Rate(int(1/(timstep/2)))
-    # fast_rate = rospy.Rate(int(1/(timstep/3)))
+    # rate = rospy.Rate(10)
+    # middle_rate = rospy.Rate(20)
+    # fast_rate=rospy.Rate(30)
+    rate = rospy.Rate(int(1/(timstep)))
+    middle_rate = rospy.Rate(int(1/(timstep/2)))
+    fast_rate = rospy.Rate(int(1/(timstep/3)))
     rospy.Subscriber("/walk_state", Bool, callback)
 
     
