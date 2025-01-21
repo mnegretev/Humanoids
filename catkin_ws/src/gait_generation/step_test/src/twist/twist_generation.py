@@ -13,17 +13,17 @@ from ctrl_msgs.srv import CalculateIK, CalculateIKRequest
 from trajectory_planner import trajectory_planner
 
 # Y_BODY_TO_FEET  = 0.0555 # [m]
-Y_BODY_TO_FEET  = 0.075
+Y_BODY_TO_FEET  = 0.056
 # Z_ROBOT_WALK    = 0.55 # m
-Z_ROBOT_WALK    = 0.50
+Z_ROBOT_WALK    = 0.55
 Z_ROBOT_STATIC= 0.57 # m
 
 stepHeight = 0.2
 STEP_LENGTH = 0.1 # [m]
 ROBOT_VEL_X = 0.1 # [m]
 
-com_x_offset = 0.03
-com_y_offset = 0.03
+com_x_offset = 0.0
+com_y_offset = 0.0
 y_com_left_offset = 0.01
 x_com_left_offset = 0.02 
 
@@ -51,7 +51,7 @@ def calculate_ik(P, service_client):
 
 def get_twist_trajectory_start_pose(duration, stepHeight, ik_client_left, ik_client_right):
     com_start   = [0 + com_x_offset, 0, Z_ROBOT_STATIC]
-    com_end     =   [0 + com_x_offset, -(Y_BODY_TO_FEET + com_y_offset), Z_ROBOT_WALK]
+    com_end     =   [0 + com_x_offset, 0, Z_ROBOT_WALK]
 
     P_CoM, T = trajectory_planner.get_polynomial_trajectory_multi_dof(com_start, com_end, duration=duration, time_step=SERVO_SAMPLE_TIME)
     
@@ -76,7 +76,7 @@ def get_twist_trajectory_left_first_step(p_start, duration, twist_angle, ik_clie
     initial_l_foot_pos  = np.array([0,  Y_BODY_TO_FEET, 0])
     
     initial_l_foot_orientation  = np.array([0,0,0])
-    final_l_foot_orientation    = np.array([0,0,math.pi/6])
+    final_l_foot_orientation    = np.array([0,0,math.pi/6]) #30 degrees left
     
     O, T = trajectory_planner.get_polynomial_trajectory_multi_dof(initial_l_foot_orientation, final_l_foot_orientation, duration=duration, time_step=SERVO_SAMPLE_TIME)
     
@@ -197,8 +197,8 @@ def main(args = None):
     if not os.path.isdir(trajectory_dir):
         raise Exception(f"File directory not found: {trajectory_dir}")
     
-    right_leg_client    = rospy.ServiceProxy('/control/ik_leg_right', CalculateIK)
-    left_leg_client     = rospy.ServiceProxy('/control/ik_leg_left', CalculateIK)
+    right_leg_client    = rospy.ServiceProxy('/manipulation/ik_leg_right_pose', CalculateIK)
+    left_leg_client     = rospy.ServiceProxy('/manipulation/ik_leg_left_pose', CalculateIK)
 
     left_q, right_q, last_p_com = get_twist_trajectory_start_pose(duration=1, stepHeight=Z_ROBOT_WALK, ik_client_left=left_leg_client, ik_client_right=right_leg_client)
     np.savez(os.path.join(trajectory_dir, "twist_right_start_pose"), right=right_q, left=left_q, timestep=SERVO_SAMPLE_TIME)
