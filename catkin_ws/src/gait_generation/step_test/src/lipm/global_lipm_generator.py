@@ -320,7 +320,7 @@ def main(args = None):
     initial_halfstep_pos = last_p_com
     final_halfstep_pos = [STEP_LENGTH/4 + com_x_offset, 0, Z_ROBOT_WALK]
 
-    left_q, right_q, final_l_foot_pos = calculate_cartesian_left_half_step_pose(1, initial_halfstep_pos, final_halfstep_pos, left_leg_client, right_leg_client)
+    left_q, right_q, final_l_foot_pos = calculate_cartesian_left_half_step_pose(0.5, initial_halfstep_pos, final_halfstep_pos, left_leg_client, right_leg_client)
     np.savez(os.path.join(trajectory_dir, "left_first_halfstep_pose"), right=right_q, left=left_q, timestep=SERVO_SAMPLE_TIME)
 
     left_q, right_q, final_r_foot_pos = calculate_cartesian_right_step_pose(final_l_foot_pos, left_leg_client, right_leg_client)

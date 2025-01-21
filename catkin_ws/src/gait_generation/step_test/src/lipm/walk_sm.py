@@ -217,8 +217,8 @@ class get_up(smach.State):
 def main():
     global pub_leg_left_goal_pose, pub_leg_right_goal_pose, walk_state, rate, middle_rate, fast_rate, start_pose, end_pose
     rospy.init_node("walk_sm")
-    pub_leg_left_goal_pose = rospy.Publisher("/hardware/leg_left_goal_pose", Float32MultiArray, queue_size=1)
-    pub_leg_right_goal_pose = rospy.Publisher("/hardware/leg_right_goal_pose", Float32MultiArray , queue_size=1)
+    pub_leg_left_goal_pose = rospy.Publisher("/leg_left_goal_pose", Float32MultiArray, queue_size=1)
+    pub_leg_right_goal_pose = rospy.Publisher("/leg_right_goal_pose", Float32MultiArray , queue_size=1)
     walk_state=False
     start_pose_file = rospy.get_param("~start_pose")
     start_pose = numpy .load(start_pose_file)
@@ -229,7 +229,7 @@ def main():
     # middle_rate = rospy.Rate(20)
     # fast_rate=rospy.Rate(30)
     rate = rospy.Rate(int(1/(timstep)))
-    middle_rate = rospy.Rate(int(1/(timstep/2)))
+    middle_rate = rospy.Rate(int(1/(timstep)))
     fast_rate = rospy.Rate(int(1/(timstep/3)))
     rospy.Subscriber("/walk_state", Bool, callback)
 
