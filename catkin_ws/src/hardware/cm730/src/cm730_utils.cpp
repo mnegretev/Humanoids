@@ -289,10 +289,13 @@ namespace CM730
                       << "\t CW: " << servo.cw 
                       << "\t ZERO: " << servo.zero 
                       << "\t NAME: " << servo.name
-                      << "\t is4Pin: " << servo.is4Pin 
+                      << "\t is4Pin: " << servo.is4Pin
                       << std::endl;
 
-            servo_list.push_back(servo);
+            if(servo.enabled)
+            {
+                servo_list.push_back(servo);
+            }
         }
         return true;
     }
