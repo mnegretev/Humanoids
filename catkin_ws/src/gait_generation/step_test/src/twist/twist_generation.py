@@ -13,7 +13,7 @@ from ctrl_msgs.srv import CalculateIK, CalculateIKRequest
 from trajectory_planner import trajectory_planner
 
 # Y_BODY_TO_FEET  = 0.0555 # [m]
-Y_BODY_TO_FEET  = 0.05
+Y_BODY_TO_FEET  = 0.06 #Mínimo valor =0.056 #Máximo valor =0.125#= 0.09
 # Z_ROBOT_WALK  = 0.55 # m
 Z_ROBOT_WALK    = 0.55
 Z_ROBOT_STATIC  = 0.575 # m
@@ -42,7 +42,7 @@ def calculate_ik(P, service_client):
 
 def get_twist_trajectory_start_pose(duration, stepHeight, ik_client_left, ik_client_right):
     com_start   =   [0, 0, Z_ROBOT_STATIC]
-    com_end     =   [0, -Y_BODY_TO_FEET*0.9, Z_ROBOT_WALK]
+    com_end     =   [0, -Y_BODY_TO_FEET, Z_ROBOT_WALK]
 
     P_CoM, T = trajectory_planner.get_polynomial_trajectory_multi_dof(com_start, com_end, duration=duration, time_step=SERVO_SAMPLE_TIME)
     
@@ -59,7 +59,6 @@ def get_twist_trajectory_start_pose(duration, stepHeight, ik_client_left, ik_cli
 
 def get_twist_trajectory_left_first_step(p_start, duration, twist_angle, ik_client_left, ik_client_right):
     com_start_pose  = p_start + [0,0,0]
-    print(p_start)
     com_end_pose    = com_start_pose
 
     P_CoM, T = trajectory_planner.get_polynomial_trajectory_multi_dof(com_start_pose, com_end_pose, duration=duration, time_step=SERVO_SAMPLE_TIME)
@@ -68,7 +67,7 @@ def get_twist_trajectory_left_first_step(p_start, duration, twist_angle, ik_clie
     initial_l_foot_pos  = np.array([0,  Y_BODY_TO_FEET, 0])
     
     initial_l_foot_orientation  = np.array([0,0,0])
-    final_l_foot_orientation    = np.array([0,0,math.pi/6]) #30 degrees left
+    final_l_foot_orientation    = np.array([0,0,math.pi/6]) #15 degrees left
     
     O, T = trajectory_planner.get_polynomial_trajectory_multi_dof(initial_l_foot_orientation, final_l_foot_orientation, duration=duration, time_step=SERVO_SAMPLE_TIME)
     
@@ -77,7 +76,6 @@ def get_twist_trajectory_left_first_step(p_start, duration, twist_angle, ik_clie
     
     r_leg_abs_pos = np.full((len(T), 3), initial_r_foot_pos)
     l_leg_abs_pos = getFootSwingTraj(initial_l_foot_pos, final_l_foot_pos, stepHeight, T)
-    #print(r_leg_abs_pos)
 
     r_leg_relative_pos  = r_leg_abs_pos - P_CoM
     l_leg_relative_pos  = l_leg_abs_pos - P_CoM
@@ -176,7 +174,6 @@ def getFootSwingTraj(initial_foot_position, final_foot_position, swing_height, t
     for i, t in enumerate(timeVector):
         aux = np.array([[x(t), y(t), z(t)]])
         swingFootTrajectory[i] = aux
-        print(aux)
     
     return swingFootTrajectory
 
