@@ -14,7 +14,7 @@ def main():
     start_pose_file = rospy.get_param("~twist_start_pose")
     start_pose = np.load(start_pose_file)
     timstep = start_pose["timestep"]
-    rate = rospy.Rate(int(1/(timstep*5)))
+    rate = rospy.Rate(int(1/(timstep)))
     for right, left in zip(start_pose["right"], start_pose["left"]):
         right_leg_goal_pose = Float32MultiArray()
         right_leg_goal_pose.data = right
@@ -28,7 +28,7 @@ def main():
     left_first_step_pose_file = rospy.get_param("~twist_left_first_step")
     left_first_step = np.load(left_first_step_pose_file)
     timstep = left_first_step["timestep"]
-    rate = rospy.Rate(int(1/(timstep*4)))
+    rate = rospy.Rate(int(1/(timstep)))
     for right, left in zip(left_first_step["right"], left_first_step["left"]):
         right_leg_goal_pose = Float32MultiArray()
         right_leg_goal_pose.data = right
@@ -42,7 +42,7 @@ def main():
     twist_move_com_left_file = rospy.get_param("~twist_move_com_left")
     twist_move_com_left = np.load(twist_move_com_left_file)
     timstep = twist_move_com_left["timestep"]
-    rate = rospy.Rate(int(1/(timstep*4)))
+    rate = rospy.Rate(int(1/(timstep)))
     for right, left in zip(twist_move_com_left["right"], twist_move_com_left["left"]):
         right_leg_goal_pose = Float32MultiArray()
         right_leg_goal_pose.data = right
@@ -56,7 +56,7 @@ def main():
     twist_right_third_step_file = rospy.get_param("~twist_right_third_step")
     twist_right_third_step = np.load(twist_right_third_step_file)
     timstep = twist_right_third_step["timestep"]
-    rate = rospy.Rate(int(1/(timstep*4)))
+    rate = rospy.Rate(int(1/(timstep)))
     for right, left in zip(twist_right_third_step["right"], twist_right_third_step["left"]):
         right_leg_goal_pose = Float32MultiArray()
         right_leg_goal_pose.data = right

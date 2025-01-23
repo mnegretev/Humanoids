@@ -5,7 +5,4 @@ network:
     eth0:
       dhcp4: no
       addresses:
-        - 10.42.0.2/24
-      routes:
-        - to: default
-          via: 10.42.0.1
+        - 192.168.0.11/24

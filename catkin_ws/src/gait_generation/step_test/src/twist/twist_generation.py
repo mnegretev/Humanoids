@@ -13,22 +13,12 @@ from ctrl_msgs.srv import CalculateIK, CalculateIKRequest
 from trajectory_planner import trajectory_planner
 
 # Y_BODY_TO_FEET  = 0.0555 # [m]
-Y_BODY_TO_FEET  = 0.056
-# Z_ROBOT_WALK    = 0.55 # m
+Y_BODY_TO_FEET  = 0.05
+# Z_ROBOT_WALK  = 0.55 # m
 Z_ROBOT_WALK    = 0.55
-Z_ROBOT_STATIC= 0.57 # m
+Z_ROBOT_STATIC  = 0.575 # m
 
-stepHeight = 0.2
-STEP_LENGTH = 0.1 # [m]
-ROBOT_VEL_X = 0.1 # [m]
-
-com_x_offset = 0.0
-com_y_offset = 0.0
-y_com_left_offset = 0.01
-x_com_left_offset = 0.02 
-
-# Tiempo de muestreo para resolver la ecuación diferencial del LIPM (debe ser pequeño)
-LIPM_SAMPLE_TIME = 0.0001 # [s]
+stepHeight = 0.10
 
 # Tiempo de muestreo maximo para escribir a los servomotores
 SERVO_SAMPLE_TIME = 0.025 # [s]
@@ -36,6 +26,7 @@ SERVO_SAMPLE_TIME = 0.025 # [s]
 def calculate_ik(P, service_client):
     joint_values = np.zeros((len(P),6))
     for i, vector in enumerate(P):
+        print(vector)
         req = CalculateIKRequest(x = vector[0], y = vector[1], z = vector[2],
                                  roll = vector[3], pitch = vector[4], yaw = vector[5])
         response = service_client(req)
@@ -50,8 +41,8 @@ def calculate_ik(P, service_client):
 
 
 def get_twist_trajectory_start_pose(duration, stepHeight, ik_client_left, ik_client_right):
-    com_start   = [0 + com_x_offset, 0, Z_ROBOT_STATIC]
-    com_end     =   [0 + com_x_offset, 0, Z_ROBOT_WALK]
+    com_start   =   [0, 0, Z_ROBOT_STATIC]
+    com_end     =   [0, -Y_BODY_TO_FEET*0.9, Z_ROBOT_WALK]
 
     P_CoM, T = trajectory_planner.get_polynomial_trajectory_multi_dof(com_start, com_end, duration=duration, time_step=SERVO_SAMPLE_TIME)
     
@@ -68,6 +59,7 @@ def get_twist_trajectory_start_pose(duration, stepHeight, ik_client_left, ik_cli
 
 def get_twist_trajectory_left_first_step(p_start, duration, twist_angle, ik_client_left, ik_client_right):
     com_start_pose  = p_start + [0,0,0]
+    print(p_start)
     com_end_pose    = com_start_pose
 
     P_CoM, T = trajectory_planner.get_polynomial_trajectory_multi_dof(com_start_pose, com_end_pose, duration=duration, time_step=SERVO_SAMPLE_TIME)
@@ -81,7 +73,7 @@ def get_twist_trajectory_left_first_step(p_start, duration, twist_angle, ik_clie
     O, T = trajectory_planner.get_polynomial_trajectory_multi_dof(initial_l_foot_orientation, final_l_foot_orientation, duration=duration, time_step=SERVO_SAMPLE_TIME)
     
     #final_r_foot_pos    = initial_r_foot_pos
-    final_l_foot_pos = np.array([0,  Y_BODY_TO_FEET*2.5, 0])
+    final_l_foot_pos = np.array([0,  Y_BODY_TO_FEET, 0])
     
     r_leg_abs_pos = np.full((len(T), 3), initial_r_foot_pos)
     l_leg_abs_pos = getFootSwingTraj(initial_l_foot_pos, final_l_foot_pos, stepHeight, T)
@@ -101,20 +93,18 @@ def get_twist_trajectory_left_first_step(p_start, duration, twist_angle, ik_clie
 def get_twist_trajectory_move_com_left(com_start, duration,  ik_client_left, ik_client_right):
     
     com_start_pose = np.concatenate((com_start, [[0,0,0]]), axis=None)
-    com_end_pose = [0 + x_com_left_offset, Y_BODY_TO_FEET*2.5 + y_com_left_offset, Z_ROBOT_WALK, 0, 0, 0]
+    com_end_pose = [0, Y_BODY_TO_FEET, Z_ROBOT_WALK, 0, 0, 0]
 
     P_CoM, T = trajectory_planner.get_polynomial_trajectory_multi_dof(com_start_pose, com_end_pose, duration=duration, time_step=SERVO_SAMPLE_TIME)
 
     initial_r_foot_pose  = [0, -Y_BODY_TO_FEET,    0, 0, 0, 0]
-    initial_l_foot_pose  = [0, Y_BODY_TO_FEET*2.5, 0, 0, 0, math.pi/6]
+    initial_l_foot_pose  = [0, Y_BODY_TO_FEET, 0, 0, 0, math.pi/6]
 
     final_r_foot_pose    = [0, -Y_BODY_TO_FEET,    0, 0, 0, -math.pi/6]
-    final_l_foot_pose    = [0, Y_BODY_TO_FEET*2.5, 0, 0, 0, 0]
+    final_l_foot_pose    = [0, Y_BODY_TO_FEET, 0, 0, 0, 0]
 
     r_foot_pose, T = trajectory_planner.get_polynomial_trajectory_multi_dof(initial_r_foot_pose, final_r_foot_pose, duration=duration, time_step=SERVO_SAMPLE_TIME)
     l_foot_pose, T = trajectory_planner.get_polynomial_trajectory_multi_dof(initial_l_foot_pose, final_l_foot_pose, duration=duration, time_step=SERVO_SAMPLE_TIME)
-    # r_foot_pose = np.full((len(T), 6), [0, -Y_BODY_TO_FEET,    0, 0, 0, 0])
-    # l_foot_pose = np.full((len(T), 6), [0, Y_BODY_TO_FEET*2.5, 0, 0, 0, math.pi/6])
 
     r_leg_relative_pose = r_foot_pose - P_CoM
     l_leg_relative_pose = l_foot_pose - P_CoM
@@ -125,13 +115,13 @@ def get_twist_trajectory_move_com_left(com_start, duration,  ik_client_left, ik_
     return left_q, right_q, P_CoM[-1]
 
 def get_twist_trajectory_right_third_step(p_start, duration, ik_client_left, ik_client_right):
-    com_start_pose = p_start
+    com_start_pose  = p_start
     com_end_pose    = com_start_pose
 
     P_CoM, T = trajectory_planner.get_polynomial_trajectory_multi_dof(com_start_pose, com_end_pose, duration=duration, time_step=SERVO_SAMPLE_TIME)
 
     initial_r_foot_pos  = np.array([0, -Y_BODY_TO_FEET, 0])
-    initial_l_foot_pos  = np.array([0,  Y_BODY_TO_FEET*2.5, 0])
+    initial_l_foot_pos  = np.array([0,  Y_BODY_TO_FEET, 0])
     
     initial_r_foot_orientation  = np.array([0,0,-math.pi/6])
     final_r_foot_orientation    = np.array([0,0,0])
@@ -202,15 +192,19 @@ def main(args = None):
 
     left_q, right_q, last_p_com = get_twist_trajectory_start_pose(duration=1, stepHeight=Z_ROBOT_WALK, ik_client_left=left_leg_client, ik_client_right=right_leg_client)
     np.savez(os.path.join(trajectory_dir, "twist_right_start_pose"), right=right_q, left=left_q, timestep=SERVO_SAMPLE_TIME)
+    print("/n Done with twist_right_start_pose")
 
     left_q, right_q, last_p_com = get_twist_trajectory_left_first_step(last_p_com, duration=1, twist_angle=math.pi/4, ik_client_left=left_leg_client, ik_client_right=right_leg_client)
     np.savez(os.path.join(trajectory_dir, "twist_left_first_step"), right=right_q, left=left_q, timestep=SERVO_SAMPLE_TIME)
+    print("/n Done with twist_left_first_step")
 
     left_q, right_q, last_p_com = get_twist_trajectory_move_com_left(last_p_com, duration=1, ik_client_left=left_leg_client, ik_client_right=right_leg_client)
     np.savez(os.path.join(trajectory_dir, "twist_move_com_left"), right=right_q, left=left_q, timestep=SERVO_SAMPLE_TIME)
+    print("/n Done with twist_right_move_com_left")
 
     left_q, right_q, last_p_com = get_twist_trajectory_right_third_step(last_p_com, duration=1, ik_client_left=left_leg_client, ik_client_right=right_leg_client)
     np.savez(os.path.join(trajectory_dir, "twist_right_third_step"), right=right_q, left=left_q, timestep=SERVO_SAMPLE_TIME)
+    print("\n Done with twist_right_third_step")
 
 
 if __name__ == "__main__":

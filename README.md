@@ -37,19 +37,32 @@ Then, in Gazebo click `Play` down below.
 source devel/setup.bash
 roslaunch surge_et_ambula humanoid_hardware.launch
 ```
-
+---
 ### Configure remote ssh to Raspberry PI
-To setup a static ip in the raspberry Ethernet port, run:
+
+<details><summary>First Method (Static IP with Router)</summary>
+
+To setup a static ip in the raspberry Ethernet port where you can connect to a router, run:
 ```sh
 cd setup/raspberry/
 sudo cp 01-static-ip.yaml /etc/netplan/01-static-ip.yaml
 sudo netplan apply
 ```
-The static IP is now set to `192.168.0.11`
+The static IP is now set to `192.168.0.10`. You can now do `ssh humanoid@192.168.0.10` to connect with Ethernet cable directly to the humanoid.
 
-In order to connect from your Linux PC, go to `Settings -> Network -> Wired`, the open settings. In IPv4, type: `192.168.0.x` with submask `255.255.255.0`. Make sure the IP from desktop is different from Raspberry PI.
+</details>
 
-![Humanoid photo](/Documentation/Images/config_ip_desktop.png)
+<details><summary>Second Method (Static IP with no router)</summary>
 
-You can now do `ssh humanoid@192.168.0.11` to connect with Ethernet cable directly to the humanoid.
+If you want to connect directly to Raspberry Pi through Ethernet and share internet at the same time, go to `Settings -> Network -> Wired`, the open settings. In `IPv4` tab, select `Shared to other computers`
 
+![Humanoid photo](/Documentation/Images/network_config.png)
+
+```sh
+cd setup/raspberry/
+sudo cp 01-static-ip.yaml /etc/netplan/02-static-ip.yaml
+sudo netplan apply
+```
+The static IP is now set to `10.42.0.2`. You can now do `ssh humanoid@10.42.0.2` to connect with Ethernet cable directly to the humanoid.
+
+</details>
