@@ -127,21 +127,20 @@ def callback(data):
     walk_state = data.data
     print(walk_state)
 
+def callback_end(data):
+    global end_state
+    end_state = data.data
+    print(end_state)
+
 class Initial(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succ', 'fail'])
-        self.tries =0
         self.state = "INIT"
 
     def execute(self, userdata):
         rospy.loginfo('STATE MACHINE WALK ->' + self.state)
-        rospy.loginfo (self.state + '-> Tries = ' + str(self.tries))
-        self.tries+=1  
-        if self.tries <3: 
-            return 'succ'
-        else:
-            rospy.loginfo (self.state + '-> Something gone wrong')
-            return 'fail'
+        start()
+        return 'succ'
     
 class Crouch(smach.State): 
     def __init__(self):
@@ -151,7 +150,6 @@ class Crouch(smach.State):
     def execute(self, userdata):
         rospy.loginfo('STATE MACHINE WALK -> ' + self.state)
         if walk_state == True:
-            start()
             init_pose()
             return 'succ'
         else:
@@ -185,41 +183,55 @@ class Full_step_Left(smach.State):
 
 class Half_step_Right(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succ', 'fail'])
+        smach.State.__init__(self, outcomes=['succ', 'fail', 'end'])
         self.state = "RIGHT_END_STEP"
 
     def execute(self, userdata):
         rospy.loginfo('STATE MACHINE WALK -> ' + self.state)
         end_step_right()
-        return 'succ'
+        if end_state:
+            return 'end'
+        else:
+            return 'succ'
 
 class Half_step_Left(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succ', 'fail'])
+        smach.State.__init__(self, outcomes=['succ', 'fail', 'end'])
         self.state = "LEFT_END_STEP"
 
     def execute(self, userdata):
         rospy.loginfo('STATE MACHINE WALK -> ' + self.state)
         end_step_left()
-        return 'succ'
-
+        if end_state:
+            return 'end'
+        else:
+            return 'succ'
+        
 class get_up(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succ', 'fail'])
         self.state = "GET_UP"
 
     def execute(self, userdata):
+        global end_state
         rospy.loginfo('STATE MACHINE WALK -> ' + self.state)
-        end()
-        return 'succ'
+        if end_state:
+            end()
+            end_state=False
+        if walk_state:
+            return 'succ'
+        
+        return 'fail'
+        
 
 
 def main():
-    global pub_leg_left_goal_pose, pub_leg_right_goal_pose, walk_state, rate, middle_rate, fast_rate, start_pose, end_pose
+    global pub_leg_left_goal_pose, pub_leg_right_goal_pose, walk_state,end_state, rate, middle_rate, fast_rate, start_pose, end_pose
     rospy.init_node("walk_sm")
-    pub_leg_left_goal_pose = rospy.Publisher("/leg_left_goal_pose", Float32MultiArray, queue_size=1)
-    pub_leg_right_goal_pose = rospy.Publisher("/leg_right_goal_pose", Float32MultiArray , queue_size=1)
+    pub_leg_left_goal_pose = rospy.Publisher("/hardware/leg_left_goal_pose", Float32MultiArray, queue_size=1)
+    pub_leg_right_goal_pose = rospy.Publisher("/hardware/leg_right_goal_pose", Float32MultiArray , queue_size=1)
     walk_state=False
+    end_state=False
     start_pose_file = rospy.get_param("~start_pose")
     start_pose = numpy .load(start_pose_file)
     end_pose_file = rospy.get_param("~end_pose")
@@ -232,6 +244,7 @@ def main():
     middle_rate = rospy.Rate(int(1/(timstep)))
     fast_rate = rospy.Rate(int(1/(timstep/3)))
     rospy.Subscriber("/walk_state", Bool, callback)
+    rospy.Subscriber("/end_sm", Bool, callback_end)
 
     
 
@@ -253,13 +266,15 @@ def main():
                                 transitions={'succ': 'Full_step_Right', 
                                              'right': 'Half_step_Left'})
         smach.StateMachine.add('Half_step_Left', Half_step_Left(), 
-                                transitions={'succ': 'get_up', 
-                                             'fail': 'Half_step_Left'})
-        smach.StateMachine.add('Half_step_Right', Half_step_Right(), 
-                                transitions={'succ': 'get_up', 
-                                             'fail': 'Half_step_Left'})
-        smach.StateMachine.add('get_up', get_up(), 
                                 transitions={'succ': 'Crouch', 
+                                             'fail': 'Half_step_Left',
+                                             'end' : 'get_up'})
+        smach.StateMachine.add('Half_step_Right', Half_step_Right(), 
+                                transitions={'succ': 'Crouch', 
+                                             'fail': 'Half_step_Left',
+                                             'end' : 'get_up'})
+        smach.StateMachine.add('get_up', get_up(), 
+                                transitions={'succ': 'Initial', 
                                              'fail': 'get_up'})
 
 
