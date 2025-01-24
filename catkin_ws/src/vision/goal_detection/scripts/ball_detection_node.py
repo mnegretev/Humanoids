@@ -22,44 +22,40 @@ def callback_image (msg):
 
     centroid_msg = Point32()  # Create a Point32 message object
     bridge = CvBridge()     
-    cv_image = bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')#source file
+    cv_image = bridge.imgmsg_to_cv2(msg, desired_encoding='rgb8')#source file
 
     #Para espacio HSV
-    # hsv_image= cv2.cvtColor(cv_image, cv2.COLOR_BGR2HSV)
-
-    # h_min =   
-    # h_max = 
-    # s_min = 
-    # s_max = 
-    # v_min = 
-    # v_max = 
-
-    # lower = np.array([h_min, s_min, v_min])
-    # upper = np.array([h_max, s_max, v_max])
-
-    # mask = cv2.inRange(hsv_image, lower, upper)
-
-    # masked_image = cv2.bitwise_and(cv_image, cv_image, mask=mask)
+    hsv_image= cv2.cvtColor(cv_image, cv2.COLOR_BGR2HSV)
+    h_min = 25  
+    h_max = 44
+    s_min = 65
+    s_max = 160
+    v_min = 70
+    v_max = 255
+    lower = np.array([h_min, s_min, v_min])
+    upper = np.array([h_max, s_max, v_max])
+    mask = cv2.inRange(hsv_image, lower, upper)
+    masked_image = cv2.bitwise_and(cv_image, cv_image, mask=mask)
    
     #Para HLS
-    hls_image= cv2.cvtColor(cv_image, cv2.COLOR_BGR2HLS)    
-    h_min = 0
-    h_max = 82
-    l_min = 108
-    l_max = 232
-    s_min = 13
-    s_max = 63 
-    lower = np.array([h_min, l_min, s_min])
-    upper = np.array([h_max, l_max, s_max])
-    mask = cv2.inRange(hls_image, lower, upper)
-    masked_image = cv2.bitwise_and(cv_image, cv_image, mask=mask)
+    # hls_image= cv2.cvtColor(cv_image, cv2.COLOR_BGR2HLS)    
+    # h_min = 0
+    # h_max = 82
+    # l_min = 108
+    # l_max = 232
+    # s_min = 13
+    # s_max = 63 
+    # lower = np.array([h_min, l_min, s_min])
+    # upper = np.array([h_max, l_max, s_max])
+    # mask = cv2.inRange(hls_image, lower, upper)
+    # masked_image = cv2.bitwise_and(cv_image, cv_image, mask=mask)
     gray = cv2.cvtColor(masked_image, cv2.COLOR_BGR2GRAY)
     blur=cv2.GaussianBlur(gray,(7,7),0)
     minDist =500
     param1 = 50
     param2 = 50 #smaller value-> more false circles
     minRadius = 5
-    maxRadius = 30
+    maxRadius = 50
     ball_detected=False
     distance_threshold = 5 
     # docstring of HoughCircles: HoughCircles(image, method, dp, minDist[, circles[, param1[, param2[, minRadius[, maxRadius]]]]]) -> circles
