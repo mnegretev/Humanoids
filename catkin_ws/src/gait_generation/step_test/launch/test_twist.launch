@@ -4,5 +4,6 @@
             <param name="twist_left_first_step"       value="$(find step_test)/src/twist/left/twist_left_first_step.npz"/>
             <param name="twist_move_com_left"         value="$(find step_test)/src/twist/left/twist_move_com_left.npz"/>
             <param name="twist_right_third_step"      value="$(find step_test)/src/twist/left/twist_right_third_step.npz"/>
+            <param name="twist_right_final_stop"      value="$(find step_test)/src/twist/left/twist_right_final_stop.npz"/>
         </node>
 </launch>
