@@ -1,0 +1,7 @@
+<launch>
+  <node pkg="step_test" type="plot.py" name="plot" output="screen" required="true">
+    <param name="csv_files" value="['$(find step_test)/src/lipm/geometric_trajectories/csv/left_first_half_step_pose.csv', '$(find step_test)/src/lipm/geometric_trajectories/csv/right_full_step_pose.csv', '$(find step_test)/src/lipm/geometric_trajectories/csv/left_full_step_pose.csv', '$(find step_test)/src/lipm/geometric_trajectories/csv/left_end_step_pose.csv', '$(find step_test)/src/lipm/geometric_trajectories/csv/right_end_step_pose.csv']" />
+    <param name="topic" value="/csv_plot" />
+  </node>
+</launch>
+

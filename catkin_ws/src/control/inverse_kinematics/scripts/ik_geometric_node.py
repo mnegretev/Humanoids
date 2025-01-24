@@ -7,10 +7,10 @@ import numpy
 import tf
 import tf.transformations as tft
 import urdf_parser_py.urdf
-from std_msgs.msg import Float64MultiArray
+from std_msgs.msg import Float32MultiArray
 from manip_msgs.srv import *
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
-from ctrl_msgs.srv import CalculateIK, CalculateIKResponse 
+from ctrl_msgs.srv import CalculateIK, CalculateDK, CalculateIKResponse,CalculateDKResponse 
 
 prompt = ""
 NAME = "Frías Hernández Camille Emille Román"
@@ -117,6 +117,42 @@ def callback_ik_leg_right(req):
     resp.joint_values = q
     return resp   
 
+def callback_fk_leg_right(req):
+    joints, transforms = get_model_info(right_leg)
+    kin=numpy.zeros(6)
+    if not (len(joints) > 5 and len(transforms) > 5):
+        print("Forward kinematics.->Cannot get model info from parameter server")
+        sys.exit(-1)
+    W = [joints[i].axis for i in range(len(joints))]  
+    kin=req.joint_values
+    resp=CalculateDKResponse()
+    aux = forward_kinematics(kin,transforms, W) 
+    resp.x=aux[0]
+    resp.y=aux[1]
+    resp.z=aux[2]
+    resp.roll=aux[3]
+    resp.pitch=aux[4]
+    resp.yaw=aux[5]
+    return resp   
+
+def callback_fk_leg_left(req):
+    joints, transforms = get_model_info(left_leg)
+    kin=numpy.zeros(6)
+    if not (len(joints) > 5 and len(transforms) > 5):
+        print("Forward kinematics.->Cannot get model info from parameter server")
+        sys.exit(-1)
+    W = [joints[i].axis for i in range(len(joints))]  
+    kin=req.joint_values
+    resp=CalculateDKResponse()
+    aux = forward_kinematics(kin,transforms, W) 
+    resp.x=aux[0]
+    resp.y=aux[1]
+    resp.z=aux[2]
+    resp.roll=aux[3]
+    resp.pitch=aux[4]
+    resp.yaw=aux[5]
+    return resp   
+
 def main():
     global  max_iterations, joints, transforms, prompt, left_leg, right_leg, total_iterations
     total_iterations=0 
@@ -130,6 +166,10 @@ def main():
 
     rospy.Service("/manipulation/ik_leg_left_pose"              , CalculateIK, callback_ik_leg_left) 
     rospy.Service("/manipulation/ik_leg_right_pose"              , CalculateIK, callback_ik_leg_right) 
+
+    rospy.Service("/manipulation/fk_leg_left_pose"              , CalculateDK, callback_fk_leg_left) 
+    rospy.Service("/manipulation/fk_leg_right_pose"              , CalculateDK, callback_fk_leg_right) 
+
     loop = rospy.Rate(40)
     while not rospy.is_shutdown():
         loop.sleep()

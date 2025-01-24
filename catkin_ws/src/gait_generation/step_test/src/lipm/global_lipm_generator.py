@@ -9,7 +9,7 @@ import os
 #ROS
 import rospy
 from std_msgs.msg import String, Float32MultiArray
-from ctrl_msgs.srv import CalculateIK, CalculateIKRequest
+from ctrl_msgs.srv import CalculateIK, CalculateIKRequest, CalculateDK, CalculateDKRequest
 from trajectory_planner import trajectory_planner
 from manip_msgs.srv import *
 
@@ -47,6 +47,20 @@ def calculate_ik(P, service_client):
             print("Could not calculate inverse kinematics for pose {vector}")
             raise ValueError("Error calculating inverse kinematics for point {vector}")
     return joint_values
+
+def calculate_Fk(q, service_client):
+    cartesian_traj = np.zeros((len(q),6))
+    for i, vector in enumerate(q):
+        req=vector
+        response = service_client(req)
+        x=response.x
+        y=response.y
+        z=response.z
+        roll=response.roll
+        pitch=response.pitch
+        yaw=response.yaw
+        cartesian_traj[i]=[x,y,z,roll,pitch,yaw]
+    return cartesian_traj
 
 def calculate_cartesian_right_start_pose(duration, y_body_to_feet_percent, ik_client_left, ik_client_right):
     p_start = [0 + com_x_offset, 0, Z_ROBOT_STATIC]
@@ -96,7 +110,7 @@ def calculate_cartesian_left_half_step_pose(duration, p_start, p_end, ik_client_
     left_q = calculate_ik(l_leg_relative_pos, ik_client_left)
     right_q = calculate_ik(r_leg_relative_pos, ik_client_right)
 
-    return left_q, right_q, l_leg_abs_pos[-1]
+    return left_q, right_q, l_leg_abs_pos
 
 def calculate_cartesian_right_step_pose(initial_l_foot_pos, ik_client_left, ik_client_right):
     global final_posr_right  
@@ -138,7 +152,7 @@ def calculate_cartesian_right_step_pose(initial_l_foot_pos, ik_client_left, ik_c
     left_q = calculate_ik(l_leg_relative_pos, ik_client_left)
     right_q = calculate_ik(r_leg_relative_pos, ik_client_right)
 
-    return left_q, right_q, r_foot_abs_pos[-1]
+    return left_q, right_q, r_foot_abs_pos
 
 def calculate_cartesian_left_step_pose(initial_r_foot_pos, ik_client_left, ik_client_right):
     #Left foot is the support foot
@@ -180,7 +194,7 @@ def calculate_cartesian_left_step_pose(initial_r_foot_pos, ik_client_left, ik_cl
     left_q  = calculate_ik(l_leg_relative_pos, ik_client_left)
     right_q = calculate_ik(r_leg_relative_pos, ik_client_right)
 
-    return left_q, right_q, l_foot_abs_pos[-1]
+    return left_q, right_q, l_foot_abs_pos
 
 def calculate_cartesian_right_end_step_pose(initial_l_foot_pos, ik_client_left, ik_client_right):
     #Left foot is the support foot
@@ -220,7 +234,7 @@ def calculate_cartesian_right_end_step_pose(initial_l_foot_pos, ik_client_left, 
     left_q = calculate_ik(l_leg_relative_pos, ik_client_left)
     right_q = calculate_ik(r_leg_relative_pos, ik_client_right)
 
-    return left_q, right_q, r_foot_abs_pos[-1]
+    return left_q, right_q, r_foot_abs_pos
 
 def calculate_cartesian_left_end_step_pose(initial_r_foot_pos, ik_client_left, ik_client_right):
     #Left foot is the support foot
@@ -262,7 +276,7 @@ def calculate_cartesian_left_end_step_pose(initial_r_foot_pos, ik_client_left, i
     left_q  = calculate_ik(l_leg_relative_pos, ik_client_left)
     right_q = calculate_ik(r_leg_relative_pos, ik_client_right)
 
-    return left_q, right_q, l_foot_abs_pos[-1]
+    return left_q, right_q, l_foot_abs_pos
 
 def findInitialConditions(STEP_LENGTH, ROBOT_VEL_X, y_0, zModel, G):
     #Desired midstance and state
@@ -313,6 +327,8 @@ def main(args = None):
     trajectory_dir = rospy.get_param("~trajectory_dir")
     right_leg_client = rospy.ServiceProxy('/manipulation/ik_leg_right_pose', CalculateIK)
     left_leg_client = rospy.ServiceProxy('/manipulation/ik_leg_left_pose', CalculateIK)
+    right_Dleg_client = rospy.ServiceProxy('/manipulation/fk_leg_right_pose', CalculateDK)
+    left_Dleg_client = rospy.ServiceProxy('/manipulation/fk_leg_left_pose', CalculateDK)
 
     left_q, right_q, last_p_com = calculate_cartesian_right_start_pose(1, 0.0, left_leg_client, right_leg_client)
     np.savez(os.path.join(trajectory_dir, "right_start_pose"), right=right_q, left=left_q, timestep=SERVO_SAMPLE_TIME)
@@ -322,21 +338,30 @@ def main(args = None):
 
     left_q, right_q, final_l_foot_pos = calculate_cartesian_left_half_step_pose(0.5, initial_halfstep_pos, final_halfstep_pos, left_leg_client, right_leg_client)
     np.savez(os.path.join(trajectory_dir, "left_first_halfstep_pose"), right=right_q, left=left_q, timestep=SERVO_SAMPLE_TIME)
-
-    left_q, right_q, final_r_foot_pos = calculate_cartesian_right_step_pose(final_l_foot_pos, left_leg_client, right_leg_client)
+    cartesian_l_pos = calculate_Fk(left_q, left_Dleg_client)
+    np.savetxt(os.path.join(trajectory_dir, "csv/left_first_half_step_pose.csv"), cartesian_l_pos)
+    
+    left_q, right_q, final_r_foot_pos = calculate_cartesian_right_step_pose(final_l_foot_pos[-1], left_leg_client, right_leg_client)
     np.savez(os.path.join(trajectory_dir, "right_full_step_pose"), right=right_q, left=left_q, timestep=SERVO_SAMPLE_TIME)
+    cartesian_r_pos = calculate_Fk(right_q, right_Dleg_client)
+    np.savetxt(os.path.join(trajectory_dir,"csv/right_full_step_pose.csv"), cartesian_r_pos)
 
-    left_q, right_q, final_l_foot_pos = calculate_cartesian_left_step_pose(final_r_foot_pos, left_leg_client, right_leg_client)
+    left_q, right_q, final_l_foot_pos = calculate_cartesian_left_step_pose(final_r_foot_pos[-1], left_leg_client, right_leg_client)
     np.savez(os.path.join(trajectory_dir, "left_full_step_pose"), right=right_q, left=left_q, timestep=SERVO_SAMPLE_TIME)
+    cartesian_l_pos = calculate_Fk(left_q, left_Dleg_client)
+    np.savetxt(os.path.join(trajectory_dir,"csv/left_full_step_pose.csv"), cartesian_l_pos)
 
     left_q, right_q, last_p_com = calculate_cartesian_right_end_pose(1, 0.0, left_leg_client, right_leg_client)
     np.savez(os.path.join(trajectory_dir, "right_end_pose"), right=right_q, left=left_q, timestep=SERVO_SAMPLE_TIME)
 
-    left_q, right_q, final_r_foot_pos = calculate_cartesian_right_end_step_pose(final_l_foot_pos, left_leg_client, right_leg_client)
+    left_q, right_q, final_r_foot_pos = calculate_cartesian_right_end_step_pose(final_l_foot_pos[-1], left_leg_client, right_leg_client)
     np.savez(os.path.join(trajectory_dir, "right_end_step_pose"), right=right_q, left=left_q, timestep=SERVO_SAMPLE_TIME)
+    cartesian_r_pos = calculate_Fk(right_q, right_Dleg_client)
+    np.savetxt(os.path.join(trajectory_dir,"csv/right_end_step_pose.csv"), cartesian_r_pos)
 
-    left_q, right_q, final_l_foot_pos = calculate_cartesian_left_end_step_pose(final_r_foot_pos, left_leg_client, right_leg_client)
+    left_q, right_q, final_l_foot_pos = calculate_cartesian_left_end_step_pose(final_r_foot_pos[-1], left_leg_client, right_leg_client)
     np.savez(os.path.join(trajectory_dir, "left_end_step_pose"), right=right_q, left=left_q, timestep=SERVO_SAMPLE_TIME)
-
+    cartesian_l_pos = calculate_Fk(left_q, left_Dleg_client)
+    np.savetxt(os.path.join(trajectory_dir,"csv/left_end_step_pose.csv"), cartesian_l_pos)
 if __name__ == "__main__":
     main()
