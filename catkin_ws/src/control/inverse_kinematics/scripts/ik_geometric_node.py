@@ -161,7 +161,7 @@ def main():
     print("INITIALIZING INVERSE KINEMATIC NODE - " + NAME)
     rospy.init_node("ik_geometric")
     prompt = rospy.get_name().upper() + ".->"
-    max_iterations = rospy.get_param("~max_iterations", 200)
+    max_iterations = rospy.get_param("~max_iterations", 400)
     print(prompt+"max_iterations: " + str(max_iterations))
 
     rospy.Service("/manipulation/ik_leg_left_pose"              , CalculateIK, callback_ik_leg_left) 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import rospy
-import numpy
+import numpy as np
 import cv2
 #import ros_numpy
 import math
@@ -15,41 +15,49 @@ from geometry_msgs.msg import Point32
 
 def calculate_distance(center1, center2):
     return math.sqrt((center1[0] - center2[0])**2 + (center1[1] - center2[1])**2)
- 
+    
 center=None
 def callback_image (msg):
     global center, prev_center
+
     centroid_msg = Point32()  # Create a Point32 message object
     bridge = CvBridge()     
     cv_image = bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')#source file
-    hls_image= cv2.cvtColor(cv_image, cv2.COLOR_BGR2HLS)
 
-    # Define thresholds (adjust based on your image data)
-    # lower_saturation = 60  # Minimum saturation to remove noise
-    # lower_lightness = 100  # Minimum lightness to avoid shadows
-    # upper_lightness = 255  # Maximum lightness to avoid overexposure
-    lower_saturation = 70  # Minimum saturation to remove noise
-    lower_lightness = 90  # Minimum lightness to avoid shadows
-    upper_lightness = 255  # Maximum lightness to avoid overexposure
-    # Threshold the S and L channels
-    mask_s = cv2.inRange(hls_image, (0, lower_saturation, 0), (255, 255, 255))
-    mask_l = cv2.inRange(hls_image, (0, 0, lower_lightness), (255, 255, upper_lightness))
+    #Para espacio HSV
+    # hsv_image= cv2.cvtColor(cv_image, cv2.COLOR_BGR2HSV)
 
-    # Combine the masks using bitwise AND to keep only pixels meeting both conditions
-    mask = cv2.bitwise_and(mask_s, mask_l)
+    # h_min =   
+    # h_max = 
+    # s_min = 
+    # s_max = 
+    # v_min = 
+    # v_max = 
+
+    # lower = np.array([h_min, s_min, v_min])
+    # upper = np.array([h_max, s_max, v_max])
+
+    # mask = cv2.inRange(hsv_image, lower, upper)
+
+    # masked_image = cv2.bitwise_and(cv_image, cv_image, mask=mask)
    
-    # Filter the original image based on the Hue range for the soccer ball
-    # hue_mask = cv2.inRange(hls_image, (0, 205, 0), (250, 250, 250)) #50 and 100 are for green color MUST CHANGE FOR FIFA BALL
-    hue_mask = cv2.inRange(cv_image, (45, 0, 25), (100, 250, 250)) #50 and 100 are for green color MUST CHANGE FOR FIFA BALL
-    # Combine the mask from HSV filtering with the mask from S & L thresholding
-    # using bitwise AND to refine the result
-    refined_mask = cv2.bitwise_and(mask, hue_mask)
-    blur=cv2.GaussianBlur(refined_mask,(7,7),0)
-    centroid_msg.x = 0
-    centroid_msg.y = 0
+    #Para HLS
+    hls_image= cv2.cvtColor(cv_image, cv2.COLOR_BGR2HLS)    
+    h_min = 0
+    h_max = 82
+    l_min = 108
+    l_max = 232
+    s_min = 13
+    s_max = 63 
+    lower = np.array([h_min, l_min, s_min])
+    upper = np.array([h_max, l_max, s_max])
+    mask = cv2.inRange(hls_image, lower, upper)
+    masked_image = cv2.bitwise_and(cv_image, cv_image, mask=mask)
+    gray = cv2.cvtColor(masked_image, cv2.COLOR_BGR2GRAY)
+    blur=cv2.GaussianBlur(gray,(7,7),0)
     minDist =500
     param1 = 50
-    param2 = 30 #smaller value-> more false circles
+    param2 = 50 #smaller value-> more false circles
     minRadius = 5
     maxRadius = 30
     ball_detected=False
@@ -60,38 +68,46 @@ def callback_image (msg):
         for i in circles[0,:]:
             #centers.append(center) 
             # draw the outer circle
-            cv2.circle(cv_image,(i[0],i[1]),i[2],(0,255,0),2)
+            cv2.circle(cv_image,(int (i[0]),int (i[1])), int (i[2]),(0,255,0),2)
             # draw the center of the circle
-            cv2.circle(cv_image,(i[0],i[1]),2,(0,0,255),3)
+            cv2.circle(cv_image,(int (i[0]),int (i[1])),2,(0,0,255),3)
             if center is None:
-                prev_center= center = (i[0], i[1])
+                prev_center= center = (int (i[0]),int (i[1]))
             else:
                 prev_center = center
-                center = (i[0], i[1])
+                center = (int (i[0]), int (i[1]))
             #print("center: ",center)           
             #print("previous center: ",prev_center)
         if prev_center is not None:
             #print("*********",prev_center)
+            
             distance = calculate_distance(prev_center, center)        
+            print("Distance = ",distance)
             if distance < distance_threshold:
                 ball_detected=True
                 #print("Ball detected.")
                 # Publish the center coordinates as a Point32 message
                 centroid_msg.x = center[0]
                 centroid_msg.y = center[1]
+                print("previous center: ",prev_center)
+                print("center: ",center)
             if distance > distance_threshold:
                 ball_detected=False
                 centroid_msg.x = 0
                 centroid_msg.y = 0
-    centroid_pub.publish(centroid_msg)
+
+    
+    centroid_pub.publish(centroid_msg) 
     msg = bridge.cv2_to_imgmsg(cv_image, encoding='rgb8')
     ball_image_pub.publish(msg)
-    msg2=bridge.cv2_to_imgmsg(blur,encoding='8UC1')
+    msg2=bridge.cv2_to_imgmsg(blur, encoding='8UC1')
     hue_image_pub.publish(msg2)
-#     #print(ball_detected)
-      # **This line publishes the center**
-
-
+   
+    #cv2.imshow('Original Image', cv_image) #hls image
+    #cv2.imshow("blur image",blur) #Blur image
+    #cv2.imshow("image mask",masked_image) #Masked image
+    cv2.waitKey(10)
+   
 def main ():
     global centroid_pub, ball_image_pub,hue_image_pub
     rospy.init_node("ball_detection_node")  

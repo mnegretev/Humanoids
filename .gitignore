@@ -43,3 +43,5 @@ logs/
 .catkin_tools/
 .vscode/
 .bash_history
+.ros/
+.cache/
