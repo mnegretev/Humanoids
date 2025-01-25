@@ -1,4 +1,5 @@
 <launch>
   <node name="cm730_v2" pkg="cm730" type="cm730v2" required="true" output="screen"/>
   <rosparam command="load" file="$(find config_files)/hardware/chuy_head_servo_config.yaml" />
+  <param name="torque_enable" type="bool" value="true" />
 </launch>

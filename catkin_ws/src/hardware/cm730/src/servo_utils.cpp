@@ -34,22 +34,25 @@ namespace Servo
         return true;
     }
     
-    bool CommHandler::wakeupAllServos()
+    bool CommHandler::wakeupAllServos(bool torque_enable)
     {
         
         uint8_t error;
-        int comm_result = packet_h -> write1ByteTxRx(port_h,
+        if(torque_enable)
+        {
+            int comm_result = packet_h -> write1ByteTxRx(port_h,
                                                         ID_CM730,
                                                         MX64::TORQUE_ENABLE,
                                                         1,
                                                         &error);
-        if (comm_result != COMM_SUCCESS)
-        {
-            std::cout << "[SERVO_UTILS] Communication error with CM730" << std::endl;
-        }
-        else if (error != 0)
-        {
-            std::cout << "[SERVO_UTILS] Packet error when communicating with CM730" << std::endl;
+            if (comm_result != COMM_SUCCESS)
+            {
+                std::cout << "[SERVO_UTILS] Communication error with CM730" << std::endl;
+            }
+            else if (error != 0)
+            {
+                std::cout << "[SERVO_UTILS] Packet error when communicating with CM730" << std::endl;
+            }
         }
 
         bulk_read_current_position_3pin.clearParam();

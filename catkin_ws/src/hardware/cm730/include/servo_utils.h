@@ -92,7 +92,7 @@ namespace Servo
 
         // Methods
         bool    startComm();
-        bool    wakeupAllServos();
+        bool    wakeupAllServos(bool torque_enable);
         bool    portIsActive();
         uint16_t getPosition(const int& id);
         bool    setPosition(const int& id, const uint16_t& pos);

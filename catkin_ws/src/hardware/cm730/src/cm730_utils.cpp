@@ -81,6 +81,17 @@ namespace CM730
 
     bool Node::start()
     {
+        bool torque_enable_param;
+        if (!ros::param::get("torque_enable", torque_enable_param))
+        {
+            ROS_ERROR("Missing param in config file: %s", "torque_enable");
+            return false;
+        }
+        if(!torque_enable_param)
+        {
+            ROS_INFO("TORQUE ENABLED IS FALSE");
+        }
+        
         if(!fillServoParameters(left_arm_names,  left_arm_servos))  return false;
         if(!fillServoParameters(right_arm_names, right_arm_servos)) return false;
         if(!fillServoParameters(left_leg_names,  left_leg_servos))  return false;
@@ -107,7 +118,7 @@ namespace CM730
         std::copy(head_servos.begin(), head_servos.end(), std::back_inserter(all_servos));
 
         if(!comm.registerIDs(all_servos))  return false;
-        bool ret = comm.wakeupAllServos();
+        bool ret = comm.wakeupAllServos(torque_enable_param);
         ros::Duration(1.0).sleep();
         
         present_position.resize(21);
