@@ -72,6 +72,7 @@ class Start_pose(smach.State):
         initial_l_leg=l_leg
         initial_r_arm=r_arm
         initial_l_arm=l_arm
+        return 'succ'
 
 
 class End_pose(smach.State):
