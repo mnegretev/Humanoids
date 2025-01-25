@@ -3,9 +3,9 @@
     <param name="robot_description_semantic" textfile="$(find nimbro_op_srdf)/config/nimbro_op_hull.srdf" />
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher"/>
 
-    <group ns="hardware">
+    <!-- <group ns="hardware">
         <node name="cm730" pkg="cm730" type="cm730v2" output="screen"/>
-    </group>
+    </group> -->
 
     <group ns="hri">
         <node name="rviz" pkg="rviz" type="rviz" args="-d $(find config_files)/rviz/config.rviz" required="true"/>
