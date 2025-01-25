@@ -13,17 +13,17 @@ def main():
     pub_arm_left_goal_pose = rospy.Publisher("/hardware/arm_left_goal_pose", Float32MultiArray, queue_size=1)
     pub_arm_right_goal_pose = rospy.Publisher("/hardware/arm_right_goal_pose", Float32MultiArray , queue_size=1)
 
-    start_pose_legs = np.load("legs_start_pose1.npz")
-    start_pose_arms = np.load("arms_start_pose1.npz")
+    start_pose_legs = np.load("/home/k1000/Humanoids/catkin_ws/src/gait_generation/step_test/src/getup/poses/legs_pose2.npz")
+    start_pose_arms = np.load("/home/k1000/Humanoids/catkin_ws/src/gait_generation/step_test/src/getup/poses/arms_pose2.npz")
 
-    start_pose_arms2 = np.load("arms_start_pose2.npz")
-    start_pose_legs2 = np.load("legs_start_pose2.npz")
+    start_pose_legs2 = np.load("/home/k1000/Humanoids/catkin_ws/src/gait_generation/step_test/src/getup/poses/legs_pose3.npz")
+    start_pose_arms2 = np.load("/home/k1000/Humanoids/catkin_ws/src/gait_generation/step_test/src/getup/poses/arms_pose3.npz")
 
-    start_pose_arms3 = np.load("arms_start_pose3.npz")
-    start_pose_legs3 = np.load("legs_start_pose3.npz")
+    start_pose_legs3 = np.load("/home/k1000/Humanoids/catkin_ws/src/gait_generation/step_test/src/getup/poses/legs_pose4.npz")
+    start_pose_arms3 = np.load("/home/k1000/Humanoids/catkin_ws/src/gait_generation/step_test/src/getup/poses/arms_pose4.npz")
 
-    start_pose_arms4 = np.load("arms_start_pose4.npz")
-    start_pose_legs4 = np.load("legs_start_pose4.npz")
+    start_pose_legs4 = np.load("/home/k1000/Humanoids/catkin_ws/src/gait_generation/step_test/src/getup/poses/legs_pose4.npz")
+    start_pose_arms4 = np.load("/home/k1000/Humanoids/catkin_ws/src/gait_generation/step_test/src/getup/poses/arms_pose4.npz")
     timstep = start_pose_legs["timestep"]
     rate = rospy.Rate(int(1/(timstep*1.5)))
     rate_pose = rospy.Rate(int(1/(timstep/2)))

@@ -34,13 +34,13 @@ def callback(data):
     r_leg=[]
     l_leg=[]
     head=[positions[-2], positions[-1]]
-    for i in range(0,6,2):
+    for i in range(1,7,2):
         r_arm.append(positions[i])
-    for i in range(1,6,2):
+    for i in range(2,7,2):
         l_arm.append(positions[i])
-    for i in range(6,18,2):
+    for i in range(7,19,2):
         r_leg.append(positions[i])
-    for i in range(7,18,2):
+    for i in range(6,19,2):
         l_leg.append(positions[i])
  
 
