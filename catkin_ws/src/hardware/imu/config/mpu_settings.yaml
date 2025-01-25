@@ -5,7 +5,7 @@ bus_uri: "/dev/i2c-1"
 mpu_address: 0x68
 
 # Frequency in Hertz wich IMU data is published (default: 30)
-pub_rate: 10
+pub_rate: 25
 
 # Frame if of IMU message (default: "imu")
 frame_id: "imu"
