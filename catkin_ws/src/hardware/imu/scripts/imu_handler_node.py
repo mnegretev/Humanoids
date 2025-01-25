@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import rospy
+from std_msgs.msg import String
 from sensor_msgs.msg import Imu
 from geometry_msgs.msg import Vector3
 import math
@@ -10,6 +11,7 @@ class Imu_Node():
     def __init__(self):
         self.sub    = rospy.Subscriber("/imu/data_raw", Imu, self.callback)
         self.pub    = rospy.Publisher("/imu/humanoid_orientation", Vector3, queue_size=1)
+        self.pub_hs = rospy.Publisher("/imu/state", String, queue_size=1)
         self.pub_msg    = Vector3()
         self.rate   = rospy.Rate(5)
         self.gx     = 0
@@ -33,6 +35,13 @@ class Imu_Node():
 
         self.pub.publish(self.pub_msg)
         
+        if self.gy < -40.0:
+            self.pub_hs.publish("fall_front")
+        elif self.gy > 40.0:
+            self.pub_hs.publish("fall_back")
+        else:
+            self.pub_hs.publish("straight")
+
 
 
 
