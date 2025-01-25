@@ -322,7 +322,7 @@ namespace CM730
         {
             msg_joint_states.name[servo.id] = servo.name;
             msg_joint_states.position[servo.id] = (int(present_position[servo.id]) - int(servo.zero))
-                                                  * SERVO_MX_BITS_PER_RAD
+                                                  * SERVO_MX_RADS_PER_BIT
                                                   * servo.cw;
             msg_joint_current_angles.data[servo.id] = msg_joint_states.position[servo.id];
         }
