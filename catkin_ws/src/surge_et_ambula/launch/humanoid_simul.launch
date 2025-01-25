@@ -10,8 +10,8 @@
 
 	<node name="humanoid_gui" pkg="humanoid_gui" type="humanoid_gui" output="screen"/>
 
-	<!-- <node name="rqt_graph" pkg="rqt_graph" type="rqt"/> -->
-
+	<node name="imu_handler" pkg="imu" type="imu_handler_node.py"/>
+	
     <group ns="control">
         <rosparam command="load" file="$(find nimbro_op_srdf)/config/kinematics.yaml"/>
         <node name="inverse_kinematics" pkg="inverse_kinematics" type="ik_moveit_node" output="screen"/>
