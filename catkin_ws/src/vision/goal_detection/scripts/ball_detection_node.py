@@ -22,16 +22,26 @@ def callback_image (msg):
 
     centroid_msg = Point32()  # Create a Point32 message object
     bridge = CvBridge()     
-    cv_image = bridge.imgmsg_to_cv2(msg, desired_encoding='rgb8')#source file
+    #For simul: desired_encoding='bgr8', for real: desired_encoding='rgb8'
+    cv_image = bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')#source file
 
     #Para espacio HSV
+    #REAL                   SIMUL
+    # h_min = 25          h_min = 0    
+    # h_max = 44          h_max = 70
+    # s_min = 65          s_min = 215
+    # s_max = 160         s_max = 255
+    # v_min = 70          v_min = 0
+    # v_max = 255         v_max = 255
     hsv_image= cv2.cvtColor(cv_image, cv2.COLOR_BGR2HSV)
-    h_min = 25  
-    h_max = 44
-    s_min = 65
-    s_max = 160
-    v_min = 70
+    
+    h_min = 0  
+    h_max = 70
+    s_min = 215
+    s_max = 255
+    v_min = 0
     v_max = 255
+
     lower = np.array([h_min, s_min, v_min])
     upper = np.array([h_max, s_max, v_max])
     mask = cv2.inRange(hsv_image, lower, upper)
@@ -87,13 +97,12 @@ def callback_image (msg):
                 centroid_msg.y = center[1]
                 print("previous center: ",prev_center)
                 print("center: ",center)
+                centroid_pub.publish(centroid_msg)
             if distance > distance_threshold:
                 ball_detected=False
-                centroid_msg.x = 0
-                centroid_msg.y = 0
-
-    
-    centroid_pub.publish(centroid_msg) 
+                
+            
+     
     msg = bridge.cv2_to_imgmsg(cv_image, encoding='rgb8')
     ball_image_pub.publish(msg)
     msg2=bridge.cv2_to_imgmsg(blur, encoding='8UC1')
