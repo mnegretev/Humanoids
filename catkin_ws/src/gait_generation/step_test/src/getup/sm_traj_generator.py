@@ -40,7 +40,7 @@ def callback(data):
         l_arm.append(positions[i])
     for i in range(7,19,2):
         r_leg.append(positions[i])
-    for i in range(6,19,2):
+    for i in range(8,19,2):
         l_leg.append(positions[i])
  
 
