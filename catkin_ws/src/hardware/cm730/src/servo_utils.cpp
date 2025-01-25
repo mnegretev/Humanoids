@@ -38,31 +38,29 @@ namespace Servo
     {
         
         uint8_t error;
-        if(torque_enable)
+        int comm_result = packet_h -> write1ByteTxRx(port_h,
+                                                    ID_CM730,
+                                                    MX64::TORQUE_ENABLE,
+                                                    1,
+                                                    &error);
+        if (comm_result != COMM_SUCCESS)
         {
-            int comm_result = packet_h -> write1ByteTxRx(port_h,
-                                                        ID_CM730,
-                                                        MX64::TORQUE_ENABLE,
-                                                        1,
-                                                        &error);
-            if (comm_result != COMM_SUCCESS)
-            {
-                std::cout << "[SERVO_UTILS] Communication error with CM730" << std::endl;
-            }
-            else if (error != 0)
-            {
-                std::cout << "[SERVO_UTILS] Packet error when communicating with CM730" << std::endl;
-            }
+            std::cout << "[SERVO_UTILS] Communication error with CM730" << std::endl;
+        }
+        else if (error != 0)
+        {
+            std::cout << "[SERVO_UTILS] Packet error when communicating with CM730" << std::endl;
         }
 
         bulk_read_current_position_3pin.clearParam();
         bulk_read_current_position_4pin.clearParam();
         for(auto servo: registered_servos)
         {
+            
             int comm_result = packet_h -> write1ByteTxRx(port_h,
                                                         servo.id,
                                                         MX64::TORQUE_ENABLE,
-                                                        1,
+                                                        int(torque_enable),
                                                         &error);
             if (comm_result != COMM_SUCCESS)
             {
