@@ -11,7 +11,16 @@ int main(int argc, char** argv)
 
     while(ros::ok())
     {
-        if(!node.writePresentPositions()) break;
+        bool torque_enable_param;
+        if (!ros::param::get("torque_enable", torque_enable_param))
+        {
+            ROS_ERROR("Missing param in config file: %s", "torque_enable");
+            break;
+        }
+        if(torque_enable_param)
+        {
+            if(!node.writePresentPositions()) break;
+        }
         while(ros::ok())
         {
             node.readAndPublishAllPositions();
