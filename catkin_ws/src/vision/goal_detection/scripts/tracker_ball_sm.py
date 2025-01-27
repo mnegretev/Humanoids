@@ -32,21 +32,20 @@ class StartingSearch(smach.State):
         start_pose4 = np.load(start_pose4_file)
         start_poses = [start_pose1, start_pose2, start_pose3, start_pose4]
         while not rospy.is_shutdown(): 
-            print (self.message_received)
             if self.message_received :
                 return 'interrupted'
-            for start_pose in start_poses:
-                timestep = start_pose["timestep"]
-                rate = rospy.Rate(int(0.3 / timestep))
-
-            for head in start_pose["head"]:
-                if self.message_received:  # Check message_received
-                    rospy.loginfo("Centroid detected, changing state...")
-                    return 'interrupted'
-                cmd_head = Float32MultiArray()
-                cmd_head.data = head
-                self.publisher.publish(cmd_head)
-                rate.sleep()
+            timestep = start_pose1["timestep"]
+            rate = rospy.Rate(int(0.3 / timestep))
+            for start_pose in start_poses :
+                for head in start_pose["head"]:
+                    if self.message_received:  # Check message_received
+                        rospy.loginfo("Centroid detected, changing state...")
+                        return 'interrupted'
+                    cmd_head = Float32MultiArray()
+                    cmd_head.data = head
+                    self.publisher.publish(cmd_head)
+                    rate.sleep()
+                print (self.message_received)
         return 'timeout'
 
 class BallFound(smach.State):
@@ -64,6 +63,12 @@ class BallFound(smach.State):
 
     def execute(self, userdata):
         global pan_robot, tilt_robot
+        # try:
+        #     self.centroid_msg = rospy.wait_for_message (self.subs_topic_name, Point32,timeout = 5)
+        # except rospy.ROSException:
+        #     rospy.loginfo ('I lost the ball')
+        #     print ('centroid_msg is: ', self.message_received)
+        #     return 'failed'
         while self.message_received :
             center_x = self.centroid_msg.x
             center_y = self.centroid_msg.y
@@ -85,9 +90,13 @@ class BallFound(smach.State):
             print(f"Publishing pan_angle: {pan_robot}, tilt: {tilt_robot}")
             self.publisher.publish(head_cmd)
             self.rate.sleep()
+            print (self.message_received)
+            try:
+                self.centroid_msg = rospy.wait_for_message(self.subs_topic_name,Point32,timeout = 5)
+            except:
+                return 'failed'
+
         return 'failed'
-
-
 
 def main():
     global ball_detected
