@@ -23,7 +23,7 @@ def callback_image (msg):
     centroid_msg = Point32()  # Create a Point32 message object
     bridge = CvBridge()     
     #For simul: desired_encoding='bgr8', for real: desired_encoding='rgb8'
-    cv_image = bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')#source file
+    cv_image = bridge.imgmsg_to_cv2(msg, desired_encoding='rgb8')#source file
 
     #Para espacio HSV
     #REAL                   SIMUL
