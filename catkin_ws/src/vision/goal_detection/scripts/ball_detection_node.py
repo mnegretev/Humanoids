@@ -35,11 +35,11 @@ def callback_image (msg):
     # v_max = 255         v_max = 255
     hsv_image= cv2.cvtColor(cv_image, cv2.COLOR_BGR2HSV)
     
-    h_min = 0  
-    h_max = 70
-    s_min = 215
-    s_max = 255
-    v_min = 0
+    h_min = 25  
+    h_max = 44
+    s_min = 65
+    s_max = 160
+    v_min = 70
     v_max = 255
 
     lower = np.array([h_min, s_min, v_min])
