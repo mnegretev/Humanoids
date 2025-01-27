@@ -60,6 +60,7 @@ add_service_files(
   FILES
   CalculateIK.srv
   CalculateDK.srv
+  Getup.srv
 )
 
 ## Generate actions in the 'action' folder

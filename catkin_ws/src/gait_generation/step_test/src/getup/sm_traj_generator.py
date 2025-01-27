@@ -84,22 +84,23 @@ class End_pose(smach.State):
         global actual_pose
         print('STATE MACHINE GET UP POSES ->' + self.state + ' POSE:_' + str(poses-actual_pose))
         input("Presione enter cuando el humanoide esté en la pose final:_")
+        
+        final_r_leg=r_leg
+        final_l_leg=l_leg
+        final_r_arm=r_arm
+        final_l_arm=l_arm
+
+        q_left=calculate_cartesian(1,initial_l_leg, final_l_leg)
+        q_right=calculate_cartesian(1,initial_r_leg, final_r_leg)
+        np.savez(os.path.join(trajectory_dir,"legs_pose"+str(poses-actual_pose-1)), right_leg=q_right, left_leg=q_left, timestep=SERVO_SAMPLE_TIME)
+
+        q_left=calculate_cartesian(1,initial_l_arm, final_l_arm)
+        q_right=calculate_cartesian(1,initial_r_arm, final_r_arm)
+        np.savez(os.path.join(trajectory_dir,("arms_pose"+str(poses-actual_pose-1))), right_arm=q_right, left_arm=q_left, timestep=SERVO_SAMPLE_TIME)
         if actual_pose ==1:
             return 'end'
         else:
             actual_pose-=1
-            final_r_leg=r_leg
-            final_l_leg=l_leg
-            final_r_arm=r_arm
-            final_l_arm=l_arm
-
-            q_left=calculate_cartesian(1,initial_l_leg, final_l_leg)
-            q_right=calculate_cartesian(1,initial_r_leg, final_r_leg)
-            np.savez(os.path.join(trajectory_dir,"legs_pose"+str(poses-actual_pose)), right_leg=q_right, left_leg=q_left, timestep=SERVO_SAMPLE_TIME)
-
-            q_left=calculate_cartesian(1,initial_l_arm, final_l_arm)
-            q_right=calculate_cartesian(1,initial_r_arm, final_r_arm)
-            np.savez(os.path.join(trajectory_dir,("arms_pose"+str(poses-actual_pose))), right_arm=q_right, left_arm=q_left, timestep=SERVO_SAMPLE_TIME)
             return 'succ'
 
 
