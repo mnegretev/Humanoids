@@ -233,7 +233,7 @@ namespace CM730
             return;
         }
         int msg_idx{0};
-        for(auto servo: left_arm_servos)
+        for(auto servo: right_arm_servos)
         {
             goal_position[servo.id] = uint16_t(msg->data[msg_idx++] * SERVO_MX_BITS_PER_RAD * servo.cw + servo.zero);
         }
