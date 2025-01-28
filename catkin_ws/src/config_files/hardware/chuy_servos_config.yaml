@@ -12,15 +12,15 @@ left:
         id:   4
         cw:   -1
         zero: 3177
-        enabled: false # Needs to change
+        enabled: true # Needs to change
         is4pin: true
     elbow:
       pitch:
         id:   6
         cw:   -1
-        zero: 440
+        zero: 1830
         enabled: true
-        is4pin: false
+        is4pin: true
   leg:
     hip:
       yaw:
@@ -45,7 +45,7 @@ left:
       pitch: 
         id:   14
         cw:   1
-        zero: 2195
+        zero: 1790
         enabled: true
         is4pin: false
     ankle:
@@ -135,6 +135,6 @@ head:
   pitch:
     id:   20
     cw:   -1
-    zero: 2100
+    zero: 2094
     enabled: true
     is4pin: true

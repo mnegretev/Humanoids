@@ -12,6 +12,7 @@ def read_poses(trajectory_dir):
     arms=[]
     legs=[]
     for traj in sorted(os.listdir(trajectory_dir)):
+        print(traj)
         if "arms" in traj:
             arms.append(np.load(os.path.join(trajectory_dir,traj)))
         else:
@@ -45,18 +46,20 @@ def handle(req):
                 rate.sleep()   
         resp=GetupResponse()
         resp.succes = True
-    except:
+    except Exception as e:
+        print(e)
         resp=GetupResponse()
         resp.succes = False
     return resp   
 
 def main():
     global pub_arm_left_goal_pose, pub_arm_right_goal_pose, pub_leg_left_goal_pose, pub_leg_right_goal_pose, rate
-    pub_leg_left_goal_pose = rospy.Publisher("/hardware/leg_left_goal_pose", Float32MultiArray, queue_size=1)
-    pub_leg_right_goal_pose = rospy.Publisher("/hardware/leg_right_goal_pose", Float32MultiArray , queue_size=1)
-    pub_arm_left_goal_pose = rospy.Publisher("/hardware/arm_left_goal_pose", Float32MultiArray, queue_size=1)
-    pub_arm_right_goal_pose = rospy.Publisher("/hardware/arm_right_goal_pose", Float32MultiArray , queue_size=1)
+    pub_leg_left_goal_pose = rospy.Publisher("/leg_left_goal_pose", Float32MultiArray, queue_size=1)
+    pub_leg_right_goal_pose = rospy.Publisher("/leg_right_goal_pose", Float32MultiArray , queue_size=1)
+    pub_arm_left_goal_pose = rospy.Publisher("/arm_left_goal_pose", Float32MultiArray, queue_size=1)
+    pub_arm_right_goal_pose = rospy.Publisher("/arm_right_goal_pose", Float32MultiArray , queue_size=1)
     rospy.init_node("getup_server")
+    print("Iniciando servicio")
     service = rospy.Service('getup', Getup, handle)
     rospy.spin()
 if __name__ == '__main__':
