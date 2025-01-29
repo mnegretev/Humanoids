@@ -20,7 +20,9 @@ Y_BODY_TO_FEET_RIGHT  = 0.068 #Mínimo valor =0.056 #Máximo valor =0.125#= 0.09
 Z_ROBOT_WALK_RIGHT    = 0.545
 Z_ROBOT_STATIC_RIGHT  = 0.575 # m
 
-stepHeight = 0.09
+X_OFFSET = 0.020
+
+stepHeight = 0.08
 
 # Tiempo de muestreo maximo para escribir a los servomotores
 SERVO_SAMPLE_TIME = 0.025 # [s]
@@ -44,7 +46,7 @@ def calculate_ik(P, service_client):
 
 def get_twist_trajectory_start_pose(duration, stepHeight, ik_client_left, ik_client_right):
     com_start   =   [0, 0, Z_ROBOT_STATIC]
-    com_end     =   [0, -Y_BODY_TO_FEET*0.5, Z_ROBOT_WALK]
+    com_end     =   [X_OFFSET, -Y_BODY_TO_FEET*0.5, Z_ROBOT_WALK]
 
     P_CoM, T = trajectory_planner.get_polynomial_trajectory_multi_dof(com_start, com_end, duration=duration, time_step=SERVO_SAMPLE_TIME)
     
@@ -93,7 +95,7 @@ def get_twist_trajectory_left_first_step(p_start, duration, twist_angle, ik_clie
 def get_twist_trajectory_move_com_left(com_start, duration,  ik_client_left, ik_client_right):
     
     com_start_pose = np.concatenate((com_start, [[0,0,0]]), axis=None)
-    com_end_pose = [0, Y_BODY_TO_FEET*0.5, Z_ROBOT_WALK, 0, 0, 0]
+    com_end_pose = [X_OFFSET, Y_BODY_TO_FEET*0.5, Z_ROBOT_WALK, 0, 0, 0]
 
     P_CoM, T = trajectory_planner.get_polynomial_trajectory_multi_dof(com_start_pose, com_end_pose, duration=duration, time_step=SERVO_SAMPLE_TIME)
 
@@ -116,9 +118,7 @@ def get_twist_trajectory_move_com_left(com_start, duration,  ik_client_left, ik_
 
 def get_twist_trajectory_right_third_step(p_start, duration, ik_client_left, ik_client_right):
     com_start_pose  = p_start
-    print(com_start_pose)
     com_end_pose    = com_start_pose
-    print(com_end_pose)
 
     P_CoM, T = trajectory_planner.get_polynomial_trajectory_multi_dof(com_start_pose, com_end_pose, duration=duration, time_step=SERVO_SAMPLE_TIME)
 
@@ -150,7 +150,7 @@ def get_twist_trajectory_right_third_step(p_start, duration, ik_client_left, ik_
 
 def get_twist_trajectory_move_com_right(com_start, duration, ik_client_left, ik_client_right):
     com_start_pose = com_start
-    com_end_pose = [0, -Y_BODY_TO_FEET*0.5, Z_ROBOT_WALK, 0, 0, 0]
+    com_end_pose = [X_OFFSET, -Y_BODY_TO_FEET*0.5, Z_ROBOT_WALK, 0, 0, 0]
 
     P_CoM, T = trajectory_planner.get_polynomial_trajectory_multi_dof(com_start_pose, com_end_pose, duration=duration, time_step=SERVO_SAMPLE_TIME)
 
@@ -193,7 +193,7 @@ def get_twist_trajectory_final_stop(p_start, duration, ik_client_left, ik_client
 
 def get_twist_right_trajectory_start_pose(duration, stepHeight, ik_client_left, ik_client_right):
     com_start   =   [0, 0, Z_ROBOT_STATIC]
-    com_end     =   [0, Y_BODY_TO_FEET_RIGHT*0.5, Z_ROBOT_WALK]
+    com_end     =   [X_OFFSET, Y_BODY_TO_FEET_RIGHT*0.5, Z_ROBOT_WALK]
 
     P_CoM, T = trajectory_planner.get_polynomial_trajectory_multi_dof(com_start, com_end, duration=duration, time_step=SERVO_SAMPLE_TIME)
     
@@ -242,7 +242,7 @@ def get_twist_right_trajectory_left_first_step(p_start, duration, twist_angle, i
 def get_twist_right_trajectory_move_com(com_start, duration,  ik_client_left, ik_client_right):
     
     com_start_pose = np.concatenate((com_start, [[0,0,0]]), axis=None)
-    com_end_pose = [0, -Y_BODY_TO_FEET_RIGHT*0.5, Z_ROBOT_WALK, 0, 0, 0]
+    com_end_pose = [X_OFFSET, -Y_BODY_TO_FEET_RIGHT*0.5, Z_ROBOT_WALK, 0, 0, 0]
 
     P_CoM, T = trajectory_planner.get_polynomial_trajectory_multi_dof(com_start_pose, com_end_pose, duration=duration, time_step=SERVO_SAMPLE_TIME)
 
@@ -298,7 +298,7 @@ def get_twist_right_trajectory_third_step(p_start, duration, ik_client_left, ik_
 def get_twist_right_trajectory_move_com_left(com_start, duration, ik_client_left, ik_client_right):
     com_start_pose = com_start
     print(com_start_pose)
-    com_end_pose = [0, Y_BODY_TO_FEET_RIGHT*0.5, Z_ROBOT_WALK, 0, 0, 0]
+    com_end_pose = [X_OFFSET, Y_BODY_TO_FEET_RIGHT*0.5, Z_ROBOT_WALK, 0, 0, 0]
     print(com_end_pose)
 
     P_CoM, T = trajectory_planner.get_polynomial_trajectory_multi_dof(com_start_pose, com_end_pose, duration=duration, time_step=SERVO_SAMPLE_TIME)
