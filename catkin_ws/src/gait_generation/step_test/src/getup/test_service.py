@@ -8,7 +8,7 @@ import os
 from ctrl_msgs.srv import Getup
 
 def main():
-    path = rospy.get_param("~path", "/home/k1000/Humanoids/catkin_ws/src/gait_generation/step_test/src/getup/poses")
+    path = rospy.get_param("path", "/home/k1000/Humanoids/catkin_ws/src/gait_generation/step_test/src/getup/poses")
     rospy.wait_for_service('getup')
     try:
         getup=rospy.ServiceProxy('getup', Getup)

@@ -12,6 +12,7 @@ def read_poses(trajectory_dir):
     arms=[]
     legs=[]
     for traj in sorted(os.listdir(trajectory_dir)):
+        print(traj)
         if "arms" in traj:
             arms.append(np.load(os.path.join(trajectory_dir,traj)))
         else:
@@ -21,11 +22,14 @@ def handle(req):
     try:
         read_poses(req.path)
         timestep = legs[0]["timestep"]
-        rate = rospy.Rate(int(1/(timestep*1.5)))
+        rate = rospy.Rate(int(1/(timestep*0.5)))
 
         for i in range(len(arms)):
             for right_leg, left_leg, right_arm, left_arm in zip(legs[i]["right_leg"], legs[i]["left_leg"],arms[i]["right_arm"], arms[i]["left_arm"]):     
-                
+                if i ==3:
+                    rate = rospy.Rate(int(1/(timestep*1.5)))
+                else:
+                    rate = rospy.Rate(int(1/(timestep*0.5)))       
                 right_leg_goal_pose = Float32MultiArray()
                 right_leg_goal_pose.data = right_leg
                 pub_leg_right_goal_pose.publish(right_leg_goal_pose)
@@ -45,18 +49,20 @@ def handle(req):
                 rate.sleep()   
         resp=GetupResponse()
         resp.succes = True
-    except:
+    except Exception as e:
+        print(e)
         resp=GetupResponse()
         resp.succes = False
     return resp   
 
 def main():
-    global pub_arm_left_goal_pose, pub_arm_right_goal_pose, pub_leg_left_goal_pose, pub_leg_right_goal_pose, rate
-    pub_leg_left_goal_pose = rospy.Publisher("/hardware/leg_left_goal_pose", Float32MultiArray, queue_size=1)
-    pub_leg_right_goal_pose = rospy.Publisher("/hardware/leg_right_goal_pose", Float32MultiArray , queue_size=1)
-    pub_arm_left_goal_pose = rospy.Publisher("/hardware/arm_left_goal_pose", Float32MultiArray, queue_size=1)
-    pub_arm_right_goal_pose = rospy.Publisher("/hardware/arm_right_goal_pose", Float32MultiArray , queue_size=1)
+    global pub_arm_left_goal_pose, pub_arm_right_goal_pose, pub_leg_left_goal_pose, pub_leg_right_goal_pose
+    pub_leg_left_goal_pose = rospy.Publisher("/leg_left_goal_pose", Float32MultiArray, queue_size=1)
+    pub_leg_right_goal_pose = rospy.Publisher("/leg_right_goal_pose", Float32MultiArray , queue_size=1)
+    pub_arm_left_goal_pose = rospy.Publisher("/arm_left_goal_pose", Float32MultiArray, queue_size=1)
+    pub_arm_right_goal_pose = rospy.Publisher("/arm_right_goal_pose", Float32MultiArray , queue_size=1)
     rospy.init_node("getup_server")
+    print("Iniciando servicio")
     service = rospy.Service('getup', Getup, handle)
     rospy.spin()
 if __name__ == '__main__':

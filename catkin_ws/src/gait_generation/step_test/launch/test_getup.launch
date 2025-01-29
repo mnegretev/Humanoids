@@ -1,0 +1,7 @@
+<launch>
+    <param name="path" value="$(find step_test)/src/getup/poses/front" />
+        <node name="getup_server" pkg="step_test" type="get_up_service.py" output="screen"/>
+    <node pkg="step_test" type="test_service.py" name="getup" output="screen" required="true"> 
+    </node>
+    <include file="$(find cm730)/launch/cm730.launch"/>
+</launch>
