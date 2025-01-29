@@ -96,13 +96,13 @@ class BallFound(smach.State):
 			Cy = 240
 			ex = center_x-Cx
 			ey = center_y-Cy
-			Kpan = 0.2/320
+			Kpan = 0.15/320
 			Ktilt = 0.1/240 
 			pan = -Kpan * ex
 			tilt = Ktilt * ey
 			pan_robot  += pan
 			tilt_robot += tilt
-			if abs(ex) < 10 and abs(ey) < 10 :
+			if abs(ex) <-3 and abs(ey) < -3 :
 				print ("Ball is centered")
 			else:
 				head_cmd.data = [pan_robot, tilt_robot]
