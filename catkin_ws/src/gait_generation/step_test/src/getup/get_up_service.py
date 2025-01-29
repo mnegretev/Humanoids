@@ -22,11 +22,14 @@ def handle(req):
     try:
         read_poses(req.path)
         timestep = legs[0]["timestep"]
-        rate = rospy.Rate(int(1/(timestep*1.0)))
+        rate = rospy.Rate(int(1/(timestep*0.5)))
 
         for i in range(len(arms)):
             for right_leg, left_leg, right_arm, left_arm in zip(legs[i]["right_leg"], legs[i]["left_leg"],arms[i]["right_arm"], arms[i]["left_arm"]):     
-                
+                if i ==3:
+                    rate = rospy.Rate(int(1/(timestep*1.5)))
+                else:
+                    rate = rospy.Rate(int(1/(timestep*0.5)))       
                 right_leg_goal_pose = Float32MultiArray()
                 right_leg_goal_pose.data = right_leg
                 pub_leg_right_goal_pose.publish(right_leg_goal_pose)
