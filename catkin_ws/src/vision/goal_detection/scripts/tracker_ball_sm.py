@@ -97,17 +97,20 @@ class BallFound(smach.State):
 			ex = center_x-Cx
 			ey = center_y-Cy
 			Kpan = 0.2/320
-			Ktilt = 0.1/240
+			Ktilt = 0.1/240 
 			pan = -Kpan * ex
 			tilt = Ktilt * ey
 			pan_robot  += pan
 			tilt_robot += tilt
-			head_cmd.data = [pan_robot, tilt_robot]
-			print(f"Publishing pan_angle: {pan_robot}, tilt: {tilt_robot}")
-			self.publisher.publish(head_cmd)
-			userdata.last_pos_out = [pan_robot, tilt_robot]
-			self.rate.sleep()
-			print (self.message_received)
+			if abs(ex) < 10 and abs(ey) < 10 :
+				print ("Ball is centered")
+			else:
+				head_cmd.data = [pan_robot, tilt_robot]
+				print(f"Publishing pan_angle: {pan_robot}, tilt: {tilt_robot}")
+				self.publisher.publish(head_cmd)
+				userdata.last_pos_out = [pan_robot, tilt_robot]
+				self.rate.sleep()
+				print (self.message_received)
 			try:
 				self.centroid_msg = rospy.wait_for_message(self.subs_topic_name, Point32, timeout=5)
 			except rospy.ROSException:
