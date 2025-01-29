@@ -1,0 +1,8 @@
+<launch>
+        <node pkg="step_test" type="test_kick.py" name="test_kick_node" output="screen" required="true"> 
+            <param name="kick_right_start_pose"      value="$(find step_test)/src/kick/right/kick_right_start_pose.npz"/>
+            <param name="kick_right_raise_foot"      value="$(find step_test)/src/kick/right/kick_right_raise_foot.npz"/>
+            <param name="kick_right_do_kick"         value="$(find step_test)/src/kick/right/kick_right_do_kick.npz"/>
+            <param name="kick_right_final_stop"      value="$(find step_test)/src/kick/right/kick_right_final_stop.npz"/>
+        </node>
+</launch>
