@@ -15,7 +15,7 @@ Y_BODY_TO_FEET  = 0.068 #Mínimo valor =0.056 #Máximo valor =0.125#= 0.09
 Z_ROBOT_WALK    = 0.545
 Z_ROBOT_STATIC  = 0.575 # m
 
-Y_BODY_TO_FEET_RIGHT  = 0.068 #Mínimo valor =0.056 #Máximo valor =0.125#= 0.09
+Y_BODY_TO_FEET_RIGHT  = 0.0406 #Mínimo valor =0.056 #Máximo valor =0.125#= 0.09
 # Z_ROBOT_WALK  = 0.55 # m
 Z_ROBOT_WALK_RIGHT    = 0.545
 Z_ROBOT_STATIC_RIGHT  = 0.575 # m
