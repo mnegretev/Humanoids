@@ -97,8 +97,6 @@ class BallFound(smach.State):
             ey = center_y-Cy
             Kpan = 0.2/320
             Ktilt = 0.1/240
-            dead_zone_x = 5
-            dead_zone_y= 5
             pan = -Kpan * ex
             tilt = Ktilt * ey
             pan_robot  += pan
