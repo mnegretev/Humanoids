@@ -67,7 +67,7 @@ def callback_image (msg):
     minRadius = 5
     maxRadius = 50
     ball_detected=False
-    distance_threshold = 5 
+    distance_threshold = 5
     # docstring of HoughCircles: HoughCircles(image, method, dp, minDist[, circles[, param1[, param2[, minRadius[, maxRadius]]]]]) -> circles
     circles = cv2.HoughCircles(blur, cv2.HOUGH_GRADIENT, 1.5, minDist, param1=param1, param2=param2, minRadius=minRadius, maxRadius=maxRadius)
     if circles is not None:
