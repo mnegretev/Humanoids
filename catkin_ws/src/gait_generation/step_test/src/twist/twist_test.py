@@ -9,6 +9,7 @@ import time
 
 def main():
     rospy.init_node("step_test_node")
+    rospy.wait_for_message("/twist_state",Float32MultiArray, timeout=None)
     pub_leg_left_goal_pose = rospy.Publisher("/hardware/leg_left_goal_pose", Float32MultiArray, queue_size=1)
     pub_leg_right_goal_pose = rospy.Publisher("/hardware/leg_right_goal_pose", Float32MultiArray , queue_size=1)
     start_pose_file = rospy.get_param("~twist_start_pose")

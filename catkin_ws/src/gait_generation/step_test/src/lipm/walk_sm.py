@@ -2,7 +2,7 @@
 import rospy
 import smach
 import smach_ros
-from std_msgs.msg import Float32MultiArray, Bool
+from std_msgs.msg import Float32MultiArray, Bool, Float32
 import numpy
 
 def start():
@@ -127,6 +127,12 @@ def callback(data):
     walk_state = data.data
     print(walk_state)
 
+def callback_ball(data):
+    global steps
+    distance = data.data
+    steps=distance/0.036
+    print(step)
+
 def callback_end(data):
     global end_state
     end_state = data.data
@@ -139,6 +145,16 @@ class Initial(smach.State):
 
     def execute(self, userdata):
         rospy.loginfo('STATE MACHINE WALK ->' + self.state)
+        right_leg_goal_pose = Float32MultiArray()
+        right_leg_goal_pose.data = right
+        pub_leg_right_goal_pose.publish([0.0,0.0,0.0,0.0,0.0,0.0])
+
+        left_leg_goal_pose = Float32MultiArray()
+        left_leg_goal_pose.data = left
+        pub_leg_left_goal_pose.publish([0.0,0.0,0.0,0.0,0.0,0.0])
+        middle_rate.sleep()
+        step=rospy.wait_for_message("/ball_position", timeout=None)
+        step = (step.data)/0.036
         start()
         return 'succ'
     
@@ -161,9 +177,11 @@ class Full_step_Right(smach.State):
         self.state = "RIGHT_STEP"
 
     def execute(self, userdata):
+        global step
         rospy.loginfo('STATE MACHINE WALK -> ' + self.state)
-        if walk_state == True:
+        if walk_state == True and step >0:
             right()
+            step -=1
             return 'succ'
         else:
             return 'left'
@@ -174,9 +192,11 @@ class Full_step_Left(smach.State):
         self.state = "LEFT_STEP"
 
     def execute(self, userdata):
+        global step
         rospy.loginfo('STATE MACHINE WALK -> ' + self.state)
-        if walk_state == True:
+        if walk_state == True and step >0:
             left()
+            step -=1
             return 'succ'
         else:
             return 'right'
@@ -245,6 +265,7 @@ def main():
     fast_rate = rospy.Rate(int(1/(timstep/3)))
     rospy.Subscriber("/walk_state", Bool, callback)
     rospy.Subscriber("/end_sm", Bool, callback_end)
+    rospy.Subscriber("/ball_position", Float32, callback_ball)
 
     
 

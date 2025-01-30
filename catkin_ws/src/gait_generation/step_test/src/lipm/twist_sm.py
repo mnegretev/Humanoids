@@ -30,6 +30,17 @@ def first_step():
 
 
 def move_com():
+    for right, left in zip(twist_move_com["right"], twist_move_com["left"]):
+        right_leg_goal_pose = Float32MultiArray()
+        right_leg_goal_pose.data = right
+        pub_leg_right_goal_pose.publish(right_leg_goal_pose)
+
+        left_leg_goal_pose = Float32MultiArray()
+        left_leg_goal_pose.data = left
+        pub_leg_left_goal_pose.publish(left_leg_goal_pose)
+        second_rate.sleep()
+
+def repeat():
     for right, left in zip(twist_move_com_left["right"], twist_move_com_left["left"]):
         right_leg_goal_pose = Float32MultiArray()
         right_leg_goal_pose.data = right
@@ -39,6 +50,7 @@ def move_com():
         left_leg_goal_pose.data = left
         pub_leg_left_goal_pose.publish(left_leg_goal_pose)
         second_rate.sleep()
+
 
 def tirth_step():
     for right, left in zip(twist_right_third_step["right"], twist_right_third_step["left"]):
@@ -72,7 +84,27 @@ class Initial(smach.State):
         rospy.loginfo('STATE MACHINE TWIST ->' + self.state)
         start()
         return 'succ'
+
+class Initial(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succ', 'fail'])
+        self.state = "INIT"
+
+    def execute(self, userdata):
+        rospy.loginfo('STATE MACHINE TWIST ->' + self.state)
+        start()
+        return 'succ'
     
+class Initial(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succ', 'fail'])
+        self.state = "INIT"
+
+    def execute(self, userdata):
+        rospy.loginfo('STATE MACHINE TWIST ->' + self.state)
+        start()
+        return 'succ'
+
 
 
 def main():
@@ -90,6 +122,10 @@ def main():
     timstep = left_first_step["timestep"]
     first_rate = rospy.Rate(int(1/(timstep)*3))
 
+    twist_move_com_file = rospy.get_param("~twist_move_com")
+    twist_move_com = np.load(twist_move_com_file)
+    timstep = twist_move_com["timestep"]
+    second_rate = rospy.Rate(int(1/(timstep))*3)
 
     twist_move_com_left_file = rospy.get_param("~twist_move_com_left")
     twist_move_com_left = np.load(twist_move_com_left_file)
