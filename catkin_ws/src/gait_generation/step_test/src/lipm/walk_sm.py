@@ -153,7 +153,7 @@ class Initial(smach.State):
         left_leg_goal_pose.data = [0.0,0.0,0.0,0.0,0.0,0.0]
         pub_leg_left_goal_pose.publish(left_leg_goal_pose)
         middle_rate.sleep()
-        step=rospy.wait_for_message("/ball_position", timeout=None)
+        step=rospy.wait_for_message("/ball_position", Float32, timeout=10)
         step = (step.data)/0.036
         start()
         return 'succ'
