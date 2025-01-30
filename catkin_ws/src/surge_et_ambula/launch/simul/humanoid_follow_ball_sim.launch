@@ -3,7 +3,7 @@
     <param name="robot_description_semantic" textfile="$(find nimbro_op_srdf)/config/nimbro_op_hull.srdf" />
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
 
-    <include file="$(find surge_et_ambula)/launch/humanoid_simul.launch"/>
+    <include file="$(find surge_et_ambula)/launch/simul/humanoid_simul.launch"/>
 
     <!-- STATE MACHINES -->
     <include file="$(find goal_detection)/launch/test_goal_detection.launch"/>
