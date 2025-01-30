@@ -1,0 +1,10 @@
+<launch>
+    <node name = "camera_video_publisher" pkg = "camera" type = "camera_video_publisher.py" output="screen"/> 
+    <!-- <include file="$(find surge_et_ambula)/launch/humanoid_simul.launch"/> -->
+    <node name="test_node_goal_detection" pkg="goal_detection" type="ball_detection_node.py" output="screen"/>
+    <node name="test_node_head_position" pkg="goal_detection" type="tracker_pid_node.py" output="screen" required="true"/>
+    <rosparam command="load" file="$(find goal_detection)/config/vision_config_hardware.yaml" />
+    <node name="video_display_recorder" pkg="camera" type="record_video_robocup.py">
+        <param name="record_video"  value="false"/>
+    </node>
+</launch>

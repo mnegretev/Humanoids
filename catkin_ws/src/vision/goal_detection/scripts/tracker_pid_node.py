@@ -23,8 +23,8 @@ class PIDController :
 		
 		return self.Kp * error +self.Ki *self.integral + self.Kd * derivative
 	
-pid_pan = PIDController (Kp = 0.05/320, Ki = 0.00005/320, Kd = 0.02/320)
-pid_tilt = PIDController (Kp = 0.025/240, Ki = 0.000025/240, Kd = 0.01/240)
+pid_pan = PIDController (Kp = 0.02/320, Ki = 0.00005/320, Kd = 0.02/320)
+pid_tilt = PIDController (Kp = 0.01/240, Ki = 0.000025/240, Kd = 0.01/240)
 last_time = time.time()
 
 def head_k_generator(centroid_msg):
