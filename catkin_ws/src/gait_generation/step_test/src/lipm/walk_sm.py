@@ -158,6 +158,7 @@ class Initial(smach.State):
         walk_state=True
         end_state=True
         step = (step.data)/0.036
+        print(f"Steps calculated: {step}")
         start()
         return 'succ'
     

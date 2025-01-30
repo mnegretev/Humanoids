@@ -98,8 +98,6 @@ def callback_image (msg):
                 # Publish the center coordinates as a Point32 message
                 centroid_msg.x = center[0]
                 centroid_msg.y = center[1]
-                print("previous center: ",prev_center)
-                print("center: ",center)
                 centroid_pub.publish(centroid_msg)
             if distance > distance_threshold:
                 ball_detected=False

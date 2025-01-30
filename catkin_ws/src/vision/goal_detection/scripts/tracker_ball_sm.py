@@ -21,10 +21,11 @@ class StartingSearch(smach.State):
 		self.subscriber = rospy.Subscriber(self.subs_topic_name, Point32, self.callback)
 		self.publisher = rospy.Publisher(self.pub_topic_name, Float32MultiArray, queue_size=1)
 		self.tries = 0
+
 	def callback (self, centroid_msg): 
 		self.centroid_msg = centroid_msg
 		self.message_received = True
-		print (self.message_received)
+
 	def execute(self, userdata):
 		self.tries += 1
 		start_pose1_file = rospy.get_param("~head_point1")
@@ -44,12 +45,10 @@ class StartingSearch(smach.State):
 			interp_pan = np.linspace(last_pos_out[0], first_head_pose[0], steps)
 			interp_tilt = np.linspace(last_pos_out[1], first_head_pose[1], steps)
 			for pan, tilt in zip(interp_pan, interp_tilt):
-				print ('in for')
 				cmd_head.data = [pan, tilt]
 				self.publisher.publish(cmd_head)
 				self.rate.sleep()
 			self.message_received = False
-			print ('out for')
 		while not rospy.is_shutdown():
 			timestep = start_pose1["timestep"]
 			rate = rospy.Rate(int(0.2 / timestep))
@@ -63,7 +62,6 @@ class StartingSearch(smach.State):
 					userdata.last_pos = cmd_head.data
 					self.publisher.publish(cmd_head)
 					rate.sleep()
-				print (self.message_received)
 		return 'timeout'
 
 class BallFound(smach.State):
@@ -114,7 +112,6 @@ class BallFound(smach.State):
 			self.publisher.publish(head_cmd)
 			userdata.last_pos_out = [pan_robot, tilt_robot]
 			self.rate.sleep()
-			print (self.message_received)
 			try:
 				self.centroid_msg = rospy.wait_for_message(self.subs_topic_name, Point32, timeout=5)
 			except rospy.ROSException:
