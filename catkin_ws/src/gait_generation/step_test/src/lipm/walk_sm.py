@@ -144,7 +144,7 @@ class Initial(smach.State):
         self.state = "INIT"
 
     def execute(self, userdata):
-        global step
+        global step, walk_state, end_state
         rospy.loginfo('STATE MACHINE WALK ->' + self.state)
         right_leg_goal_pose = Float32MultiArray()
         right_leg_goal_pose.data = [0.0,0.0,0.0,0.0,0.0,0.0]
@@ -154,7 +154,9 @@ class Initial(smach.State):
         left_leg_goal_pose.data = [0.0,0.0,0.0,0.0,0.0,0.0]
         pub_leg_left_goal_pose.publish(left_leg_goal_pose)
         middle_rate.sleep()
-        step=rospy.wait_for_message("/ball_position", Float32, timeout=10)
+        step=rospy.wait_for_message("/ball_position", Float32, timeout=None)
+        walk_state=True
+        end_state=True
         step = (step.data)/0.036
         start()
         return 'succ'
