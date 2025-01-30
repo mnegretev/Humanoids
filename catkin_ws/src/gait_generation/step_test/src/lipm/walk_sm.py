@@ -8,8 +8,6 @@ import numpy
 def start():
     # Inicio del ciclo para adquirir la pose inicial
     for right, left in zip(start_pose["right"], start_pose["left"]):
-        print(right)
-        print(left)
         right_leg_goal_pose = Float32MultiArray()
         right_leg_goal_pose.data = right
         pub_leg_right_goal_pose.publish(right_leg_goal_pose)
@@ -24,8 +22,6 @@ def start():
 def end():
     # Inicio del ciclo para adquirir la pose inicial
     for right, left in zip(end_pose["right"], end_pose["left"]):
-        print(right)
-        print(left)
         right_leg_goal_pose = Float32MultiArray()
         right_leg_goal_pose.data = right
         pub_leg_right_goal_pose.publish(right_leg_goal_pose)
@@ -44,8 +40,6 @@ def init_pose():
     first_half_step_file = rospy.get_param("~left_first_halfstep")
     first_half_step = numpy .load(first_half_step_file)
     for right, left in zip(first_half_step["right"], first_half_step["left"]):
-        print(right)
-        print(left)
         right_leg_goal_pose = Float32MultiArray()
         right_leg_goal_pose.data = right
         pub_leg_right_goal_pose.publish(right_leg_goal_pose)
@@ -60,8 +54,6 @@ def end_step_right():
         right_full_step_file = rospy.get_param("~right_end_step")
         second_step = numpy .load(right_full_step_file)
         for right, left in zip(second_step["right"], second_step["left"]):
-            print(right)
-            print(left)
             right_leg_goal_pose = Float32MultiArray()
             right_leg_goal_pose.data = right
             pub_leg_right_goal_pose.publish(right_leg_goal_pose)
@@ -76,8 +68,6 @@ def end_step_left():
         left_full_step_file = rospy.get_param("~left_end_step")
         third_step = numpy .load(left_full_step_file)
         for right, left in zip(third_step["right"], third_step["left"]):
-            print(right)
-            print(left)
             right_leg_goal_pose = Float32MultiArray()
             right_leg_goal_pose.data = right
             pub_leg_right_goal_pose.publish(right_leg_goal_pose)
@@ -94,8 +84,6 @@ def right():
         right_full_step_file = rospy.get_param("~right_full_step")
         second_step = numpy .load(right_full_step_file)
         for right, left in zip(second_step["right"], second_step["left"]):
-            print(right)
-            print(left)
             right_leg_goal_pose = Float32MultiArray()
             right_leg_goal_pose.data = right
             pub_leg_right_goal_pose.publish(right_leg_goal_pose)
@@ -110,8 +98,6 @@ def left():
         left_full_step_file = rospy.get_param("~left_full_step")
         third_step = numpy .load(left_full_step_file)
         for right, left in zip(third_step["right"], third_step["left"]):
-            print(right)
-            print(left)
             right_leg_goal_pose = Float32MultiArray()
             right_leg_goal_pose.data = right
             pub_leg_right_goal_pose.publish(right_leg_goal_pose)
@@ -130,8 +116,8 @@ def callback(data):
 def callback_ball(data):
     global steps
     distance = data.data
-    steps=distance/0.036
-    print(step)
+    steps=int(distance/0.036)
+    print(f"Steps needed to reach ball: {steps}")
 
 def callback_end(data):
     global end_state
@@ -157,8 +143,8 @@ class Initial(smach.State):
         step=rospy.wait_for_message("/ball_position", Float32, timeout=None)
         walk_state=True
         end_state=True
-        step = (step.data)/0.036
-        print(f"Steps calculated: {step}")
+        step = int((step.data)/0.036)
+        print(f"Steps needed to reach ball: {step}")
         start()
         return 'succ'
     
