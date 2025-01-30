@@ -178,13 +178,14 @@ class Full_step_Right(smach.State):
         self.state = "RIGHT_STEP"
 
     def execute(self, userdata):
-        global step
+        global step, walk_state
         rospy.loginfo('STATE MACHINE WALK -> ' + self.state)
         if walk_state == True and step >0:
             right()
             step -=1
             return 'succ'
         else:
+            walk_state=False
             return 'left'
     
 class Full_step_Left(smach.State):
@@ -193,13 +194,14 @@ class Full_step_Left(smach.State):
         self.state = "LEFT_STEP"
 
     def execute(self, userdata):
-        global step
+        global step, walk_state
         rospy.loginfo('STATE MACHINE WALK -> ' + self.state)
         if walk_state == True and step >0:
             left()
             step -=1
             return 'succ'
         else:
+            walk_state=False
             return 'right'
 
 class Half_step_Right(smach.State):
