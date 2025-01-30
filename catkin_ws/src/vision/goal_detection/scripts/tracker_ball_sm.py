@@ -3,7 +3,7 @@ import math
 import rospy
 import smach
 import smach_ros
-from std_msgs.msg import Float32MultiArray, Bool
+from std_msgs.msg import Float32MultiArray, Bool, Float32
 from geometry_msgs.msg import Point32
 import numpy as np
 import time
@@ -78,6 +78,7 @@ class BallFound(smach.State):
 		self.subscriber = rospy.Subscriber(self.subs_topic_name, Point32, self.callback)
 		self.tries = 0
 		self.publisher = rospy.Publisher(self.pub_topic_name, Float32MultiArray, queue_size=1)
+		self.ball_pos_pub = rospy.Publisher("/ball_position", Float32, queue_size=1)
 	def callback (self, centroid_msg): 
 		self.centroid_msg = centroid_msg
 		self.message_received = True
@@ -106,6 +107,9 @@ class BallFound(smach.State):
 			head_cmd.data = [pan_robot, tilt_robot]
 			print(f"Publishing pan_angle: {pan_robot}, tilt: {tilt_robot}")
 			distance = 0.85/math.tan(tilt_robot)
+			msg = Float32()
+			msg.data = distance
+			self.ball_pos_pub.publish(msg)
 			print(f'Ball distance is: {distance:.2f} meters.')
 			self.publisher.publish(head_cmd)
 			userdata.last_pos_out = [pan_robot, tilt_robot]

@@ -23,8 +23,10 @@ def callback_image (msg):
     centroid_msg = Point32()  # Create a Point32 message object
     bridge = CvBridge()     
     #For simul: desired_encoding='bgr8', for real: desired_encoding='rgb8'
-    cv_image = bridge.imgmsg_to_cv2(msg, desired_encoding='rgb8')#source file
-
+    if rospy.get_param("rgb8"):
+        cv_image = bridge.imgmsg_to_cv2(msg, desired_encoding='rgb8')#source file
+    else:
+        cv_image = bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
     #Para espacio HSV
     #REAL                   SIMUL
     # h_min = 25          h_min = 0    
@@ -33,32 +35,33 @@ def callback_image (msg):
     # s_max = 160         s_max = 255
     # v_min = 70          v_min = 0
     # v_max = 255         v_max = 255
-    hsv_image= cv2.cvtColor(cv_image, cv2.COLOR_BGR2HSV)
+    if rospy.get_param("use_hsv"):
+        hsv_image= cv2.cvtColor(cv_image, cv2.COLOR_BGR2HSV)
     
-    h_min = 25  
-    h_max = 44
-    s_min = 65
-    s_max = 160
-    v_min = 70
-    v_max = 255
+        h_min = rospy.get_param("hsv_h_min")
+        h_max = rospy.get_param("hsv_h_max")
+        s_min = rospy.get_param("hsv_s_min")
+        s_max = rospy.get_param("hsv_s_max")
+        v_min = rospy.get_param("hsv_v_min")
+        v_max = rospy.get_param("hsv_v_max")
 
-    lower = np.array([h_min, s_min, v_min])
-    upper = np.array([h_max, s_max, v_max])
-    mask = cv2.inRange(hsv_image, lower, upper)
-    masked_image = cv2.bitwise_and(cv_image, cv_image, mask=mask)
-   
+        lower = np.array([h_min, s_min, v_min])
+        upper = np.array([h_max, s_max, v_max])
+        mask = cv2.inRange(hsv_image, lower, upper)
+        masked_image = cv2.bitwise_and(cv_image, cv_image, mask=mask)
+    else:
     #Para HLS
-    # hls_image= cv2.cvtColor(cv_image, cv2.COLOR_BGR2HLS)    
-    # h_min = 0
-    # h_max = 82
-    # l_min = 108
-    # l_max = 232
-    # s_min = 13
-    # s_max = 63 
-    # lower = np.array([h_min, l_min, s_min])
-    # upper = np.array([h_max, l_max, s_max])
-    # mask = cv2.inRange(hls_image, lower, upper)
-    # masked_image = cv2.bitwise_and(cv_image, cv_image, mask=mask)
+        hls_image= cv2.cvtColor(cv_image, cv2.COLOR_BGR2HLS)    
+        h_min = rospy.get_param("hls_h_min")
+        h_max = rospy.get_param("hls_h_max")
+        l_min = rospy.get_param("hls_l_min")
+        l_max = rospy.get_param("hls_l_max")
+        s_min = rospy.get_param("hls_s_min")
+        s_max = rospy.get_param("hls_s_max") 
+        lower = np.array([h_min, l_min, s_min])
+        upper = np.array([h_max, l_max, s_max])
+        mask = cv2.inRange(hls_image, lower, upper)
+        masked_image = cv2.bitwise_and(cv_image, cv_image, mask=mask)
     gray = cv2.cvtColor(masked_image, cv2.COLOR_BGR2GRAY)
     blur=cv2.GaussianBlur(gray,(7,7),0)
     minDist =500
