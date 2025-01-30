@@ -2,7 +2,7 @@
     <include file="$(find surge_et_ambula)/launch/simul/humanoid_simul.launch"/>
 
     <!-- STATE MACHINES -->
-    <include file="$(find goal_detection)/launch/test_goal_detection.launch"/>
+    <include file="$(find goal_detection)/launch/test_goal_detection_sim.launch"/>
     <include file="$(find step_test)/launch/smwalk.launch"/>
 
 </launch>
