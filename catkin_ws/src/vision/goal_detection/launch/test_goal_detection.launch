@@ -9,7 +9,4 @@
         <param name="head_point4"  value="$(find goal_detection)/scripts/head_point4.npz"/>
     </node>
     <rosparam command="load" file="$(find goal_detection)/config/vision_config_hardware.yaml" />
-    <node name="video_display_recorder" pkg="camera" type="record_video_robocup.py">
-        <param name="record_video"  value="false"/>
-    </node>
 </launch>

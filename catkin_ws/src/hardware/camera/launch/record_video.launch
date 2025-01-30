@@ -1,0 +1,3 @@
+    <node name="video_display_recorder" pkg="camera" type="record_video_robocup.py">
+        <param name="record_video"  value="false"/>
+    </node>
