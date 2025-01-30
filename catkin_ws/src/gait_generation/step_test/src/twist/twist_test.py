@@ -70,7 +70,7 @@ def main():
     twist_right_final_stop_file = rospy.get_param("~twist_right_final_stop")
     twist_right_final_stop = np.load(twist_right_final_stop_file)
     timstep = twist_right_final_stop["timestep"]
-    rate = rospy.Rate(int(1/(timstep))*3)
+    rate = rospy.Rate(int(1/(timstep)))
     for right, left in zip(twist_right_final_stop["right"], twist_right_final_stop["left"]):
         right_leg_goal_pose = Float32MultiArray()
         right_leg_goal_pose.data = right

@@ -19,8 +19,8 @@ def head_k_generator(centroid_msg):
 	Cy = 240
 	ex = center_x-Cx
 	ey = center_y-Cy
-	Kpan = 0.2/Cx
-	Ktilt = 0.1/Cy
+	Kpan = 0.02/Cx
+	Ktilt = 0.01/Cy
 
 	pan = -Kpan * ex
 	tilt = Ktilt * ey

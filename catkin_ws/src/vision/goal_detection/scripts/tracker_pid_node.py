@@ -23,8 +23,8 @@ class PIDController :
 		
 		return self.Kp * error +self.Ki *self.integral + self.Kd * derivative
 	
-pid_pan = PIDController (Kp = 0.2/320, Ki = 0.000005, Kd = 0.00)
-pid_tilt = PIDController (Kp = 0.1/240, Ki = 0.0000025, Kd = 0.0005)
+pid_pan = PIDController (Kp = 0.05/320, Ki = 0.00005/320, Kd = 0.02/320)
+pid_tilt = PIDController (Kp = 0.025/240, Ki = 0.000025/240, Kd = 0.01/240)
 last_time = time.time()
 
 def head_k_generator(centroid_msg):
@@ -58,7 +58,7 @@ def main ():
     rospy.init_node("tracker_pid_node", anonymous=True)
 
     global pub_head_goal,rate, head_move_pub, searching
-    pub_head_goal = rospy.Publisher("/head_goal_pose", Float32MultiArray, queue_size=1)      
+    pub_head_goal = rospy.Publisher("/hardware/head_goal_pose", Float32MultiArray, queue_size=1)      
     rospy.Subscriber("/centroid_publisher", Point32, head_k_generator)  
     rospy.spin()
 

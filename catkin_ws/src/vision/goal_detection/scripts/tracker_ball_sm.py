@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import math
 import rospy
 import smach
 import smach_ros
@@ -96,21 +97,20 @@ class BallFound(smach.State):
 			Cy = 240
 			ex = center_x-Cx
 			ey = center_y-Cy
-			Kpan = 0.15/320
-			Ktilt = 0.1/240 
+			Kpan = 0.05/320
+			Ktilt = 0.025/240
 			pan = -Kpan * ex
 			tilt = Ktilt * ey
 			pan_robot  += pan
 			tilt_robot += tilt
-			if abs(ex) <-3 and abs(ey) < -3 :
-				print ("Ball is centered")
-			else:
-				head_cmd.data = [pan_robot, tilt_robot]
-				print(f"Publishing pan_angle: {pan_robot}, tilt: {tilt_robot}")
-				self.publisher.publish(head_cmd)
-				userdata.last_pos_out = [pan_robot, tilt_robot]
-				self.rate.sleep()
-				print (self.message_received)
+			head_cmd.data = [pan_robot, tilt_robot]
+			print(f"Publishing pan_angle: {pan_robot}, tilt: {tilt_robot}")
+			distance = 0.85/math.tan(tilt_robot)
+			print(f'Ball distance is: {distance:.2f} meters.')
+			self.publisher.publish(head_cmd)
+			userdata.last_pos_out = [pan_robot, tilt_robot]
+			self.rate.sleep()
+			print (self.message_received)
 			try:
 				self.centroid_msg = rospy.wait_for_message(self.subs_topic_name, Point32, timeout=5)
 			except rospy.ROSException:
@@ -127,11 +127,11 @@ def main():
 	sm = smach.StateMachine(outcomes=['Exit'])
 
 	with sm:
-		smach.StateMachine.add('STARTING_SEARCH_TRAJ',StartingSearch('/centroid_publisher', '/head_goal_pose'),
+		smach.StateMachine.add('STARTING_SEARCH_TRAJ',StartingSearch('/centroid_publisher', '/hardware/head_goal_pose'),
 					transitions = {'interrupted': 'TRACKER_BALL',
 							'timeout': 'STARTING_SEARCH_TRAJ'})
 
-		smach.StateMachine.add('TRACKER_BALL',BallFound('/centroid_publisher', '/head_goal_pose'),
+		smach.StateMachine.add('TRACKER_BALL',BallFound('/centroid_publisher', '/hardware/head_goal_pose'),
 					transitions = {'succ': 'TRACKER_BALL',
 							'failed': 'STARTING_SEARCH_TRAJ'})
 	outcome = sm.execute ()
