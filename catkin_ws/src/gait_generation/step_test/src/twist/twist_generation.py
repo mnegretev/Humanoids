@@ -15,14 +15,14 @@ Y_BODY_TO_FEET  = 0.068 #Mínimo valor =0.056 #Máximo valor =0.125#= 0.09
 Z_ROBOT_WALK    = 0.545
 Z_ROBOT_STATIC  = 0.575 # m
 
-Y_BODY_TO_FEET_RIGHT  = 0.0406 #Mínimo valor =0.056 #Máximo valor =0.125#= 0.09
+Y_BODY_TO_FEET_RIGHT  = 0.068 #Mínimo valor =0.056 #Máximo valor =0.125#= 0.09
 # Z_ROBOT_WALK  = 0.55 # m
 Z_ROBOT_WALK_RIGHT    = 0.545
 Z_ROBOT_STATIC_RIGHT  = 0.575 # m
 
-X_OFFSET = 0.020
+X_OFFSET = 0.01
 
-stepHeight = 0.08
+stepHeight = 0.09
 
 # Tiempo de muestreo maximo para escribir a los servomotores
 SERVO_SAMPLE_TIME = 0.025 # [s]
@@ -371,7 +371,8 @@ def getFootSwingTraj(initial_foot_position, final_foot_position, swing_height, t
 
 def main(args = None):
     rospy.init_node('step_test_node')
-    
+    rospy.wait_for_service('/manipulation/ik_leg_right_pose', timeout=None)
+    rospy.wait_for_service('/manipulation/ik_leg_left_pose', timeout=None)
     trajectory_dir_left = rospy.get_param("~trajectory_dir_left")
     trajectory_dir_right = rospy.get_param("~trajectory_dir_right")
 
