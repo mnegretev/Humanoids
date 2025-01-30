@@ -4,6 +4,7 @@ import smach
 import smach_ros
 from std_msgs.msg import Float32MultiArray, Bool, Float32
 import numpy
+import time
 
 def start():
     # Inicio del ciclo para adquirir la pose inicial
@@ -16,8 +17,7 @@ def start():
         left_leg_goal_pose.data = left
         pub_leg_left_goal_pose.publish(left_leg_goal_pose)
         rate.sleep()
-    
-    #time.sleep(2)
+    time.sleep(2)
 
 def end():
     # Inicio del ciclo para adquirir la pose inicial
@@ -139,6 +139,7 @@ class Initial(smach.State):
         left_leg_goal_pose = Float32MultiArray()
         left_leg_goal_pose.data = [0.0,0.0,0.0,0.0,0.0,0.0]
         pub_leg_left_goal_pose.publish(left_leg_goal_pose)
+        time.sleep(3)
         middle_rate.sleep()
         step=rospy.wait_for_message("/ball_position", Float32, timeout=None)
         walk_state=True
