@@ -143,7 +143,7 @@ class Initial(smach.State):
         middle_rate.sleep()
 
         arms_msgs = Float32MultiArray()
-        arms_msgs.data = [0.0,0.7,0.0,0.0,0.7,0.0]
+        arms_msgs.data = [0.0,0.7,0.0,0.0,-0.7,0.0]
         arms_goal_pose.publish(arms_msgs)
         middle_rate.sleep()
         
@@ -167,7 +167,7 @@ class Crouch(smach.State):
         if walk_state == True:
             init_pose()
             arms_msgs = Float32MultiArray()
-            arms_msgs.data = [-0.3,0.7,0.0,-0.3,0.7,0.0]
+            arms_msgs.data = [-0.3,0.7,0.0,-0.3,-0.7,0.0]
             arms_goal_pose.publish(arms_msgs)
             middle_rate.sleep()
             return 'succ'
