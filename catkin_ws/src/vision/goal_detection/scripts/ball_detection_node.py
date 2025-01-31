@@ -91,7 +91,7 @@ def callback_image (msg):
             #print("*********",prev_center)
             
             distance = calculate_distance(prev_center, center)        
-            print("Distance = ",distance)
+            #print("Distance = ",distance)
             if distance < distance_threshold:
                 ball_detected=True
                 #print("Ball detected.")

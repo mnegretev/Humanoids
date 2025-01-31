@@ -132,7 +132,7 @@ class Initial(smach.State):
     def execute(self, userdata):
         global step, walk_state, end_state
         time.sleep(5)
-        rospy.loginfo('EXECUTE ZERO POSE FIRST ->' + self.state)
+        #rospy.loginfo('EXECUTE ZERO POSE FIRST ->' + self.state)
         right_leg_goal_pose = Float32MultiArray()
         right_leg_goal_pose.data = [0.0,0.0,0.0,0.0,0.0,0.0]
         pub_leg_right_goal_pose.publish(right_leg_goal_pose)
@@ -163,7 +163,7 @@ class Crouch(smach.State):
         self.state = "CROUCH"
 
     def execute(self, userdata):
-        rospy.loginfo('STATE MACHINE WALK -> ' + self.state)
+        #rospy.loginfo('STATE MACHINE WALK -> ' + self.state)
         if walk_state == True:
             init_pose()
             arms_msgs = Float32MultiArray()
@@ -181,9 +181,10 @@ class Full_step_Right(smach.State):
 
     def execute(self, userdata):
         global step, walk_state
-        rospy.loginfo('STATE MACHINE WALK -> ' + self.state)
+        #rospy.loginfo('STATE MACHINE WALK -> ' + self.state)
         if walk_state == True and step >0:
             right()
+            print(step)
             step -=1
             return 'succ'
         else:
@@ -197,9 +198,10 @@ class Full_step_Left(smach.State):
 
     def execute(self, userdata):
         global step, walk_state
-        rospy.loginfo('STATE MACHINE WALK -> ' + self.state)
+        #rospy.loginfo('STATE MACHINE WALK -> ' + self.state)
         if walk_state == True and step >0:
             left()
+            print(step)
             step -=1
             return 'succ'
         else:
@@ -212,7 +214,7 @@ class Half_step_Right(smach.State):
         self.state = "RIGHT_END_STEP"
 
     def execute(self, userdata):
-        rospy.loginfo('STATE MACHINE WALK -> ' + self.state)
+        #rospy.loginfo('STATE MACHINE WALK -> ' + self.state)
         end_step_right()
         if end_state:
             return 'end'
@@ -225,7 +227,7 @@ class Half_step_Left(smach.State):
         self.state = "LEFT_END_STEP"
 
     def execute(self, userdata):
-        rospy.loginfo('STATE MACHINE WALK -> ' + self.state)
+        #rospy.loginfo('STATE MACHINE WALK -> ' + self.state)
         end_step_left()
         if end_state:
             return 'end'
@@ -239,7 +241,7 @@ class get_up(smach.State):
 
     def execute(self, userdata):
         global end_state
-        rospy.loginfo('STATE MACHINE WALK -> ' + self.state)
+        #rospy.loginfo('STATE MACHINE WALK -> ' + self.state)
         if end_state:
             end()
             end_state=False
