@@ -131,7 +131,7 @@ class Initial(smach.State):
 
     def execute(self, userdata):
         global step, walk_state, end_state
-        time.sleep(5)
+        time.sleep(10)
         rospy.loginfo('EXECUTE ZERO POSE FIRST ->' + self.state)
         right_leg_goal_pose = Float32MultiArray()
         right_leg_goal_pose.data = [0.0,0.0,0.0,0.0,0.0,0.0]
