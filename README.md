@@ -1,6 +1,8 @@
 # Software for the Pumas Humanoid Robot
 
-This repository contains the software developed for the humanoid robot of the Biorrobotics Lab. 
+This repository contains the software developed for the humanoid robot of the Biorrobotics Lab.
+
+### Our Video Qualification for Robocup 2025 is out now!!! :rocket:
 [![YouTube](http://i.ytimg.com/vi/X2F5HTAJ2lE/hqdefault.jpg)](https://www.youtube.com/watch?v=X2F5HTAJ2lE)
 ## Getting Started
 
