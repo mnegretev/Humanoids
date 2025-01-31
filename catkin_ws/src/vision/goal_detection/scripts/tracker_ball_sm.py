@@ -51,7 +51,7 @@ class StartingSearch(smach.State):
 			self.message_received = False
 		while not rospy.is_shutdown():
 			timestep = start_pose1["timestep"]
-			rate = rospy.Rate(int(0.2 / timestep))
+			rate = rospy.Rate(int(0.1 / timestep))
 			for start_pose in start_poses :
 				for head in start_pose["head"]:
 					if self.message_received:  # Check message_received
