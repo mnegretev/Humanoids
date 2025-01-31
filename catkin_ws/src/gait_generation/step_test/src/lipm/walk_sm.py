@@ -116,7 +116,7 @@ def callback(data):
 def callback_ball(data):
     global steps
     distance = data.data
-    steps=int(distance/0.036)
+    steps=int(distance/0.05)
     print(f"Steps needed to reach ball: {steps}")
 
 def callback_end(data):
@@ -143,7 +143,7 @@ class Initial(smach.State):
         middle_rate.sleep()
 
         arms_msgs = Float32MultiArray()
-        arms_msgs.data = [0.0,0.7,0.0,0.0,-0.7,0.0]
+        arms_msgs.data = [0.0,0.5,0.0,0.0,-0.5,0.0]
         arms_goal_pose.publish(arms_msgs)
         middle_rate.sleep()
         
@@ -152,7 +152,7 @@ class Initial(smach.State):
         step=rospy.wait_for_message("/ball_position", Float32, timeout=None)
         walk_state=True
         end_state=True
-        step = int((step.data)/0.036)
+        step = int((step.data)/0.05)
         print(f"Steps needed to reach ball: {step}")
         start()
         return 'succ'
@@ -167,7 +167,7 @@ class Crouch(smach.State):
         if walk_state == True:
             init_pose()
             arms_msgs = Float32MultiArray()
-            arms_msgs.data = [-0.3,0.7,0.0,-0.3,-0.7,0.0]
+            arms_msgs.data = [-0.3,0.5,0.0,-0.3,-0.5,0.0]
             arms_goal_pose.publish(arms_msgs)
             middle_rate.sleep()
             return 'succ'
