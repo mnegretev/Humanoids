@@ -21,46 +21,47 @@ class StartingSearch(smach.State):
 		self.subscriber = rospy.Subscriber(self.subs_topic_name, Point32, self.callback)
 		self.publisher = rospy.Publisher(self.pub_topic_name, Float32MultiArray, queue_size=1)
 		self.tries = 0
-		self.search_positions = [
-			[-1.32, 0.64],
-			[-0.12, 0.64],
-			[0.76, 0.64],
-			[0.73, 0.98],
-			[0.036, 0.98],
-			[-0.89, 0.98]
-		]
+
 	def callback (self, centroid_msg): 
 		self.centroid_msg = centroid_msg
 		self.message_received = True
 
 	def execute(self, userdata):
 		self.tries += 1
+		start_pose1_file = rospy.get_param("~head_point1")
+		start_pose2_file = rospy.get_param("~head_point2")
+		start_pose3_file = rospy.get_param("~head_point3")
+		start_pose4_file = rospy.get_param("~head_point4")
+		start_pose1 = np.load(start_pose1_file)
+		start_pose2 = np.load(start_pose2_file)
+		start_pose3 = np.load(start_pose3_file)
+		start_pose4 = np.load(start_pose4_file)
+		start_poses = [start_pose1, start_pose2, start_pose3, start_pose4]
 		cmd_head = Float32MultiArray()
-
 		if self.tries > 1 :
-			first_head_pose = self.search_positions["head"][0]
+			first_head_pose = start_pose1["head"][0]
 			last_pos_out = userdata.last_pos_out
 			steps = 20
 			interp_pan = np.linspace(last_pos_out[0], first_head_pose[0], steps)
 			interp_tilt = np.linspace(last_pos_out[1], first_head_pose[1], steps)
-			
 			for pan, tilt in zip(interp_pan, interp_tilt):
 				cmd_head.data = [pan, tilt]
 				self.publisher.publish(cmd_head)
 				self.rate.sleep()
 			self.message_received = False
 		while not rospy.is_shutdown():
-			timestep = 0.025
-			rate = rospy.Rate(int(0.1 / timestep))
-			for head in self.search_positions:
-				if self.message_received:  # Check message_received
-					self.message_received = False
-					rospy.loginfo("Centroid detected, changing state...")
-					return 'interrupted'
-				cmd_head.data = head
-				userdata.last_pos = cmd_head.data
-				self.publisher.publish(cmd_head)
-				rospy.sleep(1)
+			timestep = start_pose1["timestep"]
+			rate = rospy.Rate(int(0.3 / timestep))
+			for start_pose in start_poses :
+				for head in start_pose["head"]:
+					if self.message_received:  # Check message_received
+						self.message_received = False
+						rospy.loginfo("Centroid detected, changing state...")
+						return 'interrupted'
+					cmd_head.data = head
+					userdata.last_pos = cmd_head.data
+					self.publisher.publish(cmd_head)
+					rate.sleep()
 		return 'timeout'
 
 class BallFound(smach.State):
