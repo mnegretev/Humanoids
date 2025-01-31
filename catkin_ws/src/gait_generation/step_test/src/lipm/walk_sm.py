@@ -113,11 +113,7 @@ def callback(data):
     walk_state = data.data
     print(walk_state)
 
-def callback_ball(data):
-    global steps
-    distance = data.data
-    steps=int(distance/0.05)
-    print(f"Steps needed to reach ball: {steps}")
+
 
 def callback_end(data):
     global end_state
@@ -273,7 +269,7 @@ def main():
     fast_rate = rospy.Rate(int(1/(timstep/3)))
     rospy.Subscriber("/walk_state", Bool, callback)
     rospy.Subscriber("/end_sm", Bool, callback_end)
-    rospy.Subscriber("/ball_position", Float32, callback_ball)
+    #rospy.Subscriber("/ball_position", Float32, callback_ball)
 
     
 
