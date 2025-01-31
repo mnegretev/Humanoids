@@ -131,7 +131,7 @@ class Initial(smach.State):
 
     def execute(self, userdata):
         global step, walk_state, end_state
-        time.sleep(10)
+        time.sleep(5)
         rospy.loginfo('EXECUTE ZERO POSE FIRST ->' + self.state)
         right_leg_goal_pose = Float32MultiArray()
         right_leg_goal_pose.data = [0.0,0.0,0.0,0.0,0.0,0.0]
@@ -142,6 +142,11 @@ class Initial(smach.State):
         pub_leg_left_goal_pose.publish(left_leg_goal_pose)
         middle_rate.sleep()
 
+        arms_msgs = Float32MultiArray()
+        arms_msgs.data = [0.0,0.7,0.0,0.0,0.7,0.0]
+        arms_goal_pose.publish(arms_msgs)
+        middle_rate.sleep()
+        
         time.sleep(3)
 
         step=rospy.wait_for_message("/ball_position", Float32, timeout=None)
@@ -161,6 +166,10 @@ class Crouch(smach.State):
         rospy.loginfo('STATE MACHINE WALK -> ' + self.state)
         if walk_state == True:
             init_pose()
+            arms_msgs = Float32MultiArray()
+            arms_msgs.data = [-0.3,0.7,0.0,-0.3,0.7,0.0]
+            arms_goal_pose.publish(arms_msgs)
+            middle_rate.sleep()
             return 'succ'
         else:
             return 'repeat'
@@ -242,10 +251,11 @@ class get_up(smach.State):
 
 
 def main():
-    global pub_leg_left_goal_pose, pub_leg_right_goal_pose, walk_state,end_state, rate, middle_rate, fast_rate, start_pose, end_pose
+    global pub_leg_left_goal_pose, pub_leg_right_goal_pose, walk_state,end_state, rate, middle_rate, fast_rate, start_pose, end_pose, arms_goal_pose
     rospy.init_node("walk_sm")
     pub_leg_left_goal_pose = rospy.Publisher("/hardware/leg_left_goal_pose", Float32MultiArray, queue_size=1)
     pub_leg_right_goal_pose = rospy.Publisher("/hardware/leg_right_goal_pose", Float32MultiArray , queue_size=1)
+    arms_goal_pose = rospy.Publisher("/hardware/arms_goal_pose", Float32MultiArray , queue_size=1)
     walk_state=False
     end_state=False
     start_pose_file = rospy.get_param("~start_pose")
