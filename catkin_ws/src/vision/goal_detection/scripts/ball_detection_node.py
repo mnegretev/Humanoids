@@ -9,8 +9,7 @@ import argparse
 from std_msgs.msg import *
 from sensor_msgs.msg import *
 from geometry_msgs.msg import *
-from cv_bridge import CvBridge   
-from matplotlib import pyplot as plt
+from cv_bridge import CvBridge
 from geometry_msgs.msg import Point32
 
 def calculate_distance(center1, center2):

@@ -55,5 +55,7 @@
 	
 	<node name="get_predef_poses_server" pkg="humanoid" type="get_predef_poses_server.py" output="screen"/>
 	<node name="speed_profile_server"    pkg="humanoid" type="speed_profile_server.py"/>
+	<node name="vision_mask" 			 pkg="goal_detection" type="ball_detection_node.py"/>
+	<rosparam command="load" file="$(find goal_detection)/config/vision_config_simulation.yaml" />
 
 </launch>
