@@ -46,15 +46,15 @@ class Imu_Node():
     def callback(self, msg):
         #Calculate unit vector for acceleration (displayed in RViz)
         acc_vec = [msg.linear_acceleration.x, msg.linear_acceleration.y, msg.linear_acceleration.z]
-        norm_vec = 0.02*sum([ x**2 for x in acc_vec ])**0.5
+        norm_vec = sum([ x**2 for x in acc_vec ])**0.5
         # Set the pose of the self.acc_marker
         vec_points = [Point(), Point()]
         vec_points[0].x = 0.0
         vec_points[0].y = 0.0
         vec_points[0].z = 0.0
-        vec_points[1].x = acc_vec[0] / norm_vec
-        vec_points[1].y = acc_vec[1] / norm_vec
-        vec_points[1].z = acc_vec[2] / norm_vec
+        vec_points[1].x = 0.1*acc_vec[0] / norm_vec
+        vec_points[1].y = 0.1*acc_vec[1] / norm_vec
+        vec_points[1].z = -0.1*acc_vec[2] / norm_vec
         self.acc_marker.points = vec_points
         self.pub_acc.publish(self.acc_marker)
         

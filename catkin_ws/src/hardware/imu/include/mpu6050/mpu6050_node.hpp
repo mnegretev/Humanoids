@@ -8,15 +8,6 @@
 #include "ros/ros.h"
 #include "mpu6050/mpu6050.hpp"
 
-/**
- * @brief Provide MPU6050 data to ROS nodes
- * 
- * This class intend to act as middle layer between the MPU6050 library and ROS
- * applications. Thus, this class basically apply the basics settings to
- * comunicate with the MPU6050 sensor and then get data from de sensor and make it
- * available from ROS interfaces 
- * 1
- */
 class MPU6050Node {
  public:
 
