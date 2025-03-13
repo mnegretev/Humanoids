@@ -129,9 +129,9 @@ head:
   yaw:
     id:   19
     cw:   1
-    zero: 2048
+    zero: 2560
     enabled: true
-    is4pin: false
+    is4pin: true
   pitch:
     id:   20
     cw:   -1
