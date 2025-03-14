@@ -1,9 +1,9 @@
 <launch>
         <node pkg="step_test" type="twist_test.py" name="step_test_node" output="screen" required="true"> 
-            <param name="twist_start_pose"            value="$(find step_test)/src/twist/right/twist_right_start_pose.npz"/>
-            <param name="twist_left_first_step"       value="$(find step_test)/src/twist/right/twist_right_first_step.npz"/>
-            <param name="twist_move_com_left"         value="$(find step_test)/src/twist/right/twist_right_move_com.npz"/>
-            <param name="twist_right_third_step"      value="$(find step_test)/src/twist/right/twist_right_third_step.npz"/>
-            <param name="twist_right_final_stop"      value="$(find step_test)/src/twist/right/twist_right_final_stop.npz"/>
+            <param name="twist_start_pose"            value="$(find step_test)/scripts/twist/right/twist_right_start_pose.npz"/>
+            <param name="twist_left_first_step"       value="$(find step_test)/scripts/twist/right/twist_right_first_step.npz"/>
+            <param name="twist_move_com_left"         value="$(find step_test)/scripts/twist/right/twist_right_move_com.npz"/>
+            <param name="twist_right_third_step"      value="$(find step_test)/scripts/twist/right/twist_right_third_step.npz"/>
+            <param name="twist_right_final_stop"      value="$(find step_test)/scripts/twist/right/twist_right_final_stop.npz"/>
         </node>
 </launch>

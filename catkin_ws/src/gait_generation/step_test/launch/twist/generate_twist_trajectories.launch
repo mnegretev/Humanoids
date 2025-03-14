@@ -6,7 +6,7 @@
         <node name="inverse_kinematics" pkg="inverse_kinematics" type="ik_geometric_node.py" output="screen" required="true"/>
     </group>
     <node pkg="step_test" type="twist_generation.py" name="traj_generator" output="screen" required="true"> 
-        <param name="trajectory_dir_left" value="$(find step_test)/src/twist/left"/>
-        <param name="trajectory_dir_right" value="$(find step_test)/src/twist/right"/>
+        <param name="trajectory_dir_left" value="$(find step_test)/scripts/twist/left"/>
+        <param name="trajectory_dir_right" value="$(find step_test)/scripts/twist/right"/>
     </node>
 </launch>

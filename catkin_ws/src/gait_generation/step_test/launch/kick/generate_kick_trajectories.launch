@@ -6,7 +6,7 @@
         <node name="inverse_kinematics" pkg="inverse_kinematics" type="ik_geometric_node.py" output="screen" required="true"/>
     </group>
     <node pkg="step_test" type="generate_kicks.py" name="kicks_generator" output="screen" required="true"> 
-        <param name="trajectory_dir_left" value="$(find step_test)/src/kick/left"/>
-        <param name="trajectory_dir_right" value="$(find step_test)/src/kick/right"/>
+        <param name="trajectory_dir_left" value="$(find step_test)/scripts/kick/left"/>
+        <param name="trajectory_dir_right" value="$(find step_test)/scripts/kick/right"/>
     </node>
 </launch>
