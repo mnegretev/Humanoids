@@ -5,10 +5,10 @@
 
     <!-- HARDWARE -->
     <include file="$(find cm730)/launch/cm730.launch"/>
-    <include file="$(find imu)/launch/mpu6050_unfiltered.launch"/>
+    <!-- <include file="$(find imu)/launch/mpu6050_unfiltered.launch"/> -->
 
     <!-- STATE MACHINES -->
     <include file="$(find goal_detection)/launch/test_goal_detection.launch"/>
-    <include file="$(find step_test)/launch/smwalk.launch"/>
+    <include file="$(find step_test)/launch/walk/smwalk.launch"/>
 
 </launch>
