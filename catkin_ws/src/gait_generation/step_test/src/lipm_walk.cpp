@@ -2,6 +2,8 @@
 #include <iostream>
 #include <Eigen/Dense>
 #include "ros/ros.h"
+#include "ctrl_msgs/CalculateIK.h"
+#include "ctrl_msgs/CalculateDK.h"
 
 struct state_t
 {
@@ -17,18 +19,47 @@ int main(int argc, char* argv[])
     ROS_INFO("INITIALIZING LIPM WALK NODE BY MIGUEL GARCIA");
     ros::init(argc, argv, "lipm_walk_node");
     ros::NodeHandle n;
+    std::string trajectory_dir;
 
 
 
     return 0;
 }
 
+Eigen::MatrixXd request_ik( const std::vector<Eigen::Vector3d>& P,
+                            ros::ServiceClient & srv_client)
+{
+    Eigen::MatrixXd joint_values(P.size(), 6);
+    ctrl_msgs::CalculateIK srv;
+    for(auto vector: P)
+    {
+        srv.request.x = vector.x();
+        srv.request.y = vector.y();
+        srv.request.z = vector.z();
+        srv.request.roll = 0.0;
+        srv.request.pitch= 0.0;
+        srv.request.yaw  = 0.0;
+        if (srv_client.call(srv))
+        {
+            if(srv.response.joint_values.size() == 6)
+            {
+                 
+            }
+            else
+            {
+
+            }
+        }
+    }
+    return joint_values;
+}
+
 // Solve LIPM initial condition to create a symmetric trajectory
-state_t findInitialConditions(  const double step_length, 
-                                const double x_vel,
-                                const double y_foot_pos,
-                                const double z_model,
-                                const double G)
+state_t findInitialConditionsLIPM(  const double step_length, 
+                                    const double x_vel,
+                                    const double y_foot_pos,
+                                    const double z_model,
+                                    const double G)
 {
     
     // Desired midstance and state
@@ -55,3 +86,38 @@ state_t findInitialConditions(  const double step_length,
 
     return lipm_initial_state;
 }
+
+std::vector<Eigen::Vector3d> getFootSwingTrajectory(const Eigen::Vector3d initial_foot_position,
+                                                    const Eigen::Vector3d final_foot_position,
+                                                    const double swing_height,
+                                                    const std::vector<double> time_vector)
+{
+    double x_0 = initial_foot_position.x();
+    double x_f = final_foot_position.x();
+
+    double y_0 = initial_foot_position.y();
+    double y_f = final_foot_position.y();
+
+    //Calculating parabola coefficients for swinging foot
+    //Using canonical equation  y = a(x-h)^2 + k
+    double h = x_0 + (x_f - x_0)/2;
+    double k = swing_height;
+    double a = -k/std::pow((x_0-h), 2);
+    double m_x = (x_f - x_0)/(time_vector.back() - time_vector.front());
+    double m_y = (y_f - y_0)/(time_vector.back() - time_vector.front());
+
+    auto x_t  = [&](double t) -> double {return x_0 + m_x*t; };
+    auto y_t  = [&](double t) -> double {return y_0 + m_y*t; };
+    auto z    = [&](double x) -> double {return a*std::pow((x-h),2) + k; };
+
+    
+    std::vector<Eigen::Vector3d> swing_foot_trajectory;
+    for(auto i: time_vector)
+    {
+        Eigen::Vector3d aux(x_t(i), y_t(i), z(x_t(i)));
+        swing_foot_trajectory.push_back(aux);
+    }
+
+    return swing_foot_trajectory;
+}
+

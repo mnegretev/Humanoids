@@ -363,5 +363,6 @@ def main(args = None):
     np.savez(os.path.join(trajectory_dir, "left_end_step_pose"), right=right_q, left=left_q, timestep=SERVO_SAMPLE_TIME)
     cartesian_l_pos = calculate_Fk(left_q, left_Dleg_client)
     np.savetxt(os.path.join(trajectory_dir,"csv/left_end_step_pose.csv"), cartesian_l_pos)
+    
 if __name__ == "__main__":
     main()
