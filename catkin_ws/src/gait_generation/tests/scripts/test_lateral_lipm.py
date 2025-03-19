@@ -185,6 +185,7 @@ def main(args = None):
     arms_msg = Float32MultiArray()
     arms_msg.data = [0.0, 0.3, 0.0, 0.0, -0.3, 0.0]
     arms_goal_pose.publish(arms_msg)
+    rospy.spin()
     
 
 

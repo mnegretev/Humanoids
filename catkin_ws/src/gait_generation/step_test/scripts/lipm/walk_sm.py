@@ -3,6 +3,7 @@ import rospy
 import smach
 import smach_ros
 from std_msgs.msg import Float32MultiArray, Bool, Float32
+from ctrl_msgs.srv import Lateral, LateralRequest
 import numpy
 import time
 
@@ -107,6 +108,13 @@ def left():
             pub_leg_left_goal_pose.publish(left_leg_goal_pose)
             middle_rate.sleep()
 
+def lateral_step_client(iterations):
+    rospy.wait_for_service('execute_lateral_service')
+    try:
+        succes = Lateral(iterations)
+        return succes.succes
+    except rospy.Service as e:
+        rospy.loginfo("Service call failed: %s"%e)
 
 def callback(data):
     global walk_state 
@@ -204,6 +212,23 @@ class Full_step_Left(smach.State):
             walk_state=False
             return 'right'
 
+class Lateral_step(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succ', 'fail'])
+        self.state = "LATERAL_STEP"
+
+    def execute(self, userdata):
+        #rospy.loginfo('STATE MACHINE WALK -> ' + self.state)
+        try:
+            succes = lateral_step_client()
+            if succes:
+                return 'succ'
+            else:
+                return 'fail'
+        except:
+            rospy.loginfo("Something go wrong")
+            return 'fail'
+
 class Half_step_Right(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succ', 'fail', 'end'])
@@ -229,7 +254,7 @@ class Half_step_Left(smach.State):
             return 'end'
         else:
             return 'succ'
-        
+
 class get_up(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succ', 'fail'])
