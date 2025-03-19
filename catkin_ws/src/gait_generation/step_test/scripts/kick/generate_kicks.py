@@ -17,7 +17,7 @@ Z_ROBOT_STATIC  = 0.575 # m
 
 Y_BODY_TO_FEET_RIGHT  = 0.068 #Mínimo valor =0.056 #Máximo valor =0.125#= 0.09
 # Z_ROBOT_WALK  = 0.55 # m
-Z_ROBOT_WALK_RIGHT    = 0.5
+Z_ROBOT_WALK_RIGHT    = 0.53
 Z_ROBOT_STATIC_RIGHT  = 0.575 # m
 
 stepHeight = 0.12
@@ -171,7 +171,7 @@ def getFootSwingTraj(initial_foot_position, final_foot_position, swing_height, t
 def main(args = None):
     rospy.init_node('step_test_node')
     
-    trajectory_dir_left = rospy.get_param("~trajectory_dir_left")
+    trajectory_dir_left =  rospy.get_param("~trajectory_dir_left")
     trajectory_dir_right = rospy.get_param("~trajectory_dir_right")
 
     if not os.path.isdir(trajectory_dir_left):

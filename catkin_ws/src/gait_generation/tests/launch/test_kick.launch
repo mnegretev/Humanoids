@@ -1,0 +1,17 @@
+<launch>
+    
+    <!-- ROBOT DESCRIPTION -->
+    <param name="robot_description" command="cat $(find nimbro_op_model)/robots/simple_nimbro_op_hull.xml" />
+    <param name="robot_description_semantic" textfile="$(find nimbro_op_srdf)/config/nimbro_op_hull.srdf" />
+    
+    <!-- INVERSE KINEMATICS -->
+    <group ns="control">
+        <rosparam command="load" file="$(find nimbro_op_srdf)/config/kinematics.yaml"/>
+        <node name="inverse_kinematics" pkg="inverse_kinematics" type="ik_moveit_node" required="true"/>
+    </group>
+
+    <!-- TEST NODE -->
+    <rosparam command="load" file="$(find tests)/config/kick_test.yaml"/>
+    <node pkg="tests" type="test_kick.py" name="test_kick" output="screen" required="true">
+    </node>
+</launch>

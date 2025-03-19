@@ -50,19 +50,19 @@ void callback_legs_goal_pose(const std_msgs::Float32MultiArray::ConstPtr& msg)
 	std::cout << "ControlRemapper.->Error!!: goal position for both legs must be a 12-value array." << std::endl;
 	return;
     }
+    msgRightHipYaw      .data = msg->data[0];
+    msgRightHipRoll     .data = msg->data[1];
+    msgRightHipPitch    .data = msg->data[2];
+    msgRightKneePitch   .data = msg->data[3];
+    msgRightAnklePitch  .data = msg->data[4];
+    msgRightAnkleRoll   .data = msg->data[5];
+    msgLeftHipYaw       .data = msg->data[6];
+    msgLeftHipRoll      .data = msg->data[7];
+    msgLeftHipPitch     .data = msg->data[8];
+    msgLeftKneePitch    .data = msg->data[9];
+    msgLeftAnklePitch   .data = msg->data[10];
+    msgLeftAnkleRoll    .data = msg->data[11];
 
-    msgLeftHipYaw       .data = msg->data[0];
-    msgLeftHipRoll      .data = msg->data[1];
-    msgLeftHipPitch     .data = msg->data[2];
-    msgLeftKneePitch    .data = msg->data[3];
-    msgLeftAnklePitch   .data = msg->data[4];
-    msgLeftAnkleRoll    .data = msg->data[5];
-    msgRightHipYaw      .data = msg->data[6];
-    msgRightHipRoll     .data = msg->data[7];
-    msgRightHipPitch    .data = msg->data[8];
-    msgRightKneePitch   .data = msg->data[9];
-    msgRightAnklePitch  .data = msg->data[10];
-    msgRightAnkleRoll   .data = msg->data[11];
     pubLeftHipYaw        .publish(msgLeftHipYaw        );
     pubLeftHipRoll       .publish(msgLeftHipRoll       );
     pubLeftHipPitch      .publish(msgLeftHipPitch      );
