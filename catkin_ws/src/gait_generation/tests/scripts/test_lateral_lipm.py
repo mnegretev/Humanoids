@@ -168,10 +168,10 @@ def main(args = None):
     arms_msg = Float32MultiArray()
     arms_msg.data = [0.0, 0.3, 0.0, 0.0, -0.3, 0.0]
     arms_goal_pose.publish(arms_msg)
-
-    executeTrajectories(first_left_q,  first_right_q,  rate, pub_legs_goal)
-    executeTrajectories(second_left_q, second_right_q, rate, pub_legs_goal)
-
+    while not rospy.is_shutdown():
+        executeTrajectories(first_left_q,  first_right_q,  rate, pub_legs_goal)
+        executeTrajectories(second_left_q, second_right_q, rate, pub_legs_goal)
+    rospy.spin()
     
 
 
