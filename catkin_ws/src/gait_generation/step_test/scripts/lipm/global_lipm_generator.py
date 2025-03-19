@@ -17,7 +17,7 @@ G = 9.81 # [m/s^2]
 
 # Y_BODY_TO_FEET  = 0.0555 # [m]
 Y_BODY_TO_FEET  = 0.056 #Mínimo valor =0.056 #Máximo valor =0.125#= 0.09
-# Z_ROBOT_WALK    = 0.55 # m
+# Z_ROBOT_WALK  = 0.55 # m
 Z_ROBOT_WALK    = 0.55
 Z_ROBOT_STATIC  =0.576 #Máximo valor = 0.576 # m
 
@@ -113,7 +113,7 @@ def calculate_cartesian_left_half_step_pose(duration, p_start, p_end, ik_client_
     return left_q, right_q, l_leg_abs_pos
 
 def calculate_cartesian_right_step_pose(initial_l_foot_pos, ik_client_left, ik_client_right):
-    global final_posr_right  
+    global final_posr_right
     #Left foot is the support foot
     y_0 = -Y_BODY_TO_FEET
 

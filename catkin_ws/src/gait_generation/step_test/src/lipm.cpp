@@ -5,26 +5,6 @@
 #include "ctrl_msgs/CalculateIK.h"
 #include "ctrl_msgs/CalculateDK.h"
 
-struct state_t
-{
-    double x_0;
-    double dx_0;
-    double dy_0;
-    double t;
-};
-
-
-int main(int argc, char* argv[])
-{
-    ROS_INFO("INITIALIZING LIPM WALK NODE BY MIGUEL GARCIA");
-    ros::init(argc, argv, "lipm_walk_node");
-    ros::NodeHandle n;
-    std::string trajectory_dir;
-
-
-
-    return 0;
-}
 
 Eigen::MatrixXd request_ik( const std::vector<Eigen::Vector3d>& P,
                             ros::ServiceClient & srv_client)
@@ -87,10 +67,10 @@ state_t findInitialConditionsLIPM(  const double step_length,
     return lipm_initial_state;
 }
 
-std::vector<Eigen::Vector3d> getFootSwingTrajectory(const Eigen::Vector3d initial_foot_position,
-                                                    const Eigen::Vector3d final_foot_position,
-                                                    const double swing_height,
-                                                    const std::vector<double> time_vector)
+Eigen::MatrixXd getFootSwingTrajectory( const Eigen::Vector3d initial_foot_position,
+                                        const Eigen::Vector3d final_foot_position,
+                                        const double swing_height,
+                                        const std::vector<double> time_vector)
 {
     double x_0 = initial_foot_position.x();
     double x_f = final_foot_position.x();
@@ -121,3 +101,4 @@ std::vector<Eigen::Vector3d> getFootSwingTrajectory(const Eigen::Vector3d initia
     return swing_foot_trajectory;
 }
 
+trajectory_t get_right_start_pose(const double displacement_ratio)
