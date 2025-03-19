@@ -69,7 +69,7 @@ def calculate_cartesian_left_first_step_pose(p_start, p_end, ik_client_left, ik_
     initial_l_foot_pos  = np.array([0,  Y_BODY_TO_FEET, 0])
 
     #final_r_foot_pos    = initial_r_foot_pos
-    final_l_foot_pos    = np.array([0, Y_BODY_TO_FEET, 0])
+    final_l_foot_pos    = np.array([0, Y_BODY_TO_FEET*2, 0])
 
     r_leg_abs_pos = np.full((len(T), 3), initial_r_foot_pos)
     l_leg_abs_pos = getFootSwingTraj(initial_l_foot_pos, final_l_foot_pos, stepHeight, T)
@@ -88,7 +88,10 @@ def calculate_cartesian_right_second_step(p_start, p_end, ik_client_left, ik_cli
     initial_r_foot_pos = np.array([0, -Y_BODY_TO_FEET, 0])
     initial_l_foot_pos = np.array([0,  Y_BODY_TO_FEET, 0])
 
-    final_l_foot_pos   = np.array([0, Y_BODY_TO_FEET, 0])
+    final_l_foot_pos   = np.array([0,  Y_BODY_TO_FEET, 0])
+
+    r_leg_abs_pos = getFootSwingTraj(initial_l_foot_pos, final_l_foot_pos, stepHeight, T)
+
 
 def findInitialConditions(STEP_LENGTH, ROBOT_VEL_X, y_0, zModel, G):
     #Desired midstance and state
@@ -158,7 +161,7 @@ def main(args = None):
 
     first_left_q, first_right_q, last_p_com = calculate_cartesian_right_start_pose(0.8, left_leg_client, right_leg_client)
 
-    p_com_opposite = [last_p_com[0], -last_p_com[1], last_p_com[2]]
+    p_com_opposite = [last_p_com[0], 0, last_p_com[2]]
 
     second_left_q, second_right_q, left_leg_final_pos = calculate_cartesian_left_first_step_pose(last_p_com, p_com_opposite, left_leg_client, right_leg_client)
 
