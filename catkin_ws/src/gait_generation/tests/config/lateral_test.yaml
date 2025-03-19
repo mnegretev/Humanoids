@@ -1,0 +1,10 @@
+gait:
+  step_height: 1.0 # [m]
+  step_length: 1.0 # [m]
+  G: 9.81 #m/s^2
+  servo_sample_time: 0.025 #[s]
+  model_sample_time: 0.001 #[s]
+  com_x_offset: 0.01
+  z_robot_walk: 0.55
+  z_robot_static: 0.576
+  y_body_to_feet: 0.056
