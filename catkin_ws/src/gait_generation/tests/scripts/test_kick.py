@@ -1,7 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 import numpy as np
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 import math
 import os
 import time
@@ -29,14 +27,17 @@ def calculate_ik(P, service_client):
     for i, vector in enumerate(P):
         print(f"[{i}]: {vector}")
         req = CalculateIKRequest(x = vector[0], y = vector[1], z = vector[2],
-                                 roll = 0, pitch = 0, yaw = 0)
-        response = service_client(req)
-        if len(response.joint_values) == 6:
-            aux = np.array([list(response.joint_values)])
-            joint_values[i] = aux
-        else:
+                                 roll = 0, pitch = 0, yaw = 0)                         
+        try:
+            response = service_client(req)
+            print(response)
+            if len(response.joint_values) == 6:
+                aux = np.array([list(response.joint_values)])
+                joint_values[i] = aux
+        except Exception as e:
             print("Could not calculate inverse kinematics for pose {vector}")
-            raise ValueError("Error calculating inverse kinematics for point {vector}")
+            joint_values[i] = joint_values[i-1]
+            #raise ValueError("Error calculating inverse kinematics for point {vector}")
     return joint_values
 
 def calculate_cartesian_right_start_pose(y_body_to_feet_percent, ik_client_left, ik_client_right):
@@ -103,13 +104,13 @@ def main(args = None):
 
     arms_goal_pose      = rospy.Publisher("/hardware/arms_goal_pose", Float32MultiArray , queue_size=1)
     pub_legs_goal       = rospy.Publisher("/hardware/legs_goal_pose", Float32MultiArray, queue_size=1)
-    right_leg_client    = rospy.ServiceProxy('/control/ik_leg_right', CalculateIK)
-    left_leg_client     = rospy.ServiceProxy('/control/ik_leg_left', CalculateIK)
+    right_leg_client    = rospy.ServiceProxy('/manipulation/ik_leg_right_pose', CalculateIK)
+    left_leg_client     = rospy.ServiceProxy('/manipulation/ik_leg_left_pose', CalculateIK)
     
-    rospy.wait_for_service("/control/ik_leg_right")
-    rospy.wait_for_service("/control/ik_leg_left")
+    rospy.wait_for_service("/manipulation/ik_leg_right_pose")
+    rospy.wait_for_service("/manipulation/ik_leg_left_pose")
 
-    rate = rospy.Rate(40)
+    rate = rospy.Rate(10)
 
     first_left_q, first_right_q, last_p_com = calculate_cartesian_right_start_pose(0.8, left_leg_client, right_leg_client)
     second_left_q, second_right_q, _        = calculate_cartesian_left_first_step_pose(last_p_com, left_leg_client, right_leg_client)

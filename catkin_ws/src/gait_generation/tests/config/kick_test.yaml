@@ -1,6 +1,6 @@
 kick:
   kick_height: 0.13 # [m]
-  kick_length: 0.09 # [m]
+  kick_length: 0.02 # [m]
   com_x_offset: 0.005
   com_y_offset: 0.005
   z_robot_walk: 0.50
