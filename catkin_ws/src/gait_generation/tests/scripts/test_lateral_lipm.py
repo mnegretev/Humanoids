@@ -9,7 +9,7 @@ import time
 #ROS
 import rospy
 from std_msgs.msg import String, Float32MultiArray
-from ctrl_msgs.srv import CalculateIK, CalculateIKRequest
+from ctrl_msgs.srv import CalculateIK, CalculateIKRequest, Lateral, LateralResponse
 from trajectory_planner import trajectory_planner
 from manip_msgs.srv import *
 
@@ -150,8 +150,25 @@ def executeTrajectories(left_foot_q, right_foot_q, rate: rospy.Rate, legs_publis
         legs_publisher.publish(legs_msg)
         rate.sleep()
 
+def handle_execute_lateral(req):
+    try:
+        for i in range (1,req.iterations):
+            executeTrajectories(first_left_q,  first_right_q,  rate, pub_legs_goal)
+            executeTrajectories(second_left_q, second_right_q, rate, pub_legs_goal)
+        succes=LateralResponse()
+        succes.succes=True
+        return succes
+    except:
+
+        succes = LateralResponse()
+        succes.succes=False
+
+        return succes
+    return 
+
 def main(args = None):
     rospy.init_node('step_test_node')
+    service_execute     = rospy.Service("execute_lateral_service", Lateral, handle_execute_lateral)
     #rospy.get_param("/gait/")
     arms_goal_pose      = rospy.Publisher("/hardware/arms_goal_pose", Float32MultiArray , queue_size=1)
     pub_legs_goal       = rospy.Publisher("/hardware/legs_goal_pose", Float32MultiArray, queue_size=1)
@@ -168,10 +185,6 @@ def main(args = None):
     arms_msg = Float32MultiArray()
     arms_msg.data = [0.0, 0.3, 0.0, 0.0, -0.3, 0.0]
     arms_goal_pose.publish(arms_msg)
-    while not rospy.is_shutdown():
-        executeTrajectories(first_left_q,  first_right_q,  rate, pub_legs_goal)
-        executeTrajectories(second_left_q, second_right_q, rate, pub_legs_goal)
-    rospy.spin()
     
 
 
