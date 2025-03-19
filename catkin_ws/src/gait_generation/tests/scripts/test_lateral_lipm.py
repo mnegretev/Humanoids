@@ -23,7 +23,7 @@ stepHeight  = 0.1
 STEP_LENGTH = 0.1 # [m]
 ROBOT_VEL_X = 0.1 # [m]
 
-com_x_offset = 0.01 #original=0.02
+com_x_offset = 0.02 #original=0.02
 com_y_offset = 0.001 # 
 
 # Tiempo de muestreo para resolver la ecuación diferencial del LIPM (debe ser pequeño)
