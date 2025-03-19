@@ -19,7 +19,7 @@ Y_BODY_TO_FEET  = 0.056 #Mínimo valor =0.056 #Máximo valor =0.125#= 0.09
 Z_ROBOT_WALK    = 0.55
 Z_ROBOT_STATIC  = 0.576 #Máximo valor = 0.576 # m
 
-stepHeight  = 0.045
+stepHeight  = 0.1
 STEP_LENGTH = 0.1 # [m]
 ROBOT_VEL_X = 0.1 # [m]
 
@@ -170,7 +170,6 @@ def main(args = None):
     arms_goal_pose.publish(arms_msg)
 
     executeTrajectories(first_left_q,  first_right_q,  rate, pub_legs_goal)
-    time.sleep(1)
     executeTrajectories(second_left_q, second_right_q, rate, pub_legs_goal)
 
     
