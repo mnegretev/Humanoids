@@ -229,12 +229,13 @@ class Lateral_step(smach.State):
         #rospy.loginfo('STATE MACHINE WALK -> ' + self.state)
         try:
             succes = lateral_step_client(2)
-            if succes:
+            print(succes.succes)
+            if succes.succes:
                 return 'succ'
             else:
                 return 'fail'
-        except:
-            rospy.loginfo("Something go wrong")
+        except Exception as e:
+            rospy.loginfo(f"Something go wrong {e}")
             return 'fail'
         
 class Kick(smach.State):
@@ -294,7 +295,7 @@ class get_up(smach.State):
         if walk_state:
             return 'succ'
         
-        return 'fail'
+        return 'succ'
         
 
 
