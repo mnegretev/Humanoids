@@ -1,5 +1,5 @@
 kick:
-  kick_height: 0.1 # [m]
+  kick_height: 0.05 # [m]
   kick_length: 0.04 # [m]
   com_x_offset: 0.02
   com_y_offset: 0.03

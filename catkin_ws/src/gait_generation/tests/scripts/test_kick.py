@@ -155,7 +155,11 @@ def main(args = None):
     executeTrajectories(second_left_q, second_right_q, rate, pub_legs_goal)
     executeTrajectories(third_left_q,  third_right_q,  rate, pub_legs_goal)
     
+    time.sleep(5)
 
+    zero_msg = Float32MultiArray()
+    zero_msg.data = [0.0 for i in range(12)]
+    pub_legs_goal.publish(zero_msg)
 
 if __name__ == "__main__":
     main()
