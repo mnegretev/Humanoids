@@ -134,20 +134,6 @@ LIPM_SAMPLE_TIME = 0.0001 # [s]
 # Tiempo de muestreo maximo para escribir a los servomotores
 SERVO_SAMPLE_TIME = 0.025 # [s]
 
-def calculate_ik(P, service_client):
-    joint_values = np.zeros((len(P),6))
-    for i, vector in enumerate(P):
-        req = CalculateIKRequest(x = vector[0], y = vector[1], z = vector[2],
-                                 roll = 0, pitch = 0, yaw = 0)
-        print(req)
-        response = service_client(req)
-        if len(response.joint_values) == 6:
-            aux = np.array([list(response.joint_values)])
-            joint_values[i] = aux
-        else:
-            print("Could not calculate inverse kinematics for pose {vector}")
-            raise ValueError("Error calculating inverse kinematics for point {vector}")
-    return joint_values
 
 def calculate_cartesian_right_start_pose(y_body_to_feet_percent, ik_client_left, ik_client_right):
     p_start = [0 + com_x_offset, 0, Z_ROBOT_STATIC]
