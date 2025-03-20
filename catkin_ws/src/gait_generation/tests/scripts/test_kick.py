@@ -64,7 +64,7 @@ def calculate_cartesian_left_first_step_pose(p_start, ik_client_left, ik_client_
     initial_l_foot_pos  = np.array([0,  Y_BODY_TO_FEET, 0])
 
     #final_r_foot_pos    = initial_r_foot_pos
-    final_l_foot_pos    = np.array([-kick_length, Y_BODY_TO_FEET*1.1, kick_height])
+    final_l_foot_pos    = np.array([-0.02, Y_BODY_TO_FEET*1.1, kick_height])
 
     r_leg_abs_pos = np.full((len(T), 3), initial_r_foot_pos)
     l_leg_abs_pos, T = trajectory_planner.get_polynomial_trajectory_multi_dof(initial_l_foot_pos, final_l_foot_pos, time_step=SERVO_SAMPLE_TIME)
@@ -78,7 +78,7 @@ def calculate_cartesian_left_first_step_pose(p_start, ik_client_left, ik_client_
     return left_q, right_q, P_CoM[-1], final_l_foot_pos
 
 def calculate_cartesian_do_kick(p_start, final_foot_pos, ik_client_left, ik_client_right):
-    final_l_foot_pos = [kick_length, Y_BODY_TO_FEET, 0]
+    final_l_foot_pos = [kick_length*5, Y_BODY_TO_FEET, kick_height*0.3]
     p_end = p_start
     P_CoM , T = trajectory_planner.get_polynomial_trajectory_multi_dof(p_start, p_end, time_step=SERVO_SAMPLE_TIME)
 
