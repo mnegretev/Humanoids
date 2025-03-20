@@ -153,7 +153,7 @@ def main(args = None):
 
     executeTrajectories(first_left_q,  first_right_q,  rate2, pub_legs_goal)
     executeTrajectories(second_left_q, second_right_q, rate, pub_legs_goal)
-    executeTrajectories(third_left_q,  third_right_q,  rate, pub_legs_goal)
+    executeTrajectories(third_left_q[-2:],  third_right_q[-2:],  rate, pub_legs_goal)
     
     time.sleep(5)
 
