@@ -241,8 +241,8 @@ def executeTrajectories(left_foot_q, right_foot_q, rate: rospy.Rate, legs_publis
 def handle_execute_lateral(req):
     try:
         for i in range (1,req.iterations):
-            executeTrajectories(first_left_q,  first_right_q,  rate, pub_legs_goal)
-            executeTrajectories(second_left_q, second_right_q, rate, pub_legs_goal)
+            executeTrajectories(first_right_q,  first_left_q,  rate, pub_legs_goal)
+            executeTrajectories(second_right_q, second_left_q, rate, pub_legs_goal)
         succes=LateralResponse()
         succes.succes=True
         return succes
