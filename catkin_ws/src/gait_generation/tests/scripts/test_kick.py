@@ -42,7 +42,7 @@ def calculate_ik(P, service_client):
 
 def calculate_cartesian_right_start_pose(y_body_to_feet_percent, ik_client_left, ik_client_right):
     p_start = [0 + com_x_offset, 0, Z_ROBOT_STATIC]
-    p_end = [0 + com_x_offset, -y_body_to_feet_percent*Y_BODY_TO_FEET, Z_ROBOT_WALK]
+    p_end = [0 + com_x_offset, -(y_body_to_feet_percent*Y_BODY_TO_FEET + com_y_offset), Z_ROBOT_WALK]
 
     P_CoM, T = trajectory_planner.get_polynomial_trajectory_multi_dof(p_start, p_end, time_step=SERVO_SAMPLE_TIME)
     
@@ -112,7 +112,7 @@ def main(args = None):
 
     rate = rospy.Rate(10)
 
-    first_left_q, first_right_q, last_p_com = calculate_cartesian_right_start_pose(0.8, left_leg_client, right_leg_client)
+    first_left_q, first_right_q, last_p_com = calculate_cartesian_right_start_pose(1.0, left_leg_client, right_leg_client)
     second_left_q, second_right_q, _        = calculate_cartesian_left_first_step_pose(last_p_com, left_leg_client, right_leg_client)
 
     arms_msg = Float32MultiArray()
