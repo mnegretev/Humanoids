@@ -233,8 +233,8 @@ class Lateral_step(smach.State):
         #rospy.loginfo('STATE MACHINE WALK -> ' + self.state)
         try:
             succes = lateral_step_client(2)
-            print(succes.succes)
-            if succes.succes:
+            print(succes)
+            if succes:
                 return 'succ'
             else:
                 return 'fail'
