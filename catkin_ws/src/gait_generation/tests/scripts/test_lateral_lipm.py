@@ -60,7 +60,7 @@ def calculate_ik(P, service_client):
             joint_values[i] = joint_values[i-1]
     return joint_values
 
-def calculate_cartesian_right_start_pose(y_body_to_feet_percent, ik_client_left, ik_client_right):
+def calculate_cartesian_right_start_pose_kick(y_body_to_feet_percent, ik_client_left, ik_client_right):
     p_start = [0 + com_x_offset, 0, Z_ROBOT_STATIC]
     p_end = [0 + com_x_offset, -(y_body_to_feet_percent*Y_BODY_TO_FEET + com_y_offset), Z_ROBOT_WALK]
 
@@ -74,7 +74,7 @@ def calculate_cartesian_right_start_pose(y_body_to_feet_percent, ik_client_left,
 
     return left_q, right_q, P_CoM[-1]
 
-def calculate_cartesian_left_first_step_pose(p_start, ik_client_left, ik_client_right):
+def calculate_cartesian_left_raise_foot_pose(p_start, ik_client_left, ik_client_right):
     P_CoM, T = trajectory_planner.get_polynomial_trajectory_multi_dof(p_start, p_start, time_step=SERVO_SAMPLE_TIME)
     
     initial_r_foot_pos  = np.array([0, -Y_BODY_TO_FEET, 0])
@@ -311,8 +311,8 @@ def main(args = None):
     rate = rospy.Rate(40)
     rate2 = rospy.Rate(20)
 
-    first_left_q, first_right_q, last_p_com = calculate_cartesian_right_start_pose(1.0, left_leg_client, right_leg_client)
-    second_left_q, second_right_q, last_p_com , final_foot_pos = calculate_cartesian_left_first_step_pose(last_p_com, left_leg_client, right_leg_client)
+    first_left_q, first_right_q, last_p_com = calculate_cartesian_right_start_pose_kick(1.0, left_leg_client, right_leg_client)
+    second_left_q, second_right_q, last_p_com , final_foot_pos = calculate_cartesian_left_raise_foot_pose(last_p_com, left_leg_client, right_leg_client)
     third_left_q, third_right_q, last_p_com = calculate_cartesian_do_kick(last_p_com, final_foot_pos, left_leg_client, right_leg_client)
 
     #time.sleep(5)
