@@ -134,6 +134,8 @@ def main(args = None):
     rospy.wait_for_service("/manipulation/ik_leg_right_pose")
     rospy.wait_for_service("/manipulation/ik_leg_left_pose")
 
+    time.sleep(5)
+
     arms_msg = Float32MultiArray()
     arms_msg.data = [0.0, 0.3, 0.0, 0.0, -0.3, 0.0]
     arms_goal_pose.publish(arms_msg)
@@ -141,8 +143,6 @@ def main(args = None):
     zero_msg = Float32MultiArray()
     zero_msg.data = [0.0 for i in range(12)]
     pub_legs_goal.publish(zero_msg)
-
-    time.sleep(1)
 
     rate = rospy.Rate(40)
     rate2 = rospy.Rate(20)
