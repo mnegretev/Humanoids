@@ -164,9 +164,9 @@ def handle_execute_lateral(req):
         succes.succes=False
 
         return succes
-    return 
 
 def main(args = None):
+    global first_left_q, first_right_q, rate, pub_legs_goal, second_left_q, second_right_q
     rospy.init_node('step_test_node')
     service_execute     = rospy.Service("execute_lateral_service", Lateral, handle_execute_lateral)
     #rospy.get_param("/gait/")
