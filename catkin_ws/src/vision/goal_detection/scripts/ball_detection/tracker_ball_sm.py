@@ -65,7 +65,7 @@ class StartingSearch(smach.State):
 		return 'timeout'
 
 class BallFound(smach.State):
-	def __init__(self, subs_topic_name, pub_topic_name, rate = 10.0):
+	def __init__(self, subs_topic_name,subs2_topic_name, pub_topic_name, rate = 10.0):
 		smach.State.__init__(self, outcomes = ['succ', 'failed'],
 					input_keys = ['last_pos'],
 					output_keys = ['last_pos_out'])
@@ -73,11 +73,22 @@ class BallFound(smach.State):
 		self.pub_topic_name = pub_topic_name
 		self.rate = rospy.Rate(rate)
 		self.message_received = False
-		self.subscriber = rospy.Subscriber(self.subs_topic_name, Point32, self.callback)
+		self.subscriber = rospy.Subscriber(self.subs_topic_name, Point32, self.centroid_callback)
+		self.subscriber = rospy.Subscriber(self.subs2_topic_name, Vector3, self.imu_callback)
 		self.tries = 0
 		self.publisher = rospy.Publisher(self.pub_topic_name, Float32MultiArray, queue_size=1)
 		self.ball_pos_pub = rospy.Publisher("/ball_position", Float32, queue_size=1)
-	def callback (self, centroid_msg): 
+		self.imu_roll = 0.0
+		self.imu_pitch = 0.0
+		self.imu_yaw = 0.0
+		self.camera_to_imu_transform = None 
+
+	def centroid_callback (self, centroid_msg): 
+        self.imu_roll = imu_msg.x
+        self.imu_pitch = imu_msg.y
+        self.imu_yaw = imu_msg.z
+
+	def imu_callback (self, imu_msg): 
 		self.centroid_msg = centroid_msg
 		self.message_received = True
 
@@ -104,9 +115,13 @@ class BallFound(smach.State):
 			tilt_robot += tilt
 			head_cmd.data = [pan_robot, tilt_robot]
 			print(f"Publishing pan_angle: {pan_robot}, tilt: {tilt_robot}")
-			distance = 0.85/math.tan(tilt_robot)
+			
+			real_tilt = tilt tilt_robot + self.imu_pitch
+			distance = 0.85/math.tan(real_tilt)
 			msg = Float32()
 			msg.data = distance
+			
+			
 			self.ball_pos_pub.publish(msg)
 			print(f'Ball distance is: {distance:.2f} meters.')
 			self.publisher.publish(head_cmd)
@@ -128,7 +143,7 @@ def main():
 	sm = smach.StateMachine(outcomes=['Exit'])
 
 	with sm:
-		smach.StateMachine.add('STARTING_SEARCH_TRAJ',StartingSearch('/centroid_publisher', '/hardware/head_goal_pose'),
+		smach.StateMachine.add('STARTING_SEARCH_TRAJ',StartingSearch('/centroid_publisher', 'imu/humanoid_orientation','/hardware/head_goal_pose'),
 					transitions = {'interrupted': 'TRACKER_BALL',
 							'timeout': 'STARTING_SEARCH_TRAJ'})
 

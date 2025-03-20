@@ -11,12 +11,13 @@ find_package(catkin REQUIRED COMPONENTS
  
   cv_bridge
   geometry_msgs
-
+  roscpp
   rospy
   sensor_msgs
   std_msgs
+  smach
+  smach_ros
 )
-
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
