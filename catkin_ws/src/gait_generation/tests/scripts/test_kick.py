@@ -126,7 +126,7 @@ def main(args = None):
     global kick_length, kick_height, com_x_offset, com_y_offset
     global first_left_q, first_right_q, second_left_q, second_right_q, rate, rate2, third_left_q, third_right_q, pub_legs_goal
     rospy.init_node('step_test_node')
-    service_execute     = rospy.Service("execute_lateral_service", Lateral, handle_execute_kick)
+    service_execute     = rospy.Service("execute_kick_service", Lateral, handle_execute_kick)
     kick_height     = rospy.get_param("/kick/kick_height")
     kick_length     = rospy.get_param("/kick/kick_length")
     com_x_offset    = rospy.get_param("/kick/com_x_offset")

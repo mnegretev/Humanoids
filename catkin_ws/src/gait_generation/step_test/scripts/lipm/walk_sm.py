@@ -3,7 +3,7 @@ import rospy
 import smach
 import smach_ros
 from std_msgs.msg import Float32MultiArray, Bool, Float32
-from ctrl_msgs.srv import Lateral, LateralRequest, Kick, KickRequest
+from ctrl_msgs.srv import Lateral, LateralRequest
 import numpy
 import time
 
@@ -117,7 +117,7 @@ def lateral_step_client(iterations):
         rospy.loginfo("Service call failed: %s"%e)
 
 def kick_client(execute):
-    rospy.wait_for_service('execute_lateral_service')
+    rospy.wait_for_service('execute_kick_service')
     try:
         succes = Kick(execute)
         return succes.succes
@@ -355,7 +355,7 @@ def main():
                                 transitions={'succ': 'kick', 
                                              'fail': 'Lateral_step'})
         smach.StateMachine.add('kick', Kick(), 
-                                transitions={'succ': 'initial', 
+                                transitions={'succ': 'Initial', 
                                              'fail': 'kick'})
 
 
