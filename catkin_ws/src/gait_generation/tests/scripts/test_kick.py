@@ -23,6 +23,7 @@ kick_height     = None
 SERVO_SAMPLE_TIME = 0.025 # [s]
 
 def calculate_ik(P, service_client):
+    failed_counts = 0
     joint_values = np.zeros((len(P),6))
     for i, vector in enumerate(P):
         print(f"[{i}]: {vector}")
@@ -35,9 +36,11 @@ def calculate_ik(P, service_client):
                 aux = np.array([list(response.joint_values)])
                 joint_values[i] = aux
         except Exception as e:
-            print("Could not calculate inverse kinematics for pose {vector}")
+            failed_counts += 1
+            if (failed_counts > len(joint_values)*0.5):
+                raise ValueError(f"{failed_counts} failed calculations. Aborting")
+            print(f"Could not calculate inverse kinematics for pose {vector}")
             joint_values[i] = joint_values[i-1]
-            #raise ValueError("Error calculating inverse kinematics for point {vector}")
     return joint_values
 
 def calculate_cartesian_right_start_pose(y_body_to_feet_percent, ik_client_left, ik_client_right):
@@ -72,10 +75,31 @@ def calculate_cartesian_left_first_step_pose(p_start, ik_client_left, ik_client_
     left_q = calculate_ik(l_leg_relative_pos, ik_client_left)
     right_q = calculate_ik(r_leg_relative_pos, ik_client_right)
 
+    return left_q, right_q, P_CoM[-1], final_l_foot_pos
+
+def calculate_cartesian_do_kick(p_start, final_foot_pos, ik_client_left, ik_client_right):
+    final_l_foot_pos = [kick_length, Y_BODY_TO_FEET, 0]
+    p_end = p_start
+    P_CoM , T = trajectory_planner.get_polynomial_trajectory_multi_dof(p_start, p_end, time_step=SERVO_SAMPLE_TIME)
+
+    initial_r_foot_pos = np.array([0, -Y_BODY_TO_FEET, 0])
+    initial_l_foot_pos = final_foot_pos
+
+    #final_r_foot_pos = initial_r_foot_pos
+    r_leg_abs_pos = np.full((len(T), 3), initial_r_foot_pos)
+    l_leg_abs_pos , T = trajectory_planner.get_polynomial_trajectory_multi_dof(initial_l_foot_pos, final_l_foot_pos, time_step=SERVO_SAMPLE_TIME)
+
+    r_leg_relative_pos  = r_leg_abs_pos - P_CoM
+    l_leg_relative_pos  = l_leg_abs_pos - P_CoM
+
+    left_q  = calculate_ik(l_leg_relative_pos, ik_client_left)
+    right_q = calculate_ik(r_leg_relative_pos, ik_client_right)
+
     return left_q, right_q, P_CoM[-1]
 
 def executeTrajectories(left_foot_q, right_foot_q, rate: rospy.Rate, legs_publisher: rospy.Publisher):
     for left, right in zip(left_foot_q, right_foot_q):
+        np.set_printoptions(formatter={'float': lambda x: "{0:0.3f}".format(x)})
         legs_msg = Float32MultiArray()
         legs_msg.data = [*left] + [*right]
         print(legs_msg.data)
@@ -110,18 +134,26 @@ def main(args = None):
     rospy.wait_for_service("/manipulation/ik_leg_right_pose")
     rospy.wait_for_service("/manipulation/ik_leg_left_pose")
 
-    rate = rospy.Rate(10)
-
-    first_left_q, first_right_q, last_p_com = calculate_cartesian_right_start_pose(1.0, left_leg_client, right_leg_client)
-    second_left_q, second_right_q, _        = calculate_cartesian_left_first_step_pose(last_p_com, left_leg_client, right_leg_client)
-
     arms_msg = Float32MultiArray()
     arms_msg.data = [0.0, 0.3, 0.0, 0.0, -0.3, 0.0]
     arms_goal_pose.publish(arms_msg)
 
-    executeTrajectories(first_left_q,  first_right_q,  rate, pub_legs_goal)
-    executeTrajectories(second_left_q, second_right_q, rate, pub_legs_goal)
+    zero_msg = Float32MultiArray()
+    zero_msg.data = [0.0 for i in range(12)]
+    pub_legs_goal.publish(zero_msg)
 
+    time.sleep(1)
+
+    rate = rospy.Rate(40)
+    rate2 = rospy.Rate(20)
+
+    first_left_q, first_right_q, last_p_com = calculate_cartesian_right_start_pose(1.0, left_leg_client, right_leg_client)
+    second_left_q, second_right_q, last_p_com , final_foot_pos = calculate_cartesian_left_first_step_pose(last_p_com, left_leg_client, right_leg_client)
+    third_left_q, third_right_q, last_p_com = calculate_cartesian_do_kick(last_p_com, final_foot_pos, left_leg_client, right_leg_client)
+
+    executeTrajectories(first_left_q,  first_right_q,  rate2, pub_legs_goal)
+    executeTrajectories(second_left_q, second_right_q, rate, pub_legs_goal)
+    executeTrajectories(third_left_q,  third_right_q,  rate, pub_legs_goal)
     
 
 

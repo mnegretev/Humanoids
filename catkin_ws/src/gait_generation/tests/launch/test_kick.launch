@@ -1,5 +1,7 @@
 <launch>
-    
+    <!-- HARDWARE -->
+    <include file="$(find cm730)/launch/cm730.launch"/>
+
     <!-- ROBOT DESCRIPTION -->
     <param name="robot_description" command="cat $(find nimbro_op_model)/robots/simple_nimbro_op_hull.xml" />
     <param name="robot_description_semantic" textfile="$(find nimbro_op_srdf)/config/nimbro_op_hull.srdf" />
@@ -12,6 +14,6 @@
 
     <!-- TEST NODE -->
     <rosparam command="load" file="$(find tests)/config/kick_test.yaml"/>
-    <node pkg="tests" type="test_kick.py" name="test_kick" output="screen" required="true">
+    <node pkg="tests" type="test_kick.py" name="test_kick" output="screen">
     </node>
 </launch>
