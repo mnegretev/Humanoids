@@ -72,10 +72,10 @@ def calculate_cartesian_left_first_step_pose(p_start, ik_client_left, ik_client_
     left_q = calculate_ik(l_leg_relative_pos, ik_client_left)
     right_q = calculate_ik(r_leg_relative_pos, ik_client_right)
 
-    return left_q, right_q, l_leg_abs_pos
+    return left_q, right_q, P_CoM[-1]
 
 def executeTrajectories(left_foot_q, right_foot_q, rate: rospy.Rate, legs_publisher: rospy.Publisher):
-    for right, left in zip(left_foot_q, right_foot_q):
+    for left, right in zip(left_foot_q, right_foot_q):
         legs_msg = Float32MultiArray()
         legs_msg.data = [*left] + [*right]
         print(legs_msg.data)
