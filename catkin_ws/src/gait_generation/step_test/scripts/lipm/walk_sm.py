@@ -111,16 +111,20 @@ def left():
 def lateral_step_client(iterations):
     rospy.wait_for_service('execute_lateral_service')
     try:
-        succes = Lateral(iterations)
-        return succes.succes
+        srv_client = rospy.ServiceProxy('/execute_lateral_service', Lateral)
+        req = LateralRequest(iterations=iterations)
+        response = srv_client(req)
+        return response.succes
     except rospy.Service as e:
         rospy.loginfo("Service call failed: %s"%e)
 
 def kick_client(execute):
     rospy.wait_for_service('execute_kick_service')
     try:
-        succes = Kick(execute)
-        return succes.succes
+        srv_client = rospy.ServiceProxy('/execute_kick_service', Lateral)
+        req = LateralRequest(iterations=iterations)
+        response = srv_client(req)
+        return response.succes
     except rospy.Service as e:
         rospy.loginfo("Service call failed: %s"%e)
 
@@ -234,8 +238,8 @@ class Lateral_step(smach.State):
                 return 'succ'
             else:
                 return 'fail'
-        except Exception as e:
-            rospy.loginfo(f"Something go wrong {e}")
+        except:
+            rospy.loginfo("Something go wrong")
             return 'fail'
         
 class Kick(smach.State):
