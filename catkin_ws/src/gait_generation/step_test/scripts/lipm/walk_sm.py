@@ -111,8 +111,20 @@ def left():
 def lateral_step_client(iterations):
     rospy.wait_for_service('execute_lateral_service')
     try:
-        succes = Lateral(iterations)
-        return succes.succes
+        srv_client = rospy.ServiceProxy('/execute_lateral_service', Lateral)
+        req = LateralRequest(iterations=iterations)
+        response = srv_client(req)
+        return response.succes
+    except rospy.Service as e:
+        rospy.loginfo("Service call failed: %s"%e)
+
+def kick_client(execute):
+    rospy.wait_for_service('execute_kick_service')
+    try:
+        srv_client = rospy.ServiceProxy('/execute_kick_service', Lateral)
+        req = LateralRequest(iterations=iterations)
+        response = srv_client(req)
+        return response.succes
     except rospy.Service as e:
         rospy.loginfo("Service call failed: %s"%e)
 
@@ -220,7 +232,25 @@ class Lateral_step(smach.State):
     def execute(self, userdata):
         #rospy.loginfo('STATE MACHINE WALK -> ' + self.state)
         try:
-            succes = lateral_step_client()
+            succes = lateral_step_client(2)
+            print(succes)
+            if succes:
+                return 'succ'
+            else:
+                return 'fail'
+        except:
+            rospy.loginfo("Something go wrong")
+            return 'fail'
+        
+class Kick(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succ', 'fail'])
+        self.state = "KICK"
+
+    def execute(self, userdata):
+        #rospy.loginfo('STATE MACHINE WALK -> ' + self.state)
+        try:
+            succes = kick_client(2)
             if succes:
                 return 'succ'
             else:
@@ -269,7 +299,7 @@ class get_up(smach.State):
         if walk_state:
             return 'succ'
         
-        return 'fail'
+        return 'succ'
         
 
 
@@ -324,8 +354,14 @@ def main():
                                              'fail': 'Half_step_Left',
                                              'end' : 'get_up'})
         smach.StateMachine.add('get_up', get_up(), 
-                                transitions={'succ': 'Initial', 
+                                transitions={'succ': 'Lateral_step', 
                                              'fail': 'get_up'})
+        smach.StateMachine.add('Lateral_step', Lateral_step(), 
+                                transitions={'succ': 'kick', 
+                                             'fail': 'Lateral_step'})
+        smach.StateMachine.add('kick', Kick(), 
+                                transitions={'succ': 'Initial', 
+                                             'fail': 'kick'})
 
 
     outcome = sm.execute()

@@ -7,7 +7,7 @@ import time
 #ROS
 import rospy
 from std_msgs.msg import String, Float32MultiArray
-from ctrl_msgs.srv import CalculateIK, CalculateIKRequest
+from ctrl_msgs.srv import CalculateIK, CalculateIKRequest, Lateral, LateralResponse
 from trajectory_planner import trajectory_planner
 from manip_msgs.srv import *
 
@@ -22,6 +22,21 @@ kick_height     = None
 # Tiempo de muestreo maximo para escribir a los servomotores
 SERVO_SAMPLE_TIME = 0.025 # [s]
 
+def handle_execute_kick(req):
+    try:
+        
+        executeTrajectories(first_left_q,  first_right_q,  rate2, pub_legs_goal)
+        executeTrajectories(second_left_q, second_right_q, rate, pub_legs_goal)
+        executeTrajectories(third_left_q[-2:],  third_right_q[-2:],  rate, pub_legs_goal)
+        succes=LateralResponse()
+        succes.succes=True
+        return succes
+    except:
+
+        succes = LateralResponse()
+        succes.succes=False
+
+        return succes
 def calculate_ik(P, service_client):
     failed_counts = 0
     joint_values = np.zeros((len(P),6))
@@ -109,7 +124,9 @@ def executeTrajectories(left_foot_q, right_foot_q, rate: rospy.Rate, legs_publis
 def main(args = None):
     global Y_BODY_TO_FEET, Z_ROBOT_WALK, Z_ROBOT_STATIC
     global kick_length, kick_height, com_x_offset, com_y_offset
+    global first_left_q, first_right_q, second_left_q, second_right_q, rate, rate2, third_left_q, third_right_q, pub_legs_goal
     rospy.init_node('step_test_node')
+    service_execute     = rospy.Service("execute_kick_service", Lateral, handle_execute_kick)
     kick_height     = rospy.get_param("/kick/kick_height")
     kick_length     = rospy.get_param("/kick/kick_length")
     com_x_offset    = rospy.get_param("/kick/com_x_offset")
@@ -151,10 +168,6 @@ def main(args = None):
     second_left_q, second_right_q, last_p_com , final_foot_pos = calculate_cartesian_left_first_step_pose(last_p_com, left_leg_client, right_leg_client)
     third_left_q, third_right_q, last_p_com = calculate_cartesian_do_kick(last_p_com, final_foot_pos, left_leg_client, right_leg_client)
 
-    executeTrajectories(first_left_q,  first_right_q,  rate2, pub_legs_goal)
-    executeTrajectories(second_left_q, second_right_q, rate, pub_legs_goal)
-    executeTrajectories(third_left_q[-2:],  third_right_q[-2:],  rate, pub_legs_goal)
-    
     time.sleep(5)
 
     zero_msg = Float32MultiArray()

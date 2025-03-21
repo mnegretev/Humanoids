@@ -4,19 +4,20 @@ import rospy
 import smach
 import smach_ros
 from std_msgs.msg import Float32MultiArray, Bool, Float32
+from geometry_msgs.msg import Vector3
 from geometry_msgs.msg import Point32
 import numpy as np
 import time
 pan_robot = 0.0
 tilt_robot = 0.0
 class StartingSearch(smach.State):
-	def __init__(self, subs_topic_name, pub_topic_name, rate = 10.0):
+	def __init__(self, subs_topic_name, pub_topic_name):
 		smach.State.__init__(self, outcomes=['interrupted', 'timeout'],
 					output_keys = ['last_pos'],
 					input_keys = ['last_pos_out'])
 		self.subs_topic_name = subs_topic_name
 		self.pub_topic_name = pub_topic_name
-		self.rate = rospy.Rate(rate)
+		self.rate = rospy.Rate(10.0)
 		self.message_received = False
 		self.subscriber = rospy.Subscriber(self.subs_topic_name, Point32, self.callback)
 		self.publisher = rospy.Publisher(self.pub_topic_name, Float32MultiArray, queue_size=1)
@@ -69,6 +70,7 @@ class BallFound(smach.State):
 		smach.State.__init__(self, outcomes = ['succ', 'failed'],
 					input_keys = ['last_pos'],
 					output_keys = ['last_pos_out'])
+		self.subs2_topic_name = subs2_topic_name
 		self.subs_topic_name = subs_topic_name
 		self.pub_topic_name = pub_topic_name
 		self.rate = rospy.Rate(rate)
@@ -83,12 +85,12 @@ class BallFound(smach.State):
 		self.imu_yaw = 0.0
 		self.camera_to_imu_transform = None 
 
-	def centroid_callback (self, centroid_msg): 
-        self.imu_roll = imu_msg.x
-        self.imu_pitch = imu_msg.y
-        self.imu_yaw = imu_msg.z
-
 	def imu_callback (self, imu_msg): 
+        	self.imu_roll = imu_msg.x
+       		self.imu_pitch = imu_msg.y
+        	self.imu_yaw = imu_msg.z
+
+	def centroid_callback (self, centroid_msg): 
 		self.centroid_msg = centroid_msg
 		self.message_received = True
 
@@ -115,13 +117,10 @@ class BallFound(smach.State):
 			tilt_robot += tilt
 			head_cmd.data = [pan_robot, tilt_robot]
 			print(f"Publishing pan_angle: {pan_robot}, tilt: {tilt_robot}")
-			
-			real_tilt = tilt tilt_robot + self.imu_pitch
+			real_tilt = tilt_robot + self.imu_pitch
 			distance = (0.85/math.tan(real_tilt))/2
 			msg = Float32()
 			msg.data = distance
-			
-			
 			self.ball_pos_pub.publish(msg)
 			print(f'Ball distance is: {distance:.2f} meters.')
 			self.publisher.publish(head_cmd)
@@ -143,11 +142,11 @@ def main():
 	sm = smach.StateMachine(outcomes=['Exit'])
 
 	with sm:
-		smach.StateMachine.add('STARTING_SEARCH_TRAJ',StartingSearch('/centroid_publisher', 'imu/humanoid_orientation','/hardware/head_goal_pose'),
+		smach.StateMachine.add('STARTING_SEARCH_TRAJ',StartingSearch('/centroid_publisher','/hardware/head_goal_pose'),
 					transitions = {'interrupted': 'TRACKER_BALL',
 							'timeout': 'STARTING_SEARCH_TRAJ'})
 
-		smach.StateMachine.add('TRACKER_BALL',BallFound('/centroid_publisher', '/hardware/head_goal_pose'),
+		smach.StateMachine.add('TRACKER_BALL',BallFound('/centroid_publisher', 'imu/humanoid_orientation','/hardware/head_goal_pose'),
 					transitions = {'succ': 'TRACKER_BALL',
 							'failed': 'STARTING_SEARCH_TRAJ'})
 	outcome = sm.execute ()

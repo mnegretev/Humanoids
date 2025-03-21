@@ -3,6 +3,6 @@
 
     <!-- STATE MACHINES -->
     <include file="$(find goal_detection)/launch/test_goal_detection_sim.launch"/>
-    <include file="$(find step_test)/launch/smwalk.launch"/>
+    <include file="$(find step_test)/launch/walk/smwalk.launch"/>
 
 </launch>
