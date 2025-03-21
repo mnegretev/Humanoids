@@ -118,7 +118,7 @@ def calculate_cartesian_do_kick(p_start, final_foot_pos, ik_client_left, ik_clie
 G = 9.81 # [m/s^2]
 
 Y_BODY_TO_FEET  = 0.056 #Mínimo valor =0.056 #Máximo valor =0.125#= 0.09
-Z_ROBOT_WALK    = 0.50
+Z_ROBOT_WALK    = 0.55
 Z_ROBOT_STATIC  = 0.576 #Máximo valor = 0.576 # m
 
 stepHeight  = 0.1
