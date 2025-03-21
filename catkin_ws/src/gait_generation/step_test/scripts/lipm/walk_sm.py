@@ -118,7 +118,7 @@ def lateral_step_client(iterations):
     except rospy.Service as e:
         rospy.loginfo("Service call failed: %s"%e)
 
-def kick_client(execute):
+def kick_client(iterations):
     rospy.wait_for_service('execute_kick_service')
     try:
         srv_client = rospy.ServiceProxy('/execute_kick_service', Lateral)
