@@ -1,5 +1,5 @@
 <launch>
-    <include file="$(find surge_et_ambula)/launch/simul/humanoid_simul.launch"/>
+    <!-- <include file="$(find surge_et_ambula)/launch/simul/humanoid_simul.launch"/> -->
 
     <!-- STATE MACHINES -->
     <include file="$(find goal_detection)/launch/test_goal_detection_sim.launch"/>

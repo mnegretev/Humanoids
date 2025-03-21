@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 import numpy as np
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 import math
 import os
 import time
@@ -30,6 +28,9 @@ def handle_execute_kick(req):
         executeTrajectories(first_left_q,  first_right_q,  rate2, pub_legs_goal)
         executeTrajectories(second_left_q, second_right_q, rate, pub_legs_goal)
         executeTrajectories(third_left_q[-2:],  third_right_q[-2:],  rate, pub_legs_goal)
+        zero_msg = Float32MultiArray()
+        zero_msg.data = [0.0 for i in range(12)]
+        pub_legs_goal.publish(zero_msg)
         succes=LateralResponse()
         succes.succes=True
         return succes
@@ -242,9 +243,12 @@ def handle_execute_lateral(req):
     print(f"Executing lateral service{req.iterations}")
     try:
         for i in range (0,req.iterations):
-            executeTrajectories(first_right_q_lateral,  first_left_q_lateral,  rate, pub_legs_goal)
-            executeTrajectories(second_right_q_lateral, second_left_q_lateral, rate, pub_legs_goal)
-        executeTrajectories(first_right_q_lateral,  first_left_q_lateral,  rate, pub_legs_goal)
+            executeTrajectories(first_right_q_lateral_lateral,  first_left_q_lateral_lateral,  rate, pub_legs_goal)
+            executeTrajectories(second_right_q_lateral_lateral, second_left_q_lateral_lateral, rate, pub_legs_goal)
+        executeTrajectories(first_right_q_lateral_lateral,  first_left_q_lateral_lateral,  rate, pub_legs_goal)
+        zero_msg = Float32MultiArray()
+        zero_msg.data = [0.0 for i in range(12)]
+        pub_legs_goal.publish(zero_msg)
         succes=LateralResponse()
         succes.succes=True
         return succes
@@ -260,6 +264,7 @@ def main(args = None):
     global Y_BODY_TO_FEET, Z_ROBOT_WALK, Z_ROBOT_STATIC
     global kick_length, kick_height, com_x_offset, com_y_offset
     global first_left_q, first_right_q, second_left_q, second_right_q, rate, rate2, third_left_q, third_right_q, pub_legs_goal
+    global first_left_q_lateral, first_right_q_lateral, second_left_q_lateral, second_right_q_lateral
     rospy.init_node('step_test_node')
     service_execute     = rospy.Service("execute_kick_service", Lateral, handle_execute_kick)
     kick_height     = rospy.get_param("/kick/kick_height")
@@ -314,11 +319,9 @@ def main(args = None):
     pub_legs_goal       = rospy.Publisher("/hardware/legs_goal_pose", Float32MultiArray, queue_size=1)
     rate = rospy.Rate(40)
 
-    first_left_q_lateral, first_right_q_lateral, last_p_com = calculate_cartesian_right_start_pose(0.8, left_leg_client, right_leg_client)
-
+    first_left_q_lateral_lateral, first_right_q_lateral_lateral, last_p_com = calculate_cartesian_right_start_pose(0.9, left_leg_client, right_leg_client)
     p_com_opposite = [last_p_com[0], 0, last_p_com[2]]
-
-    second_left_q_lateral, second_right_q_lateral, left_leg_final_pos = calculate_cartesian_left_first_step_pose(last_p_com, p_com_opposite, left_leg_client, right_leg_client)
+    second_left_q_lateral_lateral, second_right_q_lateral_lateral, left_leg_final_pos = calculate_cartesian_left_first_step_pose(last_p_com, p_com_opposite, left_leg_client, right_leg_client)
 
     arms_msg = Float32MultiArray()
     arms_msg.data = [0.0, 0.3, 0.0, 0.0, -0.3, 0.0]
