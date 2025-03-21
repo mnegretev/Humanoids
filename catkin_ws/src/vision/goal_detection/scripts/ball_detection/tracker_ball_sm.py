@@ -117,7 +117,7 @@ class BallFound(smach.State):
 			print(f"Publishing pan_angle: {pan_robot}, tilt: {tilt_robot}")
 			
 			real_tilt = tilt tilt_robot + self.imu_pitch
-			distance = 0.85/math.tan(real_tilt)
+			distance = (0.85/math.tan(real_tilt))/2
 			msg = Float32()
 			msg.data = distance
 			

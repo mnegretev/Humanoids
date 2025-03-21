@@ -23,7 +23,7 @@ def callback_image (msg):
     bridge = CvBridge()     
     #For simul: desired_encoding='bgr8', for real: desired_encoding='rgb8'
     if rospy.get_param("rgb8"):
-        cv_image = bridge.imgmsg_to_cv2(msg, desired_encoding='rgb8')#source file
+        cv_image = bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')#source file
     else:
         cv_image = bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
     #Para espacio HSV
@@ -65,9 +65,9 @@ def callback_image (msg):
     blur=cv2.GaussianBlur(gray,(7,7),0)
     minDist =500
     param1 = 50
-    param2 = 50 #smaller value-> more false circles
+    param2 = 180 #smaller value-> more false circles
     minRadius = 5
-    maxRadius = 50
+    maxRadius = 5
     ball_detected=False
     distance_threshold = 5
     # docstring of HoughCircles: HoughCircles(image, method, dp, minDist[, circles[, param1[, param2[, minRadius[, maxRadius]]]]]) -> circles

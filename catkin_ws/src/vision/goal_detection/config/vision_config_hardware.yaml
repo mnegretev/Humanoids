@@ -1,11 +1,18 @@
 # HSV PARAM CONFIGURATIONS
 
-hsv_h_min: 25
-hsv_h_max: 44
-hsv_s_min: 65
-hsv_s_max: 160
-hsv_v_min: 70
+# hsv_h_min: 25
+# hsv_h_max: 44
+# hsv_s_min: 65
+# hsv_s_max: 160
+# hsv_v_min: 70
+# hsv_v_max: 255
+hsv_h_min: 19
+hsv_h_max: 32
+hsv_s_min: 83
+hsv_s_max: 183
+hsv_v_min: 174
 hsv_v_max: 255
+
 
 # HLS PARAM CONFIGURATION
 hls_h_min: 0  
