@@ -239,6 +239,7 @@ def executeTrajectories(left_foot_q, right_foot_q, rate: rospy.Rate, legs_publis
         rate.sleep()
 
 def handle_execute_lateral(req):
+    print(f"Executing lateral service{req.iterations}")
     try:
         for i in range (1,req.iterations):
             executeTrajectories(first_right_q,  first_left_q,  rate, pub_legs_goal)
@@ -247,8 +248,8 @@ def handle_execute_lateral(req):
         succes=LateralResponse()
         succes.succes=True
         return succes
-    except:
-
+    except Exception as e:
+        print(f"cant go lateral {e}")
         succes = LateralResponse()
         succes.succes=False
 

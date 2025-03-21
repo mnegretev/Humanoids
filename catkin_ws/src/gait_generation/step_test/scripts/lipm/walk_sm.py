@@ -165,10 +165,10 @@ class Initial(smach.State):
         
         time.sleep(3)
 
-        step=rospy.wait_for_message("/ball_position", Float32, timeout=None)
+        #step=rospy.wait_for_message("/ball_position", Float32, timeout=None)
         walk_state=True
         end_state=True
-        step = int((step.data)/0.05)
+        step = 0.56#int((step.data)/0.05) 
         print(f"Steps needed to reach ball: {step}")
         start()
         return 'succ'
