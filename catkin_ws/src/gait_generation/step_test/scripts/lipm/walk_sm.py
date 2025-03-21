@@ -231,6 +231,10 @@ class Lateral_step(smach.State):
 
     def execute(self, userdata):
         #rospy.loginfo('STATE MACHINE WALK -> ' + self.state)
+        arms_msgs = Float32MultiArray()
+        arms_msgs.data = [-0.3,0.5,0.0,-0.3,-0.5,0.0]
+        arms_goal_pose.publish(arms_msgs)
+        middle_rate.sleep()
         try:
             succes = lateral_step_client(2)
             print(succes)
