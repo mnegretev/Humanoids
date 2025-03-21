@@ -26,15 +26,15 @@ SERVO_SAMPLE_TIME = 0.025 # [s]
 
 def handle_execute_kick(req):
     try:
-        
+        print(f"Executing kick {req.iterations}")
         executeTrajectories(first_left_q,  first_right_q,  rate2, pub_legs_goal)
         executeTrajectories(second_left_q, second_right_q, rate, pub_legs_goal)
         executeTrajectories(third_left_q[-2:],  third_right_q[-2:],  rate, pub_legs_goal)
         succes=LateralResponse()
         succes.succes=True
         return succes
-    except:
-
+    except Exception as e:
+        print(f"cant go lateral {e}")
         succes = LateralResponse()
         succes.succes=False
 
@@ -241,7 +241,7 @@ def executeTrajectories(left_foot_q, right_foot_q, rate: rospy.Rate, legs_publis
 def handle_execute_lateral(req):
     print(f"Executing lateral service{req.iterations}")
     try:
-        for i in range (1,req.iterations):
+        for i in range (0,req.iterations):
             executeTrajectories(first_right_q,  first_left_q,  rate, pub_legs_goal)
             executeTrajectories(second_right_q, second_left_q, rate, pub_legs_goal)
         executeTrajectories(first_right_q,  first_left_q,  rate, pub_legs_goal)
