@@ -243,6 +243,7 @@ def handle_execute_lateral(req):
         for i in range (1,req.iterations):
             executeTrajectories(first_right_q,  first_left_q,  rate, pub_legs_goal)
             executeTrajectories(second_right_q, second_left_q, rate, pub_legs_goal)
+        executeTrajectories(first_right_q,  first_left_q,  rate, pub_legs_goal)
         succes=LateralResponse()
         succes.succes=True
         return succes
