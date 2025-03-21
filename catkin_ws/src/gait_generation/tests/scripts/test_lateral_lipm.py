@@ -27,9 +27,9 @@ SERVO_SAMPLE_TIME = 0.025 # [s]
 def handle_execute_kick(req):
     try:
         print(f"Executing kick {req.iterations}")
-        executeTrajectories(first_left_q,  first_right_q,  rate2, pub_legs_goal)
-        executeTrajectories(second_left_q, second_right_q, rate, pub_legs_goal)
-        executeTrajectories(third_left_q[-2:],  third_right_q[-2:],  rate, pub_legs_goal)
+        executeTrajectories(first_right_q, first_left_q,  rate2, pub_legs_goal)
+        executeTrajectories(second_right_q, second_left_q, rate, pub_legs_goal)
+        executeTrajectories(third_right_q[-2:], third_left_q[-2:],  rate, pub_legs_goal)
         succes=LateralResponse()
         succes.succes=True
         return succes
