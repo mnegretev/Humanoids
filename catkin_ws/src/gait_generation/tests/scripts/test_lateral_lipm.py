@@ -282,7 +282,7 @@ def handle_execute_lateral(req):
     print(f"Executing lateral service{req.iterations}")
     rate_fast = rospy.Rate(80)
     try:
-        executeTrajectories(first_left_q_lateral,  first_right_q_lateral,  rate, pub_legs_goal)
+        #executeTrajectories(first_left_q_lateral,  first_right_q_lateral,  rate, pub_legs_goal)
         for i in range (0,req.iterations):
             executeTrajectories(second_left_q_lateral, second_right_q_lateral, rate_fast, pub_legs_goal)
             time.sleep(1)
