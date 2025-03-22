@@ -122,7 +122,7 @@ def kick_client(iterations):
     rospy.wait_for_service('execute_kick_service')
     try:
         srv_client = rospy.ServiceProxy('/execute_kick_service', Lateral)
-        req = LateralRequest(iterations=0)
+        req = LateralRequest(iterations=iterations)
         response = srv_client(req)
         return response.succes
     except rospy.Service as e:
@@ -338,7 +338,7 @@ def main():
     with sm:
     
         smach.StateMachine.add('Initial', Initial(),
-                               transitions={'succ': 'Crouch',
+                               transitions={'succ': 'Lateral_step',
                                             'fail': 'Initial'})
         smach.StateMachine.add('Crouch', Crouch(),
                                transitions={'succ': 'Full_step_Right',
@@ -364,7 +364,7 @@ def main():
                                 transitions={'succ': 'kick', 
                                              'fail': 'Lateral_step'})
         smach.StateMachine.add('kick', Kick(), 
-                                transitions={'succ': 'exit', 
+                                transitions={'succ': 'Initial', 
                                              'fail': 'kick'})
 
 
