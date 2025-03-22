@@ -170,7 +170,7 @@ class Initial(smach.State):
         end_state=True
         step = int((0.56)/0.05)#int((step.data)/0.05) 
         print(f"Steps needed to reach ball: {step}")
-        start()
+        #start()
         return 'succ'
     
 class Crouch(smach.State): 
