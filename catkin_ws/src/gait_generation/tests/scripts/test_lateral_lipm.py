@@ -190,8 +190,8 @@ def calculate_cartesian_right_second_step(p_start, p_end, ik_client_left, ik_cli
     return left_q, right_q, P_CoM[-1]
 
 def calculate_cartesian_4_pose(last_p_com, ik_client_left, ik_client_right):
-    p_start = [0 + com_x_offset, Y_BODY_TO_FEET*0.9, Z_ROBOT_WALK]
-    p_end   = [0 + com_x_offset, -Y_BODY_TO_FEET*0.9, Z_ROBOT_WALK]
+    p_start = [0 + com_x_offset, Y_BODY_TO_FEET, Z_ROBOT_WALK]
+    p_end   = [0 + com_x_offset, -Y_BODY_TO_FEET, Z_ROBOT_WALK]
 
     P_CoM, T = trajectory_planner.get_polynomial_trajectory_multi_dof(p_start, p_end, time_step=SERVO_SAMPLE_TIME)
     
@@ -362,10 +362,10 @@ def main(args = None):
     pub_legs_goal       = rospy.Publisher("/hardware/legs_goal_pose", Float32MultiArray, queue_size=1)
     rate = rospy.Rate(40)
 
-    first_left_q_lateral, first_right_q_lateral, last_p_com = calculate_cartesian_right_start_pose(0.9, left_leg_client, right_leg_client)
+    first_left_q_lateral, first_right_q_lateral, last_p_com = calculate_cartesian_right_start_pose(1.0, left_leg_client, right_leg_client)
     p_com_opposite = [last_p_com[0], 0, last_p_com[2]]
     second_left_q_lateral, second_right_q_lateral, last_p_com = calculate_cartesian_left_first_step_pose(last_p_com, p_com_opposite, left_leg_client, right_leg_client)
-    new_p_com = [last_p_com[0], Y_BODY_TO_FEET*1.9, last_p_com[2]]
+    new_p_com = [last_p_com[0], Y_BODY_TO_FEET*2, last_p_com[2]]
     left_third_lateral_q, right_third_lateral_q, last_p_com = calculate_cartesian_right_second_step(last_p_com, new_p_com, left_leg_client, right_leg_client)
     left_4_lateral_q, right_4_lateral_q, last_p_com = calculate_cartesian_4_pose(last_p_com, left_leg_client, right_leg_client)
     left_stop_lateral_q, right_stop_lateral_q, last_p_com = calculate_cartesian_right_stop_pose(left_leg_client, right_leg_client)
