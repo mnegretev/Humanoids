@@ -286,7 +286,7 @@ def handle_execute_lateral(req):
         for i in range (0,req.iterations):
             executeTrajectories(second_left_q_lateral, second_right_q_lateral, rate_fast, pub_legs_goal)
             time.sleep(1)
-            executeTrajectories(left_third_lateral_q, right_third_lateral_q, rate_fast, pub_legs_goal)
+            executeTrajectories(left_third_lateral_q, right_third_lateral_q, rate, pub_legs_goal)
             time.sleep(1)
             executeTrajectories(left_4_lateral_q, right_4_lateral_q, rate, pub_legs_goal)
         executeTrajectories(left_stop_lateral_q, right_stop_lateral_q, rate, pub_legs_goal)
