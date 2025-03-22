@@ -29,7 +29,7 @@ def handle_execute_kick(req):
         executeTrajectories(second_left_q, second_right_q, rate, pub_legs_goal)
         executeTrajectories(third_left_q[-2:],  third_right_q[-2:],  rate, pub_legs_goal)
         
-        time.sleep(3)
+        #time.sleep(3)
 
         zero_msg = Float32MultiArray()
         zero_msg.data = [0.0 for i in range(12)]
@@ -266,11 +266,12 @@ def executeTrajectories(left_foot_q, right_foot_q, rate: rospy.Rate, legs_publis
 
 def handle_execute_lateral(req):
     print(f"Executing lateral service{req.iterations}")
+    rate_fast = rospy.Rate(80)
     try:
         executeTrajectories(first_left_q_lateral,  first_right_q_lateral,  rate, pub_legs_goal)
         for i in range (0,req.iterations):
-            executeTrajectories(second_left_q_lateral, second_right_q_lateral, rate, pub_legs_goal)
-            executeTrajectories(left_third_lateral_q, right_third_lateral_q, rate, pub_legs_goal)
+            executeTrajectories(second_left_q_lateral, second_right_q_lateral, rate_fast, pub_legs_goal)
+            executeTrajectories(left_third_lateral_q, right_third_lateral_q, rate_fast, pub_legs_goal)
         executeTrajectories(left_stop_lateral_q, right_stop_lateral_q, rate, pub_legs_goal)
         succes=LateralResponse()
         succes.succes=True
