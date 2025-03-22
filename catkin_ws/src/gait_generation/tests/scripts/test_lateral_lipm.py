@@ -28,6 +28,9 @@ def handle_execute_kick(req):
         executeTrajectories(first_left_q,  first_right_q,  rate2, pub_legs_goal)
         executeTrajectories(second_left_q, second_right_q, rate, pub_legs_goal)
         executeTrajectories(third_left_q[-2:],  third_right_q[-2:],  rate, pub_legs_goal)
+        
+        time.sleep(3)
+
         zero_msg = Float32MultiArray()
         zero_msg.data = [0.0 for i in range(12)]
         pub_legs_goal.publish(zero_msg)
@@ -122,15 +125,12 @@ Y_BODY_TO_FEET  = 0.056 #Mínimo valor =0.056 #Máximo valor =0.125#= 0.09
 Z_ROBOT_WALK    = 0.55
 Z_ROBOT_STATIC  = 0.576 #Máximo valor = 0.576 # m
 
-stepHeight  = 0.1
+stepHeight  = 0.2
 STEP_LENGTH = 0.1 # [m]
 ROBOT_VEL_X = 0.1 # [m]
 
 com_x_offset = 0.02 #original=0.02
 com_y_offset = 0.001 # 
-
-# Tiempo de muestreo para resolver la ecuación diferencial del LIPM (debe ser pequeño)
-LIPM_SAMPLE_TIME = 0.0001 # [s]
 
 # Tiempo de muestreo maximo para escribir a los servomotores
 SERVO_SAMPLE_TIME = 0.025 # [s]
@@ -138,13 +138,12 @@ SERVO_SAMPLE_TIME = 0.025 # [s]
 
 def calculate_cartesian_right_start_pose(y_body_to_feet_percent, ik_client_left, ik_client_right):
     p_start = [0 + com_x_offset, 0, Z_ROBOT_STATIC]
-    p_end = [0 + com_x_offset, -y_body_to_feet_percent*Y_BODY_TO_FEET, Z_ROBOT_WALK]
+    p_end   = [0 + com_x_offset, -y_body_to_feet_percent*Y_BODY_TO_FEET, Z_ROBOT_WALK]
 
-    
     P_CoM, T = trajectory_planner.get_polynomial_trajectory_multi_dof(p_start, p_end, time_step=SERVO_SAMPLE_TIME)
     
-    left_leg_relative_pos = [0, Y_BODY_TO_FEET, 0] - P_CoM
-    right_leg_relative_pos =  [0, -Y_BODY_TO_FEET, 0] - P_CoM
+    left_leg_relative_pos   = [0, Y_BODY_TO_FEET, 0] - P_CoM
+    right_leg_relative_pos  =  [0, -Y_BODY_TO_FEET, 0] - P_CoM
 
     left_q  = calculate_ik(left_leg_relative_pos, ik_client_left)
     right_q = calculate_ik(right_leg_relative_pos, ik_client_right)
@@ -169,18 +168,41 @@ def calculate_cartesian_left_first_step_pose(p_start, p_end, ik_client_left, ik_
     left_q = calculate_ik(l_leg_relative_pos, ik_client_left)
     right_q = calculate_ik(r_leg_relative_pos, ik_client_right)
 
-    return left_q, right_q, l_leg_abs_pos
+    return left_q, right_q, P_CoM[-1]
 
 def calculate_cartesian_right_second_step(p_start, p_end, ik_client_left, ik_client_right):
     P_CoM, T = trajectory_planner.get_polynomial_trajectory_multi_dof(p_start, p_end, time_step=SERVO_SAMPLE_TIME)
 
     initial_r_foot_pos = np.array([0, -Y_BODY_TO_FEET, 0])
-    initial_l_foot_pos = np.array([0,  Y_BODY_TO_FEET, 0])
+    initial_l_foot_pos = np.array([0,  Y_BODY_TO_FEET*2, 0])
 
-    final_l_foot_pos   = np.array([0,  Y_BODY_TO_FEET, 0])
+    #final_l_foot_pos   = initial_l_foot_pos
+    final_r_foot_pos = np.array([0, 0, 0])
 
-    r_leg_abs_pos = getFootSwingTraj(initial_l_foot_pos, final_l_foot_pos, stepHeight, T)
+    r_leg_abs_pos = getFootSwingTraj(initial_r_foot_pos, final_r_foot_pos, stepHeight, T)
+    l_leg_abs_pos = np.full((len(T), 3), initial_l_foot_pos)
 
+    r_leg_relative_pos  = r_leg_abs_pos - P_CoM
+    l_leg_relative_pos  = l_leg_abs_pos - P_CoM
+
+    left_q = calculate_ik(l_leg_relative_pos, ik_client_left)
+    right_q = calculate_ik(r_leg_relative_pos, ik_client_right)
+
+    return left_q, right_q, P_CoM[-1]
+
+def calculate_cartesian_right_stop_pose(ik_client_left, ik_client_right):
+    p_start = [0 + com_x_offset, 0, Z_ROBOT_WALK]
+    p_end   = [0 + com_x_offset, 0, Z_ROBOT_STATIC]
+
+    P_CoM, T = trajectory_planner.get_polynomial_trajectory_multi_dof(p_start, p_end, time_step=SERVO_SAMPLE_TIME)
+    
+    left_leg_relative_pos   = [0, Y_BODY_TO_FEET, 0] - P_CoM
+    right_leg_relative_pos  =  [0, -Y_BODY_TO_FEET, 0] - P_CoM
+
+    left_q  = calculate_ik(left_leg_relative_pos, ik_client_left)
+    right_q = calculate_ik(right_leg_relative_pos, ik_client_right)
+
+    return left_q, right_q, P_CoM[-1]
 
 def findInitialConditions(STEP_LENGTH, ROBOT_VEL_X, y_0, zModel, G):
     #Desired midstance and state
@@ -208,25 +230,32 @@ def findInitialConditions(STEP_LENGTH, ROBOT_VEL_X, y_0, zModel, G):
     return [dy0, x_0, dx0, singlesupport_t]
 
 def getFootSwingTraj(initial_foot_position, final_foot_position, swing_height, timeVector):
+    t_0 = timeVector[0]
+    t_f = timeVector[-1]
+    
     x_0 = initial_foot_position[0]
     x_1 = final_foot_position[0]
 
     y_0 = initial_foot_position[1]
     y_1 = final_foot_position[1]
     
-    h = x_0 + (x_1 - x_0)/2
-    k = swing_height
-    a = -k/((x_0-h)**2)
     m_x = (x_1 - x_0)/(timeVector[-1] - timeVector[0])
     x_t = lambda t: x_0 + m_x*t
+
     m_y = (y_1 - y_0)/(timeVector[-1] - timeVector[0])
     y_t = lambda t: y_0 + m_y*t
-    z = lambda x: a*((x-h)**2) + k
+    
+    m_t = (t_f - t_0)/len(timeVector)
+    tau_t = lambda t: t_0 + m_t*t
+    
+    h = t_0 + (t_f - t_0)/2
+    k = swing_height
+    a = -k/((t_0-h)**2)
+    z = lambda t: a*((t-h)**2) + k
 
     swingFootTrajectory = np.array([[0, 0, 0]])
-
     for i in timeVector:
-        aux = np.array([[x_t(i), y_t(i), z(x_t(i))]])
+        aux = np.array([[x_t(i), y_t(i), z(tau_t(i))]])
         swingFootTrajectory = np.concatenate((swingFootTrajectory,aux), axis=0)
     swingFootTrajectory = np.delete(swingFootTrajectory, 0, axis=0)
     return swingFootTrajectory
@@ -242,13 +271,11 @@ def executeTrajectories(left_foot_q, right_foot_q, rate: rospy.Rate, legs_publis
 def handle_execute_lateral(req):
     print(f"Executing lateral service{req.iterations}")
     try:
+        executeTrajectories(first_left_q_lateral,  first_right_q_lateral,  rate, pub_legs_goal)
         for i in range (0,req.iterations):
-            executeTrajectories(first_right_q_lateral_lateral,  first_left_q_lateral_lateral,  rate, pub_legs_goal)
-            executeTrajectories(second_right_q_lateral_lateral, second_left_q_lateral_lateral, rate, pub_legs_goal)
-        executeTrajectories(first_right_q_lateral_lateral,  first_left_q_lateral_lateral,  rate, pub_legs_goal)
-        zero_msg = Float32MultiArray()
-        zero_msg.data = [0.0 for i in range(12)]
-        pub_legs_goal.publish(zero_msg)
+            executeTrajectories(second_left_q_lateral, second_right_q_lateral, rate, pub_legs_goal)
+            executeTrajectories(left_third_lateral_q, right_third_lateral_q, rate, pub_legs_goal)
+        executeTrajectories(left_stop_lateral_q, right_stop_lateral_q, rate, pub_legs_goal)
         succes=LateralResponse()
         succes.succes=True
         return succes
@@ -264,7 +291,9 @@ def main(args = None):
     global Y_BODY_TO_FEET, Z_ROBOT_WALK, Z_ROBOT_STATIC
     global kick_length, kick_height, com_x_offset, com_y_offset
     global first_left_q, first_right_q, second_left_q, second_right_q, rate, rate2, third_left_q, third_right_q, pub_legs_goal
-    global first_left_q_lateral, first_right_q_lateral, second_left_q_lateral, second_right_q_lateral
+    global left_third_lateral_q, right_third_lateral_q
+    global left_stop_lateral_q, right_stop_lateral_q
+
     rospy.init_node('step_test_node')
     service_execute     = rospy.Service("execute_kick_service", Lateral, handle_execute_kick)
     kick_height     = rospy.get_param("/kick/kick_height")
@@ -290,8 +319,6 @@ def main(args = None):
     
     rospy.wait_for_service("/manipulation/ik_leg_right_pose")
     rospy.wait_for_service("/manipulation/ik_leg_left_pose")
-
-    time.sleep(5)
 
     arms_msg = Float32MultiArray()
     arms_msg.data = [0.0, 0.3, 0.0, 0.0, -0.3, 0.0]
@@ -319,10 +346,12 @@ def main(args = None):
     pub_legs_goal       = rospy.Publisher("/hardware/legs_goal_pose", Float32MultiArray, queue_size=1)
     rate = rospy.Rate(40)
 
-    first_left_q_lateral_lateral, first_right_q_lateral_lateral, last_p_com = calculate_cartesian_right_start_pose(0.9, left_leg_client, right_leg_client)
+    first_left_q_lateral, first_right_q_lateral, last_p_com = calculate_cartesian_right_start_pose(0.9, left_leg_client, right_leg_client)
     p_com_opposite = [last_p_com[0], 0, last_p_com[2]]
-    second_left_q_lateral_lateral, second_right_q_lateral_lateral, left_leg_final_pos = calculate_cartesian_left_first_step_pose(last_p_com, p_com_opposite, left_leg_client, right_leg_client)
-
+    second_left_q_lateral, second_right_q_lateral, last_p_com = calculate_cartesian_left_first_step_pose(last_p_com, p_com_opposite, left_leg_client, right_leg_client)
+    new_p_com = [last_p_com[0], Y_BODY_TO_FEET, last_p_com[2]]
+    left_third_lateral_q, right_third_lateral_q, last_p_com = calculate_cartesian_right_second_step(last_p_com, new_p_com, left_leg_client, right_leg_client)
+    left_stop_lateral_q, right_stop_lateral_q, last_p_com = calculate_cartesian_right_stop_pose(left_leg_client, right_leg_client)
     arms_msg = Float32MultiArray()
     arms_msg.data = [0.0, 0.3, 0.0, 0.0, -0.3, 0.0]
     arms_goal_pose.publish(arms_msg)
