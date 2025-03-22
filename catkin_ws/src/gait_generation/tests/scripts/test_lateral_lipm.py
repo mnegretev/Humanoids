@@ -29,7 +29,7 @@ def handle_execute_kick(req):
         executeTrajectories(second_left_q, second_right_q, rate, pub_legs_goal)
         executeTrajectories(third_left_q[-2:],  third_right_q[-2:],  rate, pub_legs_goal)
         
-        #time.sleep(3)
+        time.sleep(1)
 
         zero_msg = Float32MultiArray()
         zero_msg.data = [0.0 for i in range(12)]
