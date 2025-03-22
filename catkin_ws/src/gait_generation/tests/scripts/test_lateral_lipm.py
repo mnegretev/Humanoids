@@ -189,8 +189,22 @@ def calculate_cartesian_right_second_step(p_start, p_end, ik_client_left, ik_cli
 
     return left_q, right_q, P_CoM[-1]
 
+def calculate_cartesian_4_pose(last_p_com, ik_client_left, ik_client_right):
+    p_start = [0 + com_x_offset, Y_BODY_TO_FEET*0.9, Z_ROBOT_WALK]
+    p_end   = [0 + com_x_offset, -Y_BODY_TO_FEET*0.9, Z_ROBOT_WALK]
+
+    P_CoM, T = trajectory_planner.get_polynomial_trajectory_multi_dof(p_start, p_end, time_step=SERVO_SAMPLE_TIME)
+    
+    left_leg_relative_pos   =   [0, Y_BODY_TO_FEET, 0] - P_CoM
+    right_leg_relative_pos  =   [0, -Y_BODY_TO_FEET, 0] - P_CoM
+
+    left_q  = calculate_ik(left_leg_relative_pos, ik_client_left)
+    right_q = calculate_ik(right_leg_relative_pos, ik_client_right)
+
+    return left_q, right_q, P_CoM[-1]
+
 def calculate_cartesian_right_stop_pose(ik_client_left, ik_client_right):
-    p_start = [0 + com_x_offset, 0, Z_ROBOT_WALK]
+    p_start = [0 + com_x_offset, -Y_BODY_TO_FEET*0.9, Z_ROBOT_WALK]
     p_end   = [0 + com_x_offset, 0, Z_ROBOT_STATIC]
 
     P_CoM, T = trajectory_planner.get_polynomial_trajectory_multi_dof(p_start, p_end, time_step=SERVO_SAMPLE_TIME)
@@ -272,7 +286,9 @@ def handle_execute_lateral(req):
         for i in range (0,req.iterations):
             executeTrajectories(second_left_q_lateral, second_right_q_lateral, rate_fast, pub_legs_goal)
             executeTrajectories(left_third_lateral_q, right_third_lateral_q, rate_fast, pub_legs_goal)
+            executeTrajectories(left_4_lateral_q, right_4_lateral_q, rate, pub_legs_goal)
         executeTrajectories(left_stop_lateral_q, right_stop_lateral_q, rate, pub_legs_goal)
+        time.sleep(1)
         succes=LateralResponse()
         succes.succes=True
         return succes
@@ -290,6 +306,7 @@ def main(args = None):
     global first_left_q, first_right_q, second_left_q, second_right_q, rate, rate2, third_left_q, third_right_q, pub_legs_goal
     global left_third_lateral_q, right_third_lateral_q
     global left_stop_lateral_q, right_stop_lateral_q
+    global left_4_lateral_q, right_4_lateral_q
 
     rospy.init_node('step_test_node')
     service_execute     = rospy.Service("execute_kick_service", Lateral, handle_execute_kick)
@@ -348,6 +365,7 @@ def main(args = None):
     second_left_q_lateral, second_right_q_lateral, last_p_com = calculate_cartesian_left_first_step_pose(last_p_com, p_com_opposite, left_leg_client, right_leg_client)
     new_p_com = [last_p_com[0], Y_BODY_TO_FEET*1.9, last_p_com[2]]
     left_third_lateral_q, right_third_lateral_q, last_p_com = calculate_cartesian_right_second_step(last_p_com, new_p_com, left_leg_client, right_leg_client)
+    left_4_lateral_q, right_4_lateral_q, last_p_com = calculate_cartesian_4_pose(last_p_com, left_leg_client, right_leg_client)
     left_stop_lateral_q, right_stop_lateral_q, last_p_com = calculate_cartesian_right_stop_pose(left_leg_client, right_leg_client)
     arms_msg = Float32MultiArray()
     arms_msg.data = [0.0, 0.3, 0.0, 0.0, -0.3, 0.0]
