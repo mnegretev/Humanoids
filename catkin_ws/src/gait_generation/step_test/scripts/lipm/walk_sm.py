@@ -168,7 +168,7 @@ class Initial(smach.State):
         #step=rospy.wait_for_message("/ball_position", Float32, timeout=None)
         walk_state=True
         end_state=True
-        step = int((0.56)/0.05)#int((step.data)/0.05) 
+        step = int((2.06)/0.05)#int((step.data)/0.05) 
         print(f"Steps needed to reach ball: {step}")
         start()
         return 'succ'
@@ -358,7 +358,7 @@ def main():
                                              'fail': 'Half_step_Left',
                                              'end' : 'get_up'})
         smach.StateMachine.add('get_up', get_up(), 
-                                transitions={'succ': 'exit', 
+                                transitions={'succ': 'Initial', 
                                              'fail': 'get_up'})
         smach.StateMachine.add('Lateral_step', Lateral_step(), 
                                 transitions={'succ': 'kick', 
