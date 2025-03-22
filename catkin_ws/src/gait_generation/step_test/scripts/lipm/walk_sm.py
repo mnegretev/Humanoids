@@ -170,7 +170,7 @@ class Initial(smach.State):
         end_state=True
         step = int((0.56)/0.05)#int((step.data)/0.05) 
         print(f"Steps needed to reach ball: {step}")
-        #start()
+        start()
         return 'succ'
     
 class Crouch(smach.State): 
@@ -338,7 +338,7 @@ def main():
     with sm:
     
         smach.StateMachine.add('Initial', Initial(),
-                               transitions={'succ': 'Lateral_step',
+                               transitions={'succ': 'Crouch',
                                             'fail': 'Initial'})
         smach.StateMachine.add('Crouch', Crouch(),
                                transitions={'succ': 'Full_step_Right',
@@ -358,7 +358,7 @@ def main():
                                              'fail': 'Half_step_Left',
                                              'end' : 'get_up'})
         smach.StateMachine.add('get_up', get_up(), 
-                                transitions={'succ': 'Lateral_step', 
+                                transitions={'succ': 'exit', 
                                              'fail': 'get_up'})
         smach.StateMachine.add('Lateral_step', Lateral_step(), 
                                 transitions={'succ': 'kick', 
