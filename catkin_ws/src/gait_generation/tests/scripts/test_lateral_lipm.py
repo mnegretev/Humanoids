@@ -125,7 +125,7 @@ Y_BODY_TO_FEET  = 0.056 #Mínimo valor =0.056 #Máximo valor =0.125#= 0.09
 Z_ROBOT_WALK    = 0.55
 Z_ROBOT_STATIC  = 0.576 #Máximo valor = 0.576 # m
 
-stepHeight  = 0.2
+stepHeight  = 0.1
 STEP_LENGTH = 0.1 # [m]
 ROBOT_VEL_X = 0.1 # [m]
 
@@ -161,7 +161,6 @@ def calculate_cartesian_left_first_step_pose(p_start, p_end, ik_client_left, ik_
 
     r_leg_abs_pos = np.full((len(T), 3), initial_r_foot_pos)
     l_leg_abs_pos = getFootSwingTraj(initial_l_foot_pos, final_l_foot_pos, stepHeight, T)
-
     r_leg_relative_pos  = r_leg_abs_pos - P_CoM
     l_leg_relative_pos  = l_leg_abs_pos - P_CoM
 
@@ -244,18 +243,15 @@ def getFootSwingTraj(initial_foot_position, final_foot_position, swing_height, t
 
     m_y = (y_1 - y_0)/(timeVector[-1] - timeVector[0])
     y_t = lambda t: y_0 + m_y*t
-    
-    m_t = (t_f - t_0)/len(timeVector)
-    tau_t = lambda t: t_0 + m_t*t
-    
+        
     h = t_0 + (t_f - t_0)/2
     k = swing_height
     a = -k/((t_0-h)**2)
-    z = lambda t: a*((t-h)**2) + k
+    z_t = lambda t: a*((t-h)**2) + k
 
     swingFootTrajectory = np.array([[0, 0, 0]])
     for i in timeVector:
-        aux = np.array([[x_t(i), y_t(i), z(tau_t(i))]])
+        aux = np.array([[x_t(i), y_t(i), z_t(i)]])
         swingFootTrajectory = np.concatenate((swingFootTrajectory,aux), axis=0)
     swingFootTrajectory = np.delete(swingFootTrajectory, 0, axis=0)
     return swingFootTrajectory
