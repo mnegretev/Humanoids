@@ -7,13 +7,13 @@
 namespace LIPM
 {
 
-struct state_t
+typedef struct state
 {
     double x_0;
     double dx_0;
     double dy_0;
     double t;
-};
+} state_t ;
 
 struct trajectory_t
 {
@@ -22,7 +22,7 @@ struct trajectory_t
     Eigen::MatrixXd q_right;
 };
 
-class Step {
+class StepHandler {
 private:
     const double y_feet_gap;
     const double static_height;
@@ -41,6 +41,18 @@ private:
     ros::Publisher  legs_goal_pose;
 
 public:
+
+    StepHandler(const double & gravity,
+         const double & y_feet_gap, 
+         const double & z_robot_walk,
+         const double & z_robot_static,
+         const double & step_length,
+         const double & step_height,
+         const double & com_x_offset,
+         const double & com_y_offset,
+         const double & lipm_sample_time,
+         const double & servo_sample_time);
+
     Eigen::MatrixXd getFootSwingTrajectory( const Eigen::Vector3d & initial_foot_position,
                                             const Eigen::Vector3d & final_foot_position,
                                             const double & swing_height,

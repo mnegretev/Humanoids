@@ -5,9 +5,9 @@
 #include "ctrl_msgs/CalculateIK.h"
 #include "ctrl_msgs/CalculateDK.h"
 
-
-Eigen::MatrixXd request_ik( const std::vector<Eigen::Vector3d>& P,
-                            ros::ServiceClient & srv_client)
+namespace LIPM
+{
+Eigen::MatrixXd StepHandler::request_ik( const Eigen::MatrixXd & P, ros::ServiceClient & srv_client)
 {
     Eigen::MatrixXd joint_values(P.size(), 6);
     ctrl_msgs::CalculateIK srv;
@@ -35,7 +35,7 @@ Eigen::MatrixXd request_ik( const std::vector<Eigen::Vector3d>& P,
 }
 
 // Solve LIPM initial condition to create a symmetric trajectory
-state_t findInitialConditionsLIPM(  const double step_length, 
+state_t StepHandler::findInitialConditionsLIPM(  const double step_length, 
                                     const double x_vel,
                                     const double y_foot_pos,
                                     const double z_model,
@@ -67,7 +67,7 @@ state_t findInitialConditionsLIPM(  const double step_length,
     return lipm_initial_state;
 }
 
-Eigen::MatrixXd getFootSwingTrajectory( const Eigen::Vector3d initial_foot_position,
+Eigen::MatrixXd StepHandler::getFootSwingTrajectory( const Eigen::Vector3d initial_foot_position,
                                         const Eigen::Vector3d final_foot_position,
                                         const double swing_height,
                                         const std::vector<double> time_vector)
@@ -101,4 +101,6 @@ Eigen::MatrixXd getFootSwingTrajectory( const Eigen::Vector3d initial_foot_posit
     return swing_foot_trajectory;
 }
 
-trajectory_t get_right_start_pose(const double displacement_ratio)
+trajectory_t Step_Handler::get_right_start_pose(const double displacement_ratio);
+
+} // Namespace LIPM
