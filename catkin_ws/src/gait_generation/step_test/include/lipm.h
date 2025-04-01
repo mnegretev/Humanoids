@@ -20,7 +20,7 @@ struct trajectory_t
     Eigen::Vector3d last_p_com;
     Eigen::MatrixXd q_left;
     Eigen::MatrixXd q_right;
-}
+};
 
 class Step {
 private:
@@ -38,13 +38,15 @@ private:
     ros::ServiceClient left_ik_srv;
     ros::ServiceClient right_ik_srv;
 
+    ros::Publisher  legs_goal_pose;
+
 public:
     Eigen::MatrixXd getFootSwingTrajectory( const Eigen::Vector3d & initial_foot_position,
                                             const Eigen::Vector3d & final_foot_position,
                                             const double & swing_height,
                                             const std::vector<double> & time_vector);
     
-    Eigen::MatrixXd request_ik( const Eigen::MatrixXd & P, ros::ServiceClient & service)
+    Eigen::MatrixXd request_ik( const Eigen::MatrixXd & P, ros::ServiceClient & service);
     
     state_t findInitialConditionsLIPM(  const double step_length, 
                                         const double x_vel,
