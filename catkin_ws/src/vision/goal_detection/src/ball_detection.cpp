@@ -17,8 +17,10 @@ float calculate_distance(const cv::Point& p1, const cv::Point& p2) {
 
 void imageCallback(const sensor_msgs::ImageConstPtr& msg) {
     cv_bridge::CvImagePtr cv_ptr;
+    std::string image_encoding;
+    ros::param::get("image_encoding", image_encoding);
     try {
-        cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
+        cv_ptr = cv_bridge::toCvCopy(msg, image_encoding);
     } catch (cv_bridge::Exception& e) {
         ROS_ERROR("cv_bridge exception: %s", e.what());
         return;
