@@ -4,6 +4,8 @@
 #include <Eigen/Dense>
 #include "ros/ros.h"
 
+using PointVector = std::vector<Eigen::Vector3d>;
+using JointVector  = std::vector<Eigen::VectorXd>;
 namespace LIPM
 {
 
@@ -18,8 +20,8 @@ typedef struct state
 struct trajectory_t
 {
     Eigen::Vector3d last_p_com;
-    Eigen::MatrixXd q_left;
-    Eigen::MatrixXd q_right;
+    PointVector q_left;
+    PointVector q_right;
 };
 
 class StepHandler {
@@ -53,12 +55,12 @@ public:
          const double & lipm_sample_time,
          const double & servo_sample_time);
 
-    Eigen::MatrixXd getFootSwingTrajectory( const Eigen::Vector3d & initial_foot_position,
+    PointVector getFootSwingTrajectory( const Eigen::Vector3d & initial_foot_position,
                                             const Eigen::Vector3d & final_foot_position,
                                             const double & swing_height,
                                             const std::vector<double> & time_vector);
     
-    Eigen::MatrixXd request_ik( const Eigen::MatrixXd & P, ros::ServiceClient & service);
+    JointVector request_ik( const PointVector & P, ros::ServiceClient & service);
     
     state_t findInitialConditionsLIPM(  const double step_length, 
                                         const double x_vel,

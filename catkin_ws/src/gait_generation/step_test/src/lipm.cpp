@@ -1,15 +1,18 @@
 #include <cmath>
 #include <iostream>
 #include <Eigen/Dense>
+#include "lipm.h"
 #include "ros/ros.h"
 #include "ctrl_msgs/CalculateIK.h"
 #include "ctrl_msgs/CalculateDK.h"
 
+
+
 namespace LIPM
 {
-Eigen::MatrixXd StepHandler::request_ik( const Eigen::MatrixXd & P, ros::ServiceClient & srv_client)
+JointVector StepHandler::request_ik( const PointVector & P, ros::ServiceClient & srv_client)
 {
-    Eigen::MatrixXd joint_values(P.size(), 6);
+    JointVector joint_values(6);
     ctrl_msgs::CalculateIK srv;
     for(auto vector: P)
     {
@@ -67,40 +70,44 @@ state_t StepHandler::findInitialConditionsLIPM(  const double step_length,
     return lipm_initial_state;
 }
 
-Eigen::MatrixXd StepHandler::getFootSwingTrajectory( const Eigen::Vector3d initial_foot_position,
-                                        const Eigen::Vector3d final_foot_position,
-                                        const double swing_height,
-                                        const std::vector<double> time_vector)
+PointVector StepHandler::getFootSwingTrajectory(const Eigen::Vector3d & initial_foot_position,
+                                                const Eigen::Vector3d & final_foot_position,
+                                                const double & swing_height,
+                                                const std::vector<double> & time_vector)
 {
+    double t_0 = time_vector.front();
+    double t_f = time_vector.back();
+
     double x_0 = initial_foot_position.x();
     double x_f = final_foot_position.x();
 
     double y_0 = initial_foot_position.y();
     double y_f = final_foot_position.y();
 
-    //Calculating parabola coefficients for swinging foot
-    //Using canonical equation  y = a(x-h)^2 + k
-    double h = x_0 + (x_f - x_0)/2;
-    double k = swing_height;
-    double a = -k/std::pow((x_0-h), 2);
-    double m_x = (x_f - x_0)/(time_vector.back() - time_vector.front());
-    double m_y = (y_f - y_0)/(time_vector.back() - time_vector.front());
+    //Using linear equation for x axis displacement
+    double m_x = (x_f - x_0)/(t_f - t_0);
+    auto x_t   = [&](double t) -> double {return x_0 + m_x*t; };    
 
-    auto x_t  = [&](double t) -> double {return x_0 + m_x*t; };
+    //Using linear equation for y axis displacement
+    double m_y = (y_f - y_0)/(t_f - t_0);
     auto y_t  = [&](double t) -> double {return y_0 + m_y*t; };
-    auto z    = [&](double x) -> double {return a*std::pow((x-h),2) + k; };
 
+    //Using canonical equation  z = a(t-h)^2 + k for height displacement z
+    double h = t_0 + (t_f - t_0)/2;
+    double k = swing_height;
+    double a = -k/std::pow((t_0-h), 2);
+    auto z_t = [&](double t) -> double { return a*std::pow((t-h),2) + k; };
     
-    std::vector<Eigen::Vector3d> swing_foot_trajectory;
+    PointVector swing_foot_trajectory;
     for(auto i: time_vector)
     {
-        Eigen::Vector3d aux(x_t(i), y_t(i), z(x_t(i)));
+        Eigen::Vector3d aux(x_t(i), y_t(i), z_t(i));
         swing_foot_trajectory.push_back(aux);
     }
 
     return swing_foot_trajectory;
 }
 
-trajectory_t Step_Handler::get_right_start_pose(const double displacement_ratio);
+ //trajectory_t Step_Handler::get_right_start_pose(const double displacement_ratio);
 
 } // Namespace LIPM
