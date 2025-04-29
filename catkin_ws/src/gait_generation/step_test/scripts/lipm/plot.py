@@ -1,61 +1,55 @@
 #!/usr/bin/env python3
 import rospy
-import pandas as pd
-import ast
+import numpy as np
+from ctrl_msgs.srv import CalculateDK, CalculateDKRequest
 import matplotlib.pyplot as plt
-from std_msgs.msg import String
-from mpl_toolkits.mplot3d import Axes3D  # Importación necesaria
+from mpl_toolkits.mplot3d import Axes3D
 
-def load_csv(file_path):
-    try:
-        # Read CSV assuming a single column with space-separated values
-        data = pd.read_csv(file_path, delim_whitespace=True, header=None)
-        data.columns = ['x', 'y', 'z', 'roll', 'pitch', 'yaw']
-        rospy.loginfo(f"Loaded {file_path} successfully.")
-        return data
-    except Exception as e:
-        rospy.logerr(f"Failed to load {file_path}: {e}")
-        return None
+def get_cartesian_positions(joint_trajectories):
+    rospy.wait_for_service('/manipulation/fk_leg_right_pose')
+    rospy.wait_for_service('/manipulation/fk_leg_left_pose')
+    if side == "right":
+        fk_service = rospy.ServiceProxy('/manipulation/fk_leg_right_pose', CalculateDK)
+    else:
+        fk_service = rospy.ServiceProxy('/manipulation/fk_leg_left_pose', CalculateDK)
+    cartesian_positions = []
 
-def plot():
-    rospy.loginfo("Plotting data from CSV files.")
+    for i, angles in enumerate(joint_trajectories):
+        try:
+            req = CalculateDKRequest()
+            req.joint_values = angles
+            resp = fk_service(req)
+            cartesian_positions.append([resp.x, resp.y, resp.z])
+        except rospy.ServiceException as e:
+            rospy.logerr(f"Error calling FK service for sample {i}: {e}")
+            cartesian_positions.append([None, None, None])
     
-    # Graficar cada conjunto de datos en una ventana diferente
-    for idx, df in enumerate(dataframes):
-        if df is not None:
-            x_vals = df['x'].tolist()
-            y_vals = df['y'].tolist()
-            z_vals = df['z'].tolist()
+    return np.array(cartesian_positions)
 
-            # Crear una nueva figura para cada archivo de datos
-            fig = plt.figure(figsize=(10, 6))
-            ax = fig.add_subplot(111, projection='3d')
+def plot_trajectory(positions):
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    xs, ys, zs = positions[:, 0], positions[:, 1], positions[:, 2]
 
-            # Graficar la trayectoria
-            ax.plot(x_vals, y_vals, z_vals, marker='o', label=f'Trayectoria {idx+1}')
+    ax.plot(xs, ys, zs, label='Trayectoria del efector final')
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Z')
+    ax.set_title('Trayectoria 3D del efector final')
+    ax.legend()
+    plt.tight_layout()
+    plt.show()
 
-            # Agregar etiquetas
-            ax.set_xlabel('Eje X')
-            ax.set_ylabel('Eje Y')
-            ax.set_zlabel('Eje Z')
+if __name__ == "__main__":
+    global side
+    rospy.init_node("traviz")
+    side = rospy.get_param("~side", "right")
+    npz_file = rospy.get_param("~NPZ")
+    data = np.load(npz_file)
+    leg_joint_angles = data[side]
 
-            # Agregar leyenda y mostrar la gráfica
-            ax.legend()
-            plt.show()
+    print("Calculando posiciones cartesianas...")
+    positions = get_cartesian_positions(leg_joint_angles)
 
-def main():
-    global dataframes
-    rospy.init_node('plot', anonymous=True)
-        
-    # Parameters for CSV files and topics
-    csv_files = ast.literal_eval(rospy.get_param('~csv_files'))  # List of CSV file paths
-    if not csv_files:
-        rospy.logerr("No CSV files provided. Please set the '~csv_files' parameter.")
-        rospy.signal_shutdown("No CSV files provided.")
-    dataframes = [load_csv(file) for file in csv_files]
-    while not rospy.is_shutdown():
-        plot()
-    rospy.spin()
-
-if __name__ == '__main__':
-    main()
+    print("Graficando...")
+    plot_trajectory(positions)
