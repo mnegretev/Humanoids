@@ -9,7 +9,6 @@ project(trajectory_planner)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
-  manip_msgs
   roscpp
   rospy
   sensor_msgs

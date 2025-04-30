@@ -6,7 +6,7 @@ import numpy
 import tf
 import tf.transformations as tft
 from std_msgs.msg import Float64MultiArray
-from manip_msgs.srv import *
+# from manip_msgs.srv import *
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 
 prompt = ""
