@@ -31,33 +31,33 @@ left:
         is4pin: false
       roll:
         id:   10
-        cw:   1
+        cw:   -1
         zero: 2064
         enabled: true
         is4pin: false
       pitch:
         id:   12
-        cw:   1
+        cw:   -1
         zero: 2068
         enabled: true
         is4pin: false
     knee:
       pitch: 
         id:   14
-        cw:   1
+        cw:   -1
         zero: 2083
         enabled: true
         is4pin: false
     ankle:
       pitch: 
         id:   16
-        cw:   -1
+        cw:   1
         zero: 2118
         enabled: true
         is4pin: false
       roll:
         id:   18
-        cw:   -1
+        cw:   1
         zero: 2051
         enabled: true
         is4pin: false
@@ -81,7 +81,7 @@ right:
     elbow:
       pitch:
         id:   5
-        cw:   1
+        cw:   -1
         zero: 1244
         enabled: true
         is4pin: false
@@ -95,33 +95,33 @@ right:
         is4pin: false
       roll:
         id:   9
-        cw:   1
+        cw:   -1
         zero: 2061
         enabled: true
         is4pin: false
       pitch:
         id:   11
-        cw:   -1
+        cw:   1
         zero: 2028
         enabled: true
         is4pin: false
     knee:
       pitch: 
         id:   13
-        cw:   -1
+        cw:   1
         zero: 2027
         enabled: true
         is4pin: false
     ankle:
       pitch:
         id:   15
-        cw:   1
+        cw:   -1
         zero: 2027
         enabled: true
         is4pin: false
       roll:
         id:   17
-        cw:   -1
+        cw:   1
         zero: 2055
         enabled: true
         is4pin: false
@@ -134,7 +134,7 @@ head:
     is4pin: true
   pitch:
     id:   20
-    cw:   -1
+    cw:   1
     zero: 2048
     enabled: true
     is4pin: true
