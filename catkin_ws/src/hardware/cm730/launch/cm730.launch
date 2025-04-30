@@ -1,8 +1,11 @@
 <launch>
+  <arg name="darwin" default="false"/>
+  
   <group ns="hardware">
     <node name="cm730_v2" pkg="cm730" type="cm730v2" required="true" output="screen"/>
     <param name="torque_enable" type="bool" value="true" />
   </group>
-  <rosparam command="load" file="$(find config_files)/hardware/chuy_servos_config.yaml" />
+  <rosparam command="load" file="$(find config_files)/hardware/chuy_servos_config.yaml" unless="$(arg darwin)" />
+  <rosparam command="load" file="$(find config_files)/hardware/darwin_servos_config.yaml" if="$(arg darwin)" />
   
 </launch>

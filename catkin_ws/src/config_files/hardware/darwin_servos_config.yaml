@@ -1,0 +1,140 @@
+# LEFT SIDE
+left:
+  arm:
+    shoulder:
+      pitch:
+        id:   2 # SERVOMOTOR ID (from 0 to 255)
+        cw:   1 # IS CLOCKWISE? (The only values accepted are 1 and -1)
+        zero: 2057 # NATURAL ZERO POSE OF HUMANOID IN DYNAMIXEL BITS (0-4095)
+        enabled: true
+        is4pin: false
+      roll:
+        id:   4
+        cw:   -1
+        zero: 2493
+        enabled: true # Needs to change
+        is4pin: true
+    elbow:
+      pitch:
+        id:   6
+        cw:   -1
+        zero: 2922
+        enabled: true
+        is4pin: true
+  leg:
+    hip:
+      yaw:
+        id:   8
+        cw:   -1
+        zero: 2123
+        enabled: true
+        is4pin: false
+      roll:
+        id:   10
+        cw:   1
+        zero: 2064
+        enabled: true
+        is4pin: false
+      pitch:
+        id:   12
+        cw:   1
+        zero: 2068
+        enabled: true
+        is4pin: false
+    knee:
+      pitch: 
+        id:   14
+        cw:   1
+        zero: 2083
+        enabled: true
+        is4pin: false
+    ankle:
+      pitch: 
+        id:   16
+        cw:   -1
+        zero: 2118
+        enabled: true
+        is4pin: false
+      roll:
+        id:   18
+        cw:   -1
+        zero: 2051
+        enabled: true
+        is4pin: false
+
+ # RIGHT SIDE  
+right:
+  arm:
+    shoulder:
+      pitch:
+        id:   1
+        cw:   -1
+        zero: 1993
+        enabled: true
+        is4pin: false
+      roll:
+        id:   3
+        cw:   -1
+        zero: 1609
+        enabled: true
+        is4pin: false
+    elbow:
+      pitch:
+        id:   5
+        cw:   1
+        zero: 1244
+        enabled: true
+        is4pin: false
+  leg:
+    hip:
+      yaw:
+        id:   7
+        cw:   -1
+        zero: 2088
+        enabled: true
+        is4pin: false
+      roll:
+        id:   9
+        cw:   1
+        zero: 2061
+        enabled: true
+        is4pin: false
+      pitch:
+        id:   11
+        cw:   -1
+        zero: 2028
+        enabled: true
+        is4pin: false
+    knee:
+      pitch: 
+        id:   13
+        cw:   -1
+        zero: 2027
+        enabled: true
+        is4pin: false
+    ankle:
+      pitch:
+        id:   15
+        cw:   1
+        zero: 2027
+        enabled: true
+        is4pin: false
+      roll:
+        id:   17
+        cw:   -1
+        zero: 2055
+        enabled: true
+        is4pin: false
+head:
+  yaw:
+    id:   19
+    cw:   1
+    zero: 2020
+    enabled: true
+    is4pin: true
+  pitch:
+    id:   20
+    cw:   -1
+    zero: 2048
+    enabled: true
+    is4pin: true
