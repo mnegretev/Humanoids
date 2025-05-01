@@ -1,0 +1,16 @@
+<launch>
+    <param name="robot_description" command="cat $(find nimbro_op_model)/robots/simple_nimbro_op_hull.xml" />
+    <param name="robot_description_semantic" textfile="$(find nimbro_op_srdf)/config/nimbro_op_hull.srdf" />
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+
+    <!-- HARDWARE -->
+    <include file="$(find cm730)/launch/cm730.launch">
+        <arg name="darwin" value="true"/>
+    </include>
+    <include file="$(find imu)/launch/mpu6050_unfiltered.launch"/>
+
+    <!-- STATE MACHINES -->
+    <include file="$(find goal_detection)/launch/test_goal_detection.launch"/>
+    <include file="$(find step_test)/launch/walk/smwalk.launch"/>
+
+</launch>
