@@ -10,23 +10,38 @@ import cv2
 import rospy
 from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
+import os 
 
 PUBL_NAME  = "camera_video_publisher"
 TOPIC_NAME = "/hardware/camera/image"
-CAMERA     = 0
+CAMERA     = 2
 RATE       = 30.0
+
+def configure_camera():
+    # Configuración de la cámara usando v4l2-ctl
+    os.system("v4l2-ctl -d /dev/video{} -c focus_automatic_continuous=0".format(CAMERA))
+    os.system("v4l2-ctl -d /dev/video{} -c white_balance_automatic=0".format(CAMERA))
+    os.system("v4l2-ctl -d /dev/video{} -c auto_exposure=1".format(CAMERA))  
+    os.system("v4l2-ctl -d /dev/video{} -c exposure_time_absolute=50".format(CAMERA)) 
+    os.system("v4l2-ctl -d /dev/video{} -c white_balance_temperature=4500".format(CAMERA))
+
 
 def main():
     # Check: http://wiki.ros.org/rospy/Overview/Publishers%20and%20Subscribers
     pub_img = rospy.Publisher(TOPIC_NAME, Image, queue_size = 10)
     # Check: http://wiki.ros.org/rospy/Overview/Initialization%20and%20Shutdown
     rospy.init_node(PUBL_NAME)
+
+    configure_camera()
+
     video_capture = cv2.VideoCapture(CAMERA)
     video_capture.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
     video_capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
     video_capture.set(cv2.CAP_PROP_FPS, 30)
+
     bridge = CvBridge()
     rate = rospy.Rate(RATE)
+
     while not rospy.is_shutdown():
         ret, frame = video_capture.read()
         if not ret:
