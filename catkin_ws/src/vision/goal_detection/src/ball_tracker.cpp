@@ -1,32 +1,138 @@
-#include <iostream>
 #include <ros/ros.h>
-#include <sensor_msg/Image.h>
 #include <geometry_msgs/Point32.h>
-#include <cv_bridge/cv_bridge.h>
-#include <opencv2/opencv.hpp>
+#include <std_msgs/Float32MultiArray.h>
 #include <cmath>
-#include <sensor_msgs/image_encodings.h>
 
-ros::Publisher ball_image_pub;
-ros::Publisher hue_image_pub;
-ros::Publisher centroid_pub;
-cv::Point center (-1 -1);
-cv::Point prev_center (-1 -1);
+const double PAN_MIN = -M_PI / 2.1;
+const double PAN_MAX = M_PI / 2.1;
+const double TILT_MIN = 0.0;
+const double TILT_MAX = 1.0;
 
-float calculate_distance(const cv::Point& center1, const cv::Point& center2){
-    return std::sqrt(std::pow(center1.x - center2.x, 2) + std::pow(center1.y - center2.y, 2));
-}
-void callback_image(const sensor_msgs::ImageConstPtr& msg){
-    cv_bridge::CvImagePtr cv_ptr;
-    try {
-        cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
-    }
-    catch (cv_bridge::Exception& e){
-        ROS_ERROR("cv_bridge exception: %s", e.what ());
-        return ;
-    }
-    cv::Mat cv_image = cv_ptr->image;
-    cv::Mat gray, blur;
+ros::Publisher tracker_pub;
+//ros::Subscriber head_position_sub;
+//ros::Subscriber filtered_centroid;
+ros::Time last_detection_time;
 
+double timeout = 5.0;  
+float pan_robot = 0.0, tilt_robot = 0.0;
+float last_search_pan ;
+float last_search_tilt;
+enum State { SEARCHING, TRACKING, LOST };
+State current_state = SEARCHING;
+
+geometry_msgs::Point32 getSearchTrajectory() {
+    static double current_pan = PAN_MIN;
+    static double current_tilt = TILT_MIN;
+    static bool increasing_pan = true;
     
+    geometry_msgs::Point32 search_point;
+    
+    if (increasing_pan) {
+        current_pan += 0.05;
+        if (current_pan >= PAN_MAX) {
+            current_pan = PAN_MAX;
+            increasing_pan = false;
+            if (current_tilt < TILT_MAX) current_tilt += 0.2;
+        }
+    } else {
+        current_pan -= 0.05;
+        if (current_pan <= PAN_MIN) {
+            current_pan = PAN_MIN;
+            increasing_pan = true;
+            if (current_tilt < TILT_MAX) current_tilt += 0.2;
+        }
+    }
+
+    search_point.x = current_pan;
+    search_point.y = current_tilt;
+    last_search_pan = current_pan;
+    last_search_tilt = current_tilt;
+    return search_point;
+}
+
+void stateMachine() {
+    ros::Time current_time = ros::Time::now();
+    double time_since_last_detection = (current_time - last_detection_time).toSec();
+    std_msgs::Float32MultiArray head_goal_pose_msg;
+
+    switch (current_state) {
+        case SEARCHING:
+            if (time_since_last_detection > timeout) {
+                geometry_msgs::Point32 search_point = getSearchTrajectory();
+                head_goal_pose_msg.data = {search_point.x, search_point.y};
+                tracker_pub.publish(head_goal_pose_msg);
+                ROS_INFO("Searching... pan: %.2f, tilt: %.2f", search_point.x, search_point.y);
+            }
+            break;
+
+        case TRACKING:
+            if (time_since_last_detection > timeout) {
+                ROS_WARN("Lost ball, switching to LOST state");
+                current_state = LOST;
+            }
+            break;
+
+        case LOST:
+            if (time_since_last_detection > timeout + 3.0) { 
+                ROS_WARN("No ball detected, returning to SEARCHING state");
+                current_state = SEARCHING;
+            }
+            break;
+    }
+}
+
+void centroidCallback(const geometry_msgs::Point32::ConstPtr& msg) {
+    last_detection_time = ros::Time::now();
+    std_msgs::Float32MultiArray head_goal_pose_msg;
+    pan_robot= last_search_pan;
+    tilt_robot= last_search_tilt;
+    float 
+    center_x = msg->x, 
+    center_y = msg ->y,
+    kpan=0.05/320,
+    ktilt = 0.025/240;
+
+    int 
+    Cx=320,
+    Cy=240,
+    ex = center_x-Cx, 
+    ey = center_y-Cy;
+
+    float
+    pan = -kpan * ex,
+    tilt = ktilt * ey;
+
+    pan_robot += pan;
+    tilt_robot += tilt;
+    last_search_pan = pan_robot;
+    last_search_tilt = tilt_robot;
+    std::cout << "Center:"<<center_x<<","<<center_y<<std::endl;
+    std::cout<<"Coordenadas:"<<pan_robot<<","<<tilt_robot<<std::endl;
+    std::cout<<"Error***:"<<ex<<","<<ey<<std::endl;
+
+    head_goal_pose_msg.data = {pan_robot, tilt_robot};
+
+    tracker_pub.publish(head_goal_pose_msg);
+
+}
+void headPositionCallback(const std_msgs::Float32MultiArray::ConstPtr& msg) {
+    pan_robot = msg->data[18];
+    tilt_robot = msg->data[19];
+}
+
+int main(int argc, char** argv) {
+    ros::init(argc, argv, "ball_tracker");
+    ros::NodeHandle nh;
+    last_detection_time = ros::Time::now();
+    ros::Subscriber centroid_sub = nh.subscribe("/centroid_publisher", 1, centroidCallback);
+    //filtered_centroid = nh.subscribe("/filtered_centroid",1, centroidCallback);
+    tracker_pub = nh.advertise<std_msgs::Float32MultiArray>("/hardware/head_goal_pose", 1);
+
+    ros::Rate loop_rate(10); // Se ejecuta a 10 Hz (sin timers)
+    while (ros::ok()) {
+        stateMachine();
+        ros::spinOnce();
+        loop_rate.sleep();
+    }
+    return 0;
 }

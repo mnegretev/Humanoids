@@ -6,12 +6,12 @@
 # hsv_s_max: 160
 # hsv_v_min: 70
 # hsv_v_max: 255
-hsv_h_min: 19
-hsv_h_max: 32
-hsv_s_min: 83
-hsv_s_max: 183
-hsv_v_min: 174
-hsv_v_max: 255
+hsv_h_min: 33
+hsv_h_max: 39
+hsv_s_min: 81
+hsv_s_max: 152
+hsv_v_min: 137
+hsv_v_max: 242
 
 
 # HLS PARAM CONFIGURATION
@@ -23,5 +23,5 @@ hls_s_min: 0
 hls_s_max: 255
 
 # CAMERA PARAMETERS
-rgb8: true
+image_encoding: "rgb8"
 use_hsv: true
