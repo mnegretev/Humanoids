@@ -6,6 +6,6 @@
     <param name="torque_enable" type="bool" value="true" />
   </group>
   <rosparam command="load" file="$(find config_files)/hardware/chuy_servos_config.yaml" unless="$(arg darwin)" />
-  <rosparam command="load" file="$(find config_files)/hardware/darwin_servos_config.yaml" if="$(arg darwin)" />
+  <rosparam command="load" file="$(find config_files)/hardware/darwin2_servos_config.yaml" if="$(arg darwin)" />
   
 </launch>
