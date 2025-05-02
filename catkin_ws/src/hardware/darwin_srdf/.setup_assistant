@@ -1,0 +1,11 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: darwin_description
+    relative_path: urdf/darwin_lab.urdf
+    xacro_args: ""
+  SRDF:
+    relative_path: config/darwin_lab.srdf
+  CONFIG:
+    author_name: darwin
+    author_email: darwin@gmail.com
+    generated_timestamp: 1746216865
