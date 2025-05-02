@@ -1,6 +1,6 @@
 <launch>
 	<arg name="fixed" default="false"/>
-    <include file="$(find surge_et_ambula)/launch/humanoid_hardware_simul.launch">
+    <include file="$(find surge_et_ambula)/launch/simul/humanoid_hardware_simul.launch">
 		<arg name="fixed" value="$(arg fixed)"/>
 	</include>
 

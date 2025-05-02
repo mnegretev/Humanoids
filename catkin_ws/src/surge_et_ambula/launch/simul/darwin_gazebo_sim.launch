@@ -1,65 +1,28 @@
 <launch>
 
+	<!-- URDF -->
+	<param name="robot_description" textfile="$(find darwin_description)/urdf/darwin_lab.urdf" /> 
+	<node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -model darwin_lab -z 0.3417" />
+
+	<!-- ROBOT CONTROL -->
+	<include file="$(find darwin_control)/launch/darwin_control.launch"/>
+	<node name="darwin_walker" pkg="darwin_gazebo" type="walker.py" />
+
 	<!-- GAZEBO -->
-   	<param name="robot_description" textfile="$(find darwin_description)/urdf/darwin.urdf" />  
+	<env name="GAZEBO_MODEL_PATH" value="$(find nimbro_op_gazebo)/models:$(optenv GAZEBO_MODEL_PATH)"/>
    	<include file="$(find gazebo_ros)/launch/empty_world.launch">
     	<arg name="world_name" value="$(find nimbro_op_gazebo)/worlds/nimbro_op.world"/>
     	<arg name="paused" value="true"/>
   	</include>
-	<node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-file $(find darwin_description)/urdf/darwin.urdf -urdf -model darwin -z 0.3417" />
-  	
-	<!-- CONTROL -->
-	<include file="$(find darwin_control)/launch/darwin_control.launch"/>
-	<node name="darwin_walker" pkg="darwin_gazebo" type="walker.py" />
-
-	<!-- <node name="humanoid_gui" pkg="humanoid_gui" type="humanoid_gui" output="screen"/> -->
-
-	<!-- <node name="imu_handler" pkg="imu" type="imu_simul_handler_node.py"/> -->
 	
-    <!-- <group ns="control">
-        <rosparam command="load" file="$(find nimbro_op_srdf)/config/kinematics.yaml"/>
-        <node name="inverse_kinematics" pkg="inverse_kinematics" type="ik_moveit_node" output="screen"/>
-    </group> -->
-    
-    <!-- Load joint controller configurations from YAML file to parameter server -->
-    <!-- <rosparam file="$(find nimbro_op_gazebo)/config/controllers.yaml" command="load"/> -->
+	<group ns="hardware">
+      <node name="gazebo_joint_reader" pkg="gazebo_joint_reader" type="darwin_gazebo_joint_reader" respawn="true"/>
+      <node name="control_remapper" pkg="gazebo_control_remapper" type="darwin_gazebo_control_remapper" output="screen"/>
+    </group>
 
-    <!-- load the controllers -->
-    <!-- <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
-	  output="screen" ns="/nimbro"
-	  args="
-		right_hip_yaw_position_controller
-		right_hip_roll_position_controller
-		right_hip_pitch_position_controller
-		right_knee_pitch_position_controller
-		right_ankle_pitch_position_controller
-		right_ankle_roll_position_controller
-                
-		left_hip_yaw_position_controller
-		left_hip_roll_position_controller
-		left_hip_pitch_position_controller
-		left_knee_pitch_position_controller
-		left_ankle_pitch_position_controller
-		left_ankle_roll_position_controller
-                
-		right_shoulder_pitch_position_controller
-		right_shoulder_roll_position_controller
-		right_elbow_pitch_position_controller    
-                
-		left_shoulder_pitch_position_controller
-		left_shoulder_roll_position_controller
-		left_elbow_pitch_position_controller    
-                
-		neck_yaw_position_controller
-		head_pitch_position_controller
-                
-		joint_state_controller
-		"
-          /> -->
-	
-	<!-- <node name="get_predef_poses_server" pkg="humanoid" type="get_predef_poses_server.py" output="screen"/> -->
-	<!-- <node name="speed_profile_server"    pkg="humanoid" type="speed_profile_server.py"/> -->
-	<!-- <node name="vision_mask" 			 pkg="goal_detection" type="ball_detection_node.py"/> -->
-	<!-- <rosparam command="load" file="$(find goal_detection)/config/vision_config_simulation.yaml" /> -->
-
+	<!-- HRI -->
+	<group ns="hri">
+        <node name="rviz" pkg="rviz" type="rviz" args="-d $(find config_files)/rviz/config.rviz" required="true"/>
+    </group>
+	<node name="humanoid_gui" pkg="humanoid_gui" type="humanoid_gui" output="screen"/>
 </launch>
