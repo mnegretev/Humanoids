@@ -1,6 +1,8 @@
 <launch>
-    <param name="path" value="$(find step_test)/scripts/getup/poses/front" />
+    <group ns="hardware">
+        <param name="path" value="$(find step_test)/scripts/getup/poses/front" />
         <node name="getup_server" pkg="step_test" type="get_up_service.py" output="screen"/>
-    <node pkg="step_test" type="test_service.py" name="getup" output="screen" required="true"> 
-    </node>
+        <node pkg="step_test" type="test_service.py" name="getup" output="screen" required="true"> 
+        </node>
+    </group>
 </launch>

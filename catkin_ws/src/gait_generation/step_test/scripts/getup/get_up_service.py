@@ -57,10 +57,10 @@ def handle(req):
 
 def main():
     global pub_arm_left_goal_pose, pub_arm_right_goal_pose, pub_leg_left_goal_pose, pub_leg_right_goal_pose
-    pub_leg_left_goal_pose = rospy.Publisher("/leg_left_goal_pose", Float32MultiArray, queue_size=1)
-    pub_leg_right_goal_pose = rospy.Publisher("/leg_right_goal_pose", Float32MultiArray , queue_size=1)
-    pub_arm_left_goal_pose = rospy.Publisher("/arm_left_goal_pose", Float32MultiArray, queue_size=1)
-    pub_arm_right_goal_pose = rospy.Publisher("/arm_right_goal_pose", Float32MultiArray , queue_size=1)
+    pub_leg_left_goal_pose = rospy.Publisher("/hardware/leg_left_goal_pose", Float32MultiArray, queue_size=1)
+    pub_leg_right_goal_pose = rospy.Publisher("/hardware/leg_right_goal_pose", Float32MultiArray , queue_size=1)
+    pub_arm_left_goal_pose = rospy.Publisher("/hardware/arm_left_goal_pose", Float32MultiArray, queue_size=1)
+    pub_arm_right_goal_pose = rospy.Publisher("/hardware/arm_right_goal_pose", Float32MultiArray , queue_size=1)
     rospy.init_node("getup_server")
     print("Iniciando servicio")
     service = rospy.Service('getup', Getup, handle)
