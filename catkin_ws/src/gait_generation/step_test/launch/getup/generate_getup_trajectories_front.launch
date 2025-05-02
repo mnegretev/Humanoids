@@ -1,6 +1,9 @@
-<launch>
+<launch>    
+<arg name="darwin" default="false" />
+
         <node pkg="step_test" type="sm_traj_generator.py" name="generate_getup_poses_sm" output="screen" required="true"> 
-            <param name="trajectory_dir"            value="$(find step_test)/scripts/getup/poses/front"/>
+            <param name="trajectory_dir"            value="$(find step_test)/scripts/getup/poses/front/darwin" if="$(arg darwin)"/>
+            <param name="trajectory_dir"            value="$(find step_test)/scripts/getup/poses/front" unless="$(arg darwin)"/>
         </node>
         <include file="$(find cm730)/launch/cm730_no_torque.launch"/>
 </launch>
