@@ -13,9 +13,6 @@ from trajectory_planner import trajectory_planner
 from sensor_msgs.msg import JointState
 import smach_ros
 
-Y_BODY_TO_FEET  = 0.0555
-Z_ROBOT_STATIC= 0.56 # m
-
 # Tiempo de muestreo maximo para escribir a los servomotores
 SERVO_SAMPLE_TIME = 0.025 # [s]
 

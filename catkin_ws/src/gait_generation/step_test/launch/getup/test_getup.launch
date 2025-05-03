@@ -1,5 +1,7 @@
 <launch>
-    <param name="path" value="$(find step_test)/scripts/getup/poses/front/darwin" />
+<arg name="darwin" default="false" />
+    <param name="path" value="$(find step_test)/scripts/getup/poses/front/darwin" if="$(arg darwin)"/>
+    <param name="path" value="$(find step_test)/scripts/getup/poses/front" unless="$(arg darwin)"/>
         <node name="getup_server" pkg="step_test" type="get_up_service.py" output="screen"/>
     <node pkg="step_test" type="test_service.py" name="getup" output="screen" required="true"> 
     </node>
