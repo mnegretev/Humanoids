@@ -5,18 +5,19 @@ from std_msgs.msg import Float32MultiArray
 import numpy as np
 import time
 import os
+import glob
 from ctrl_msgs.srv import Getup, GetupResponse
 
 def read_poses(trajectory_dir):
     global arms, legs
     arms=[]
     legs=[]
-    for traj in sorted(os.listdir(trajectory_dir)):
+    for traj in sorted(glob.glob(os.path.join(trajectory_dir, '*.npz'))):
         print(traj)
         if "arms" in traj:
-            arms.append(np.load(os.path.join(trajectory_dir,traj)))
+            arms.append(np.load(traj))
         else:
-            legs.append(np.load(os.path.join(trajectory_dir,traj)))   
+            legs.append(np.load(traj))   
 
 def handle(req):
     try:
