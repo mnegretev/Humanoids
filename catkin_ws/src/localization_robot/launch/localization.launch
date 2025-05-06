@@ -1,0 +1,7 @@
+<launch>
+    <group ns="hri">
+        <node name="rviz" pkg="rviz" type="rviz" args="-d $(find config_files)/rviz/config.rviz" required="true"/>
+    </group>
+    <node name = "map_node" pkg = "localization_robot" type = "map_node" output="screen"/> 
+    <node name="particle_generator" pkg="localization_robot" type="particle_generator" output="screen"/>
+</launch>
