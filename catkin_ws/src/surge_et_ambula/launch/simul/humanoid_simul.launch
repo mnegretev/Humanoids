@@ -52,7 +52,8 @@
 		joint_state_controller
 		"
           />
-	
+	<node name = "map_node" pkg = "localization_robot" type = "map_node"/> 
+	<node name="particle_generator" pkg="localization_robot" type="particle_generator"/>
 	<node name="get_predef_poses_server" pkg="humanoid" type="get_predef_poses_server.py" output="screen"/>
 	<node name="speed_profile_server"    pkg="humanoid" type="speed_profile_server.py"/>
 	<node name="vision_mask" 			 pkg="goal_detection" type="ball_detection_node.py"/>
