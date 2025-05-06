@@ -114,7 +114,6 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg) {
 int main(int argc, char** argv) {
     ros::init(argc, argv, "ball_detection");
     ros::NodeHandle nh;
-
     ros::Subscriber image_sub = nh.subscribe("/hardware/camera/image", 1, imageCallback);
     centroid_pub = nh.advertise<geometry_msgs::Point32>("/centroid_publisher", 1);
     ball_image_pub = nh.advertise<sensor_msgs::Image>("/ball_image", 1);

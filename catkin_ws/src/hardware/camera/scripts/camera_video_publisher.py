@@ -14,15 +14,15 @@ import os
 
 PUBL_NAME  = "camera_video_publisher"
 TOPIC_NAME = "/hardware/camera/image"
-CAMERA     = 2
+CAMERA     = 0
 RATE       = 30.0
 
 def configure_camera():
     # Configuración de la cámara usando v4l2-ctl
-    os.system("v4l2-ctl -d /dev/video{} -c focus_automatic_continuous=0".format(CAMERA))
-    os.system("v4l2-ctl -d /dev/video{} -c white_balance_automatic=0".format(CAMERA))
-    os.system("v4l2-ctl -d /dev/video{} -c auto_exposure=1".format(CAMERA))  
-    os.system("v4l2-ctl -d /dev/video{} -c exposure_time_absolute=50".format(CAMERA)) 
+    os.system("v4l2-ctl -d /dev/video{} -c focus_auto=0".format(CAMERA))
+    os.system("v4l2-ctl -d /dev/video{} -c white_balance_temperature_auto=0".format(CAMERA))
+    os.system("v4l2-ctl -d /dev/video{} -c exposure_auto=1".format(CAMERA))  
+    os.system("v4l2-ctl -d /dev/video{} -c exposure_absolute=50".format(CAMERA)) 
     os.system("v4l2-ctl -d /dev/video{} -c white_balance_temperature=4500".format(CAMERA))
 
 

@@ -4,24 +4,26 @@
 #include <geometry_msgs/Point32.h>
 #include <cv_bridge/cv_bridge.h>
 #include <opencv2/opencv.hpp>
+#include <cmath>
 
 ros::Publisher pub_head_goal;
 ros::Publisher centroid_pub;
 ros::Publisher original_cv_image_pub;
-
+ros::Publisher goal_image_pub;
+ros::Publisher hue_image_pub;
 void imageCallback(const sensor_msgs::ImageConstPtr& msg)
 {
-    cv::Mat cv_image;
+    cv_bridge::CvImagePtr cv_ptr;
     try
     {
-        cv_image = cv_bridge::toCvCopy(msg, "rgb8")->image;
+        cv_ptr = cv_bridge::toCvCopy(msg, "rgb8");
     }
     catch (cv_bridge::Exception& e)
     {
         ROS_ERROR("cv_bridge exception: %s", e.what());
         return;
     }
-
+    cv::Mat cv_image = cv_ptr->image;
     // Convert to HSV and mask
     cv::Mat hsv_image;
     cv::cvtColor(cv_image, hsv_image, cv::COLOR_RGB2HSV);
@@ -30,7 +32,7 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg)
     cv::cvtColor(cv_image, gray_image, cv::COLOR_BGR2GRAY);
 
     cv::Mat mask;
-    cv::inRange(hsv_image, cv::Scalar(0, 0, 0), cv::Scalar(179, 255, 32), mask);
+    cv::inRange(hsv_image, cv::Scalar(0, 0, 0), cv::Scalar(179, 255, 80), mask);
 
     cv::Mat image_mask;
     cv::bitwise_and(cv_image, cv_image, image_mask, mask);
@@ -72,9 +74,9 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg)
         cv::HuMoments(M, hu_moments);
         std::cout<< hu_moments << std::endl;
         if (0.19 > hu_moments.at <double> (0) > 0.18  &&
-            0.005 > hu_moments.at <double>( 1) > 0.004  
-            // 3 > hu_moments.at <double> (0) > 2.4 ||
-            //  8.4 > hu_moments.at <double> (1) > 5.3
+            0.005 > hu_moments.at <double>( 1) > 0.004  ||
+            6.8 > hu_moments.at <double> (0) > 2.2||
+            7.6 > hu_moments.at <double> (1) > 5.7
             ) 
             {
 
@@ -108,27 +110,17 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg)
         centroid_msg.x = cx;
         centroid_msg.y = cy;
         centroid_pub.publish(centroid_msg);
-
-    //     // Publish head goal
-    //     std_msgs::Float32MultiArray head_goal_pose;
-    //     head_goal_pose.data.push_back(goal_pan);
-    //     head_goal_pose.data.push_back(goal_tilt);
-    //     pub_head_goal.publish(head_goal_pose);
     }
 
     // Publish original image
     sensor_msgs::ImagePtr msg_pub = cv_bridge::CvImage(std_msgs::Header(), "bgr8", cv_image).toImageMsg();
     original_cv_image_pub.publish(msg_pub);
 
-    // Show debug images
-    cv::imshow("Original", cv_image);
-    cv::imshow("HSV Image", hsv_image);
-    cv::imshow("Blur Image", blur);
-    cv::imshow("Image Mask", mask);
-    cv::imshow("Canny Edges", edges);
-    cv::imshow("Contours", contour_output);
-    cv::imshow("Detected Lines", cdstP);
-    cv::waitKey(10);
+    sensor_msgs::ImagePtr goal_output = cv_bridge::CvImage(std_msgs::Header(), "bgr8", contour_output).toImageMsg();
+    goal_image_pub.publish(goal_output);
+    
+    sensor_msgs::ImagePtr blur_msg = cv_bridge::CvImage(std_msgs::Header(), "mono8", blur).toImageMsg();
+    hue_image_pub.publish(blur_msg);
 }
 
 int main(int argc, char** argv)
@@ -138,8 +130,10 @@ int main(int argc, char** argv)
     ros::NodeHandle nh;
     ros::Subscriber sub = nh.subscribe("/hardware/camera/image", 1, imageCallback);
     pub_head_goal = nh.advertise<std_msgs::Float32MultiArray>("/hardware/head_goal_pose", 1);
-    centroid_pub = nh.advertise<geometry_msgs::Point32>("/centroid_publisher", 1);
+    centroid_pub = nh.advertise<geometry_msgs::Point32>("/centroid_goal_publisher", 1);
     original_cv_image_pub = nh.advertise<sensor_msgs::Image>("/original_image", 1);
+    goal_image_pub = nh.advertise<sensor_msgs::Image>("/ball_image", 1);
+    hue_image_pub = nh.advertise<sensor_msgs::Image>("/hue_image", 1);
 
     ros::spin();
     return 0;

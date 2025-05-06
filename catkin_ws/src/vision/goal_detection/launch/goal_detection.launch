@@ -1,0 +1,7 @@
+<launch>
+    <node name = "camera_video_publisher" pkg = "camera" type = "camera_video_publisher.py" output="screen"/> 
+    <!-- <include file="$(find surge_et_ambula)/launch/humanoid_simul.launch"/> -->
+    <node name="goal_detector" pkg="goal_detection" type="goal_detector" output="screen"/>
+    <node name="goal_tracker" pkg="goal_detection" type="goal_tracker" output="screen" required="true">
+    </node>
+</launch>

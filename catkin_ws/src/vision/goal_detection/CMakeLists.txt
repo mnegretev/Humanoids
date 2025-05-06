@@ -216,8 +216,8 @@ target_link_libraries(ball_tracker ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 add_executable(goal_detector src/goal_detector.cpp)
 target_link_libraries(goal_detector ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 
-# add_executable(kalman_filter_node src/kalman_filter.cpp)
-# target_link_libraries(kalman_filter_node ${catkin_LIBRARIES} Eigen3::Eigen)
+add_executable(goal_tracker src/goal_tracker.cpp)
+target_link_libraries(goal_tracker ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 
 # add_executable(kalman_filter src/kalman_filter.cpp)
 # target_link_libraries(kalman_filter ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
