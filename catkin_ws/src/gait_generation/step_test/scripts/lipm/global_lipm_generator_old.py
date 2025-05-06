@@ -19,7 +19,7 @@ Z_ROBOT_WALK    = 0.50
 # Z_ROBOT_STATIC= 0.56 # m
 Z_ROBOT_STATIC= 0.60 # m
 
-stepHeight = 0.1
+stepHeight = 0.05
 STEP_LENGTH = 0.1 # [m]
 ROBOT_VEL_X = 0.1 # [m]
 

@@ -5,8 +5,9 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Grid1
+        - /RobotModel1
         - /Image1
-        - /Image2
+        - /Axes1
       Splitter Ratio: 0.5
     Tree Height: 484
   - Class: rviz/Selection
@@ -19,7 +20,7 @@ Panels:
   - Class: rviz/Time
     Name: Time
     SyncMode: 0
-    SyncSource: Image
+    SyncSource: ""
 Preferences:
   PromptSaveOnExit: true
 Toolbars:
@@ -55,6 +56,50 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
+        MP_ARM_GRIPPER_FIX_DUMMY_L:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        MP_ARM_GRIPPER_FIX_DUMMY_R:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        MP_ARM_GRIPPER_FIX_L:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        MP_ARM_GRIPPER_FIX_R:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        MP_ARM_GRIPPER_MOV_L:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        MP_ARM_GRIPPER_MOV_R:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        MP_BACK_L:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        MP_BACK_R:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         camera_optical:
           Alpha: 1
           Show Axes: false
@@ -78,10 +123,6 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        left_foot_plane_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
         left_hip_roll_link:
           Alpha: 1
           Show Axes: false
@@ -132,10 +173,6 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        right_foot_plane_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
         right_hip_roll_link:
           Alpha: 1
           Show Axes: false
@@ -176,6 +213,10 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        world:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
       Name: RobotModel
       Robot Description: robot_description
       TF Prefix: ""
@@ -252,7 +293,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 2.7869410514831543
+      Distance: 1.254752516746521
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -268,9 +309,9 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.28979676961898804
+      Pitch: 0.37479662895202637
       Target Frame: <Fixed Frame>
-      Yaw: 2.751713275909424
+      Yaw: 3.3317129611968994
     Saved: ~
 Window Geometry:
   Displays:
@@ -289,4 +330,4 @@ Window Geometry:
     collapsed: false
   Width: 2452
   X: 1008
-  Y: 152
+  Y: 78

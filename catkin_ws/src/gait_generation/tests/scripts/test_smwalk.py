@@ -128,7 +128,7 @@ def main():
     global left_leg_pub, right_leg_pub
     rospy.init_node("walk_test")
     left_leg_pub = rospy.Publisher("/hardware/leg_left_goal_pose", Float32MultiArray, queue_size=1)
-    right_leg_pub = rospy.Publisher("/hardware/leg_left_goal_pose", Float32MultiArray, queue_size=1)
+    right_leg_pub = rospy.Publisher("/hardware/leg_right_goal_pose", Float32MultiArray, queue_size=1)
     start_pose_file = rospy.get_param("~start_pose")
     first_half_step_file = rospy.get_param("~left_first_halfstep")
     right_full_step_file = rospy.get_param("~right_full_step")

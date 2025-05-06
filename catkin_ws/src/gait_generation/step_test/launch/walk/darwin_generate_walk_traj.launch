@@ -1,0 +1,12 @@
+<launch>
+    <param name="robot_description" command="cat $(find darwin_description)/urdf/darwin_lab.urdf" />
+    <param name="robot_description_semantic" textfile="$(find darwin_srdf)/config/darwin_lab.srdf" />
+    <group ns="control">
+        <rosparam command="load" file="$(find darwin_srdf)/config/kinematics.yaml"/>
+        <!-- <node name="inverse_kinematics" pkg="inverse_kinematics" type="ik_geometric_node.py"/> -->
+        <node name="inverse_kinematics" pkg="inverse_kinematics" type="ik_moveit_node"/>
+    </group>
+    <node pkg="step_test" type="global_lipm_generator.py" name="traj_generator" output="screen" required="true"> 
+        <param name="trajectory_dir" value="$(find step_test)/scripts/lipm/darwin/geometric_trajectories"/>
+    </node>
+</launch>

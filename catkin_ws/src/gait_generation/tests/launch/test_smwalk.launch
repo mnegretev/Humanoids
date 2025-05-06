@@ -1,0 +1,11 @@
+<launch>
+        <node pkg="tests" type="test_smwalk.py" name="walk_sm" output="screen" required="true"> 
+            <param name="start_pose"            value="$(find step_test)/scripts/lipm/darwin/geometric_trajectories/right_start_pose.npz"/>
+            <param name="end_pose"              value="$(find step_test)/scripts/lipm/darwin/geometric_trajectories/right_end_pose.npz"/>
+            <param name="left_first_halfstep"   value="$(find step_test)/scripts/lipm/darwin/geometric_trajectories/left_first_halfstep_pose.npz"/>
+            <param name="right_full_step"       value="$(find step_test)/scripts/lipm/darwin/geometric_trajectories/right_full_step_pose.npz"/>
+            <param name="left_full_step"        value="$(find step_test)/scripts/lipm/darwin/geometric_trajectories/left_full_step_pose.npz"/>
+            <param name="right_end_step"        value="$(find step_test)/scripts/lipm/darwin/geometric_trajectories/right_end_step_pose.npz"/>
+            <param name="left_end_step"         value="$(find step_test)/scripts/lipm/darwin/geometric_trajectories/left_end_step_pose.npz"/>
+        </node>
+</launch>

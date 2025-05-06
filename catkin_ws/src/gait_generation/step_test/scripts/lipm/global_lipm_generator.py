@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import numpy as np
 from scipy import signal, interpolate
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import math
 import os
@@ -16,36 +16,42 @@ from manip_msgs.srv import *
 G = 9.81 # [m/s^2]
 
 # Y_BODY_TO_FEET  = 0.0555 # [m]
-Y_BODY_TO_FEET  = 0.056 #Mínimo valor =0.056 #Máximo valor =0.125#= 0.09
+Y_BODY_TO_FEET  = 0.03 #Mínimo valor =0.056 #Máximo valor =0.125#= 0.09
 # Z_ROBOT_WALK  = 0.55 # m
-Z_ROBOT_WALK    = 0.55
-Z_ROBOT_STATIC  =0.576 #Máximo valor = 0.576 # m
+Z_ROBOT_WALK    = 0.25
+Z_ROBOT_STATIC  = 0.3 #Máximo valor = 0.576 # m
 
-stepHeight = 0.045
-STEP_LENGTH = 0.1 # [m]
+stepHeight = 0.04
+STEP_LENGTH = 0.03 # [m]
 ROBOT_VEL_X = 0.1 # [m]
 
-com_x_offset = 0.01 #original=0.02
+com_x_offset = 0.00 #original=0.02
 
 # Tiempo de muestreo para resolver la ecuación diferencial del LIPM (debe ser pequeño)
 LIPM_SAMPLE_TIME = 0.0001 # [s]
 
 # Tiempo de muestreo maximo para escribir a los servomotores
-SERVO_SAMPLE_TIME = 0.025 # [s]
+SERVO_SAMPLE_TIME = 0.05 # [s]
 
 def calculate_ik(P, service_client):
+    failed_counts = 0
     joint_values = np.zeros((len(P),6))
     for i, vector in enumerate(P):
+        print(f"[{i}]: {vector}")
         req = CalculateIKRequest(x = vector[0], y = vector[1], z = vector[2],
-                                 roll = 0, pitch = 0, yaw = 0)
-        print(req)
-        response = service_client(req)
-        if len(response.joint_values) == 6:
-            aux = np.array([list(response.joint_values)])
-            joint_values[i] = aux
-        else:
-            print("Could not calculate inverse kinematics for pose {vector}")
-            raise ValueError("Error calculating inverse kinematics for point {vector}")
+                                 roll = 0, pitch = 0, yaw = 0)                         
+        try:
+            response = service_client(req)
+            print(response)
+            if len(response.joint_values) == 6:
+                aux = np.array([list(response.joint_values)])
+                joint_values[i] = aux
+        except Exception as e:
+            failed_counts += 1
+            if (failed_counts > len(joint_values)*0.5):
+                raise ValueError(f"{failed_counts} failed calculations. Aborting")
+            print(f"Could not calculate inverse kinematics for pose {vector}")
+            joint_values[i] = joint_values[i-1]
     return joint_values
 
 def calculate_Fk(q, service_client):
@@ -324,11 +330,11 @@ def getFootSwingTraj(initial_foot_position, final_foot_position, swing_height, t
 def main(args = None):
     rospy.init_node('step_test_node')
 
-    trajectory_dir = rospy.get_param("~trajectory_dir")
-    right_leg_client = rospy.ServiceProxy('/manipulation/ik_leg_right_pose', CalculateIK)
-    left_leg_client = rospy.ServiceProxy('/manipulation/ik_leg_left_pose', CalculateIK)
-    right_Dleg_client = rospy.ServiceProxy('/manipulation/fk_leg_right_pose', CalculateDK)
-    left_Dleg_client = rospy.ServiceProxy('/manipulation/fk_leg_left_pose', CalculateDK)
+    trajectory_dir      = rospy.get_param("~trajectory_dir")
+    right_leg_client    = rospy.ServiceProxy('/control/ik_leg_right', CalculateIK)
+    left_leg_client     = rospy.ServiceProxy('/control/ik_leg_left', CalculateIK)
+    right_Dleg_client   = rospy.ServiceProxy('/control/fk_leg_right_pose', CalculateDK)
+    left_Dleg_client    = rospy.ServiceProxy('/control/fk_leg_left_pose', CalculateDK)
 
     left_q, right_q, last_p_com = calculate_cartesian_right_start_pose(1, 0.0, left_leg_client, right_leg_client)
     np.savez(os.path.join(trajectory_dir, "right_start_pose"), right=right_q, left=left_q, timestep=SERVO_SAMPLE_TIME)
@@ -338,31 +344,31 @@ def main(args = None):
 
     left_q, right_q, final_l_foot_pos = calculate_cartesian_left_half_step_pose(0.5, initial_halfstep_pos, final_halfstep_pos, left_leg_client, right_leg_client)
     np.savez(os.path.join(trajectory_dir, "left_first_halfstep_pose"), right=right_q, left=left_q, timestep=SERVO_SAMPLE_TIME)
-    cartesian_l_pos = calculate_Fk(left_q, left_Dleg_client)
-    np.savetxt(os.path.join(trajectory_dir, "csv/left_first_half_step_pose.csv"), cartesian_l_pos)
+    # cartesian_l_pos = calculate_Fk(left_q, left_Dleg_client)
+    # np.savetxt(os.path.join(trajectory_dir, "csv/left_first_half_step_pose.csv"), cartesian_l_pos)
     
     left_q, right_q, final_r_foot_pos = calculate_cartesian_right_step_pose(final_l_foot_pos[-1], left_leg_client, right_leg_client)
     np.savez(os.path.join(trajectory_dir, "right_full_step_pose"), right=right_q, left=left_q, timestep=SERVO_SAMPLE_TIME)
-    cartesian_r_pos = calculate_Fk(right_q, right_Dleg_client)
-    np.savetxt(os.path.join(trajectory_dir,"csv/right_full_step_pose.csv"), cartesian_r_pos)
+    # cartesian_r_pos = calculate_Fk(right_q, right_Dleg_client)
+    # np.savetxt(os.path.join(trajectory_dir,"csv/right_full_step_pose.csv"), cartesian_r_pos)
 
     left_q, right_q, final_l_foot_pos = calculate_cartesian_left_step_pose(final_r_foot_pos[-1], left_leg_client, right_leg_client)
     np.savez(os.path.join(trajectory_dir, "left_full_step_pose"), right=right_q, left=left_q, timestep=SERVO_SAMPLE_TIME)
-    cartesian_l_pos = calculate_Fk(left_q, left_Dleg_client)
-    np.savetxt(os.path.join(trajectory_dir,"csv/left_full_step_pose.csv"), cartesian_l_pos)
+    # cartesian_l_pos = calculate_Fk(left_q, left_Dleg_client)
+    # np.savetxt(os.path.join(trajectory_dir,"csv/left_full_step_pose.csv"), cartesian_l_pos)
 
     left_q, right_q, last_p_com = calculate_cartesian_right_end_pose(1, 0.0, left_leg_client, right_leg_client)
     np.savez(os.path.join(trajectory_dir, "right_end_pose"), right=right_q, left=left_q, timestep=SERVO_SAMPLE_TIME)
 
     left_q, right_q, final_r_foot_pos = calculate_cartesian_right_end_step_pose(final_l_foot_pos[-1], left_leg_client, right_leg_client)
     np.savez(os.path.join(trajectory_dir, "right_end_step_pose"), right=right_q, left=left_q, timestep=SERVO_SAMPLE_TIME)
-    cartesian_r_pos = calculate_Fk(right_q, right_Dleg_client)
-    np.savetxt(os.path.join(trajectory_dir,"csv/right_end_step_pose.csv"), cartesian_r_pos)
+    # cartesian_r_pos = calculate_Fk(right_q, right_Dleg_client)
+    # np.savetxt(os.path.join(trajectory_dir,"csv/right_end_step_pose.csv"), cartesian_r_pos)
 
     left_q, right_q, final_l_foot_pos = calculate_cartesian_left_end_step_pose(final_r_foot_pos[-1], left_leg_client, right_leg_client)
     np.savez(os.path.join(trajectory_dir, "left_end_step_pose"), right=right_q, left=left_q, timestep=SERVO_SAMPLE_TIME)
-    cartesian_l_pos = calculate_Fk(left_q, left_Dleg_client)
-    np.savetxt(os.path.join(trajectory_dir,"csv/left_end_step_pose.csv"), cartesian_l_pos)
+    # cartesian_l_pos = calculate_Fk(left_q, left_Dleg_client)
+    # np.savetxt(os.path.join(trajectory_dir,"csv/left_end_step_pose.csv"), cartesian_l_pos)
     
 if __name__ == "__main__":
     main()

@@ -1,7 +1,9 @@
 <launch>
-
 	<!-- URDF -->
-	<param name="robot_description" textfile="$(find darwin_description)/urdf/darwin_lab.urdf" /> 
+	<arg name="fixed" default="false"/>
+	<param name="robot_description" textfile="$(find darwin_description)/urdf/darwin_lab_fixed.urdf" 	if="$(arg fixed)"/>
+	<param name="robot_description" textfile="$(find darwin_description)/urdf/darwin_lab.urdf" 			unless="$(arg fixed)"/>
+
 	<node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -model darwin_lab -z 0.3417" />
 
 	<!-- ROBOT CONTROL -->
