@@ -145,8 +145,8 @@ class Edit_pose(smach.State):
         global final_l_arm, final_l_leg, final_r_arm, final_r_leg
         print('STATE MACHINE GET UP POSES ->' + self.state + ' POSE:_' + str(edit_pose))
         try:
-            past_arms=np.load(trajectory_dir+"arms_pose"+str(edit_pose-1))
-            past_legs=np.load(trajectory_dir+"legs_pose"+str(edit_pose-1))
+            past_arms=np.load(trajectory_dir+"/arms_pose"+str(edit_pose-1)+".npz")
+            past_legs=np.load(trajectory_dir+"/legs_pose"+str(edit_pose-1)+".npz")
             initial_r_leg=past_legs["right_leg"][-1]
             initial_l_leg=past_legs["left_leg"][-1]
             initial_r_arm=past_arms["right_arm"][-1]
@@ -163,6 +163,7 @@ class Edit_pose(smach.State):
             q_left=calculate_cartesian(1,initial_l_arm, final_l_arm)
             q_right=calculate_cartesian(1,initial_r_arm, final_r_arm)
             np.savez(os.path.join(trajectory_dir,("arms_pose"+str(edit_pose))), right_arm=q_right, left_arm=q_left, timestep=SERVO_SAMPLE_TIME)
+            actual_pose=edit_pose
             return 'succ'
         except Exception as e:
             print(f"Error al guardar las poses {e}")
