@@ -9,8 +9,8 @@ import re
 import glob
 from ctrl_msgs.srv import Getup, GetupResponse
 def getnum(file):
-    match=re.search('r/d+', file)
-    return int(match.group())if match else 0
+    num=int(re.findall(r'\d+', file)[0])
+    return num
 def read_poses(trajectory_dir):
     global arms, legs
     arms=[]
@@ -54,6 +54,14 @@ def handle(req):
                 pub_arm_left_goal_pose.publish(left_arm_goal_pose)
                 rate.sleep()   
         resp=GetupResponse()
+        msg=Float32MultiArray()
+        msg.data=[0.0,0.0,0.0,0.0,0.0,0.0]
+        msga=Float32MultiArray()
+        msga.data=[0.0,0.0,0.0]
+        pub_leg_right_goal_pose.publish(msg)
+        pub_leg_left_goal_pose.publish(msg)
+        pub_arm_right_goal_pose.publish(msga)
+        pub_arm_left_goal_pose.publish(msga)
         resp.succes = True
     except Exception as e:
         print(e)
