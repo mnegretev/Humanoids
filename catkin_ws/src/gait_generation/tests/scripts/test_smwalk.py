@@ -6,6 +6,15 @@ import smach
 import smach_ros
 
 def  Dotraj(file):
+    
+    right_arm_goal_pose = Float32MultiArray()
+    right_arm_goal_pose.data = [0.0,-0.3,0.0]
+    right_arm_pub.publish(right_arm_goal_pose)
+
+    left_arm_goal_pose = Float32MultiArray()
+    left_arm_goal_pose.data = [0.0,0.3,0.0]
+    left_arm_pub.publish(left_arm_goal_pose)
+
     timestep = file["timestep"]
     rate = rospy.Rate(int(1/timestep))
     for right, left in zip(file["right"], file["left"]):
@@ -125,10 +134,12 @@ class End(smach.State):
             
 
 def main():
-    global left_leg_pub, right_leg_pub
+    global left_leg_pub, right_leg_pub, left_arm_pub, right_arm_pub
     rospy.init_node("walk_test")
     left_leg_pub = rospy.Publisher("/hardware/leg_left_goal_pose", Float32MultiArray, queue_size=1)
     right_leg_pub = rospy.Publisher("/hardware/leg_right_goal_pose", Float32MultiArray, queue_size=1)
+    left_arm_pub = rospy.Publisher("/hardware/arm_left_goal_pose", Float32MultiArray, queue_size=1)
+    right_arm_pub = rospy.Publisher("/hardware/arm_right_goal_pose", Float32MultiArray, queue_size=1)
     start_pose_file = rospy.get_param("~start_pose")
     first_half_step_file = rospy.get_param("~left_first_halfstep")
     right_full_step_file = rospy.get_param("~right_full_step")
@@ -136,8 +147,8 @@ def main():
     right_end_step_file = rospy.get_param("~right_end_step")
     left_end_step_file = rospy.get_param("~left_end_step")
     end_pose_file = rospy.get_param("~end_pose")
+    
     sm=smach.StateMachine(outcomes=['exit'])
-
     sm.userdata.file_start_pose = numpy .load(start_pose_file)
     sm.userdata.file_first_half_step = numpy .load(first_half_step_file)
     sm.userdata.file_second_step = numpy .load(right_full_step_file)
@@ -158,12 +169,12 @@ def main():
                                 remapping={'file': 'file_first_half_step'})
         smach.StateMachine.add('Second', Right_full(),
                                transitions={'succ': 'Tirth',
-                                            'fail': 'Init',
+                                            'fail': 'Second',
                                             'end': 'Fourthl'},
                                 remapping={'file': 'file_second_step'})
         smach.StateMachine.add('Tirth', Left_full(),
-                               transitions={'succ': 'First',
-                                            'fail': 'Init',
+                               transitions={'succ': 'Second',
+                                            'fail': 'Tirth',
                                             'end': 'Fourthr'},
                                 remapping={'file': 'file_third_step'})
         smach.StateMachine.add('Fourthr', Right_end(),
