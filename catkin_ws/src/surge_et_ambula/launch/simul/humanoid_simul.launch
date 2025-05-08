@@ -5,7 +5,8 @@
 	</include>
 
     <group ns="hri">
-        <node name="rviz" pkg="rviz" type="rviz" args="-d $(find config_files)/rviz/config.rviz" required="true"/>
+		<arg name="rviz" default="true"/>
+        <node name="rviz" pkg="rviz" type="rviz" args="-d $(find config_files)/rviz/config.rviz" required="true" if="$(arg rviz)"/>
     </group>
 
 	<node name="humanoid_gui" pkg="humanoid_gui" type="humanoid_gui" output="screen"/>

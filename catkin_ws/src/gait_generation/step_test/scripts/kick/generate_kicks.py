@@ -14,6 +14,7 @@ Y_BODY_TO_FEET  = 0.068 #Mínimo valor =0.056 #Máximo valor =0.125#= 0.09
 # Z_ROBOT_WALK  = 0.55 # m
 Z_ROBOT_WALK    = 0.54
 Z_ROBOT_STATIC  = 0.575 # m
+Z_ROBOT_SIT     = 0.28
 
 Y_BODY_TO_FEET_RIGHT  = 0.068 #Mínimo valor =0.056 #Máximo valor =0.125#= 0.09
 # Z_ROBOT_WALK  = 0.55 # m
@@ -42,6 +43,23 @@ def calculate_ik(P, service_client):
     return joint_values
 
 # RIGHT SIDE ------------------------------------------------------------------------------
+
+def get_kick_standup_trajectory(duration, ik_client_left, ik_client_right):
+    com_start   =   [0, 0, Z_ROBOT_SIT]
+    com_end     =   [0, 0, Z_ROBOT_STATIC]
+
+    P_CoM, T    = trajectory_planner.get_polynomial_trajectory_multi_dof(com_start, com_end, duration=duration, time_step=SERVO_SAMPLE_TIME)
+
+    left_leg_relative_pos   =   [0, Y_BODY_TO_FEET_RIGHT, 0]  - P_CoM
+    right_leg_relative_pos  =   [0, -Y_BODY_TO_FEET_RIGHT, 0] - P_CoM
+
+    r_leg_pose = np.concatenate((right_leg_relative_pos, np.full((len(T), 3), [0,0,0])), axis=1)
+    l_leg_pose = np.concatenate((left_leg_relative_pos,  np.full((len(T), 3), [0,0,0])), axis=1)
+
+    left_q  = calculate_ik(l_leg_pose, ik_client_left)
+    right_q = calculate_ik(r_leg_pose, ik_client_right)
+
+    return left_q, right_q, P_CoM[-1]
 
 def get_kick_right_trajectory_start_pose(duration, stepHeight, ik_client_left, ik_client_right):
     com_start   =   [0, 0, Z_ROBOT_STATIC]
@@ -171,19 +189,22 @@ def getFootSwingTraj(initial_foot_position, final_foot_position, swing_height, t
 def main(args = None):
     rospy.init_node('step_test_node')
     
-    trajectory_dir_left =  rospy.get_param("~trajectory_dir_left")
+    # trajectory_dir_left =  rospy.get_param("~trajectory_dir_left")
     trajectory_dir_right = rospy.get_param("~trajectory_dir_right")
 
-    if not os.path.isdir(trajectory_dir_left):
-        raise Exception(f"File directory not found: {trajectory_dir_left}")
+    # if not os.path.isdir(trajectory_dir_left):
+    #     raise Exception(f"File directory not found: {trajectory_dir_left}")
     
     if not os.path.isdir(trajectory_dir_right):
         raise Exception(f"File directory not found: {trajectory_dir_right}")
     
-    right_leg_client    = rospy.ServiceProxy('/manipulation/ik_leg_right_pose', CalculateIK)
-    left_leg_client     = rospy.ServiceProxy('/manipulation/ik_leg_left_pose', CalculateIK)
+    right_leg_client    = rospy.ServiceProxy('/control/ik_leg_right', CalculateIK)
+    left_leg_client     = rospy.ServiceProxy('/control/ik_leg_left', CalculateIK)
 
     # RIGHT SIDE
+    left_q, right_q, last_p_com = get_kick_standup_trajectory(duration=1, ik_client_left=left_leg_client, ik_client_right=right_leg_client)
+    np.savez(os.path.join(trajectory_dir_right, "standup"), right=right_q, left=left_q, timestep=SERVO_SAMPLE_TIME)
+    print("\n Done with standup\n")
 
     left_q, right_q, last_p_com = get_kick_right_trajectory_start_pose(duration=1, stepHeight=Z_ROBOT_WALK, ik_client_left=left_leg_client, ik_client_right=right_leg_client)
     np.savez(os.path.join(trajectory_dir_right, "kick_right_start_pose"), right=right_q, left=left_q, timestep=SERVO_SAMPLE_TIME)
