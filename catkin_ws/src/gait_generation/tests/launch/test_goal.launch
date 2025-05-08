@@ -1,0 +1,9 @@
+<launch>
+<arg name="darwin" default="false" />
+    <param name="path" value="$(find tests)/scripts/goal/poses/darwin" if="$(arg darwin)"/>
+    <param name="path" value="$(find tests)/scripts/goal/poses" unless="$(arg darwin)"/>
+        <node name="getup_server" pkg="step_test" type="get_up_service.py" output="screen"/>
+    <node pkg="tests" type="goalkeep.py" name="getup" output="screen" required="true"> 
+    </node>
+    <include file="$(find cm730)/launch/cm730.launch"/>
+</launch>

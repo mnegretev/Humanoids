@@ -74,7 +74,7 @@ right:
         is4pin: false
       roll:
         id:   3
-        cw:   -1
+        cw:  -1
         zero: 1622
         enabled: true
         is4pin: false
