@@ -17,7 +17,7 @@ left:
     elbow:
       pitch:
         id:   6
-        cw:   1
+        cw:   -1
         zero: 2949
         enabled: true
         is4pin: true
@@ -74,7 +74,7 @@ right:
         is4pin: false
       roll:
         id:   3
-        cw:   -1
+        cw:  -1
         zero: 1622
         enabled: true
         is4pin: false

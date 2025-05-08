@@ -12,6 +12,19 @@ def main():
     pub_leg_left_goal_pose = rospy.Publisher("/hardware/leg_left_goal_pose", Float32MultiArray, queue_size=1)
     pub_leg_right_goal_pose = rospy.Publisher("/hardware/leg_right_goal_pose", Float32MultiArray , queue_size=1)
     
+    start_pose_file = rospy.get_param("~standup")
+    start_pose = np.load(start_pose_file)
+    timstep = start_pose["timestep"]
+    rate = rospy.Rate(int(1/(timstep*5)))
+    for right, left in zip(start_pose["right"], start_pose["left"]):
+        right_leg_goal_pose = Float32MultiArray()
+        right_leg_goal_pose.data = right
+        pub_leg_right_goal_pose.publish(right_leg_goal_pose)
+
+        left_leg_goal_pose = Float32MultiArray()
+        left_leg_goal_pose.data = left
+        pub_leg_left_goal_pose.publish(left_leg_goal_pose)
+        rate.sleep()
     
     start_pose_file = rospy.get_param("~kick_right_start_pose")
     start_pose = np.load(start_pose_file)

@@ -5,7 +5,20 @@ import numpy
 import smach
 import smach_ros
 
+def callback(data):
+    global walk
+    walk=data.data
+
 def  Dotraj(file):
+    
+    right_arm_goal_pose = Float32MultiArray()
+    right_arm_goal_pose.data = [0.0,-0.3,0.0]
+    right_arm_pub.publish(right_arm_goal_pose)
+
+    left_arm_goal_pose = Float32MultiArray()
+    left_arm_goal_pose.data = [0.0,0.3,0.0]
+    left_arm_pub.publish(left_arm_goal_pose)
+
     timestep = file["timestep"]
     rate = rospy.Rate(int(1/timestep))
     for right, left in zip(file["right"], file["left"]):
@@ -27,8 +40,11 @@ class Init(smach.State):
     def execute(self, userdata):
         print(f"Walk_test_sm------------>{self.state}")
         try:
-            Dotraj(userdata.file)
-            return 'succ'
+            if walk:
+                Dotraj(userdata.file)
+                return 'succ'
+            else:
+                return 'fail'
         except Exception as e:
             print(f"Ocurrio un error {e}")
             return 'fail'
@@ -55,10 +71,14 @@ class Right_full(smach.State):
         self.state = "R_full_step"
 
     def execute(self, userdata):
+        global walk
         print(f"Walk_test_sm------------>{self.state}")
         try:
             Dotraj(userdata.file)
-            return 'succ'
+            if walk:
+                return 'succ'
+            else:
+                return 'end'
         except Exception as e:
             print(f"Ocurrio un error {e}")
             return 'fail'
@@ -70,10 +90,14 @@ class Left_full(smach.State):
         self.state = "L_full_step"
 
     def execute(self, userdata):
+        global walk
         print(f"Walk_test_sm------------>{self.state}")
         try:
             Dotraj(userdata.file)
-            return 'succ'
+            if walk:
+                return 'succ'
+            else:
+                return 'end'
         except Exception as e:
             print(f"Ocurrio un error {e}")
             return 'fail'
@@ -110,25 +134,31 @@ class Left_end(smach.State):
         
 class End(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succ', 'fail'],
+        smach.State.__init__(self, outcomes=['succ', 'fail','again'],
                              input_keys=['file' ])
         self.state = "End"
 
     def execute(self, userdata):
         print(f"Walk_test_sm------------>{self.state}")
         try:
-            Dotraj(userdata.file)
-            return 'succ'
+            if walk:
+                return 'again'
+            else:
+                Dotraj(userdata.file)
+                return 'succ'
         except Exception as e:
             print(f"Ocurrio un error {e}")
             return 'fail'
             
 
 def main():
-    global left_leg_pub, right_leg_pub
+    global left_leg_pub, right_leg_pub, left_arm_pub, right_arm_pub, walk
     rospy.init_node("walk_test")
+    rospy.Subscriber("walker", Bool, callback)
     left_leg_pub = rospy.Publisher("/hardware/leg_left_goal_pose", Float32MultiArray, queue_size=1)
     right_leg_pub = rospy.Publisher("/hardware/leg_right_goal_pose", Float32MultiArray, queue_size=1)
+    left_arm_pub = rospy.Publisher("/hardware/arm_left_goal_pose", Float32MultiArray, queue_size=1)
+    right_arm_pub = rospy.Publisher("/hardware/arm_right_goal_pose", Float32MultiArray, queue_size=1)
     start_pose_file = rospy.get_param("~start_pose")
     first_half_step_file = rospy.get_param("~left_first_halfstep")
     right_full_step_file = rospy.get_param("~right_full_step")
@@ -136,8 +166,9 @@ def main():
     right_end_step_file = rospy.get_param("~right_end_step")
     left_end_step_file = rospy.get_param("~left_end_step")
     end_pose_file = rospy.get_param("~end_pose")
+    walk =True
+    
     sm=smach.StateMachine(outcomes=['exit'])
-
     sm.userdata.file_start_pose = numpy .load(start_pose_file)
     sm.userdata.file_first_half_step = numpy .load(first_half_step_file)
     sm.userdata.file_second_step = numpy .load(right_full_step_file)
@@ -158,12 +189,12 @@ def main():
                                 remapping={'file': 'file_first_half_step'})
         smach.StateMachine.add('Second', Right_full(),
                                transitions={'succ': 'Tirth',
-                                            'fail': 'Init',
+                                            'fail': 'Second',
                                             'end': 'Fourthl'},
                                 remapping={'file': 'file_second_step'})
         smach.StateMachine.add('Tirth', Left_full(),
-                               transitions={'succ': 'First',
-                                            'fail': 'Init',
+                               transitions={'succ': 'Second',
+                                            'fail': 'Tirth',
                                             'end': 'Fourthr'},
                                 remapping={'file': 'file_third_step'})
         smach.StateMachine.add('Fourthr', Right_end(),
@@ -175,7 +206,8 @@ def main():
                                             'fail': 'Fourthl'},
                                 remapping={'file': 'file_fourthl'})
         smach.StateMachine.add('End', End(),
-                               transitions={'succ': 'exit',
+                               transitions={'succ': 'Init',
+                                            'again': 'End',
                                             'fail': 'End'},
                                 remapping={'file': 'file_end_pose'})
 
