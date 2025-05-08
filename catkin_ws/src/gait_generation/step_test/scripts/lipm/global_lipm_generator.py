@@ -18,8 +18,8 @@ G = 9.81 # [m/s^2]
 # Y_BODY_TO_FEET  = 0.0555 # [m]
 Y_BODY_TO_FEET  = 0.03 #Mínimo valor =0.056 #Máximo valor =0.125#= 0.09
 # Z_ROBOT_WALK  = 0.55 # m
-Z_ROBOT_WALK    = 0.25
-Z_ROBOT_STATIC  = 0.3 #Máximo valor = 0.576 # m
+Z_ROBOT_WALK    = 0.3
+Z_ROBOT_STATIC  = 0.35 #Máximo valor = 0.576 # m
 
 stepHeight = 0.04
 STEP_LENGTH = 0.03 # [m]
