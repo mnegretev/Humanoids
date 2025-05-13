@@ -149,7 +149,7 @@ bool QtRosNode::callPolynomialTrajectory(std::vector<double>  p_init, std::vecto
     srv.request.time_step = 0.05;
     cltPolynomialTrajectory.call(srv);
     
-
+    return true;
 }
 
 bool QtRosNode::getAllJointCurrentAngles(std::vector<float>& angles)

@@ -24,7 +24,7 @@ bool ik_leg_left(ctrl_msgs::CalculateIK::Request &req, ctrl_msgs::CalculateIK::R
     //std::cout << "IK.->Desired orientation:" << std::endl;
     //std::cout << desired_pose.rotation() << std::endl;
 
-    bool found_ik = kinematic_state->setFromIK(joint_group_leg_left, desired_pose, 5, 0.1);
+    bool found_ik = kinematic_state->setFromIK(joint_group_leg_left, desired_pose, 0.1);
     std::vector<double> result;
     if(found_ik)
     {
@@ -54,7 +54,7 @@ bool ik_leg_right(ctrl_msgs::CalculateIK::Request &req, ctrl_msgs::CalculateIK::
     //std::cout << "IK.->Desired orientation:" << std::endl;
     //std::cout << desired_pose.rotation() << std::endl;
 
-    bool found_ik = kinematic_state->setFromIK(joint_group_leg_right, desired_pose, 5, 0.1);
+    bool found_ik = kinematic_state->setFromIK(joint_group_leg_right, desired_pose, 0.1);
     std::vector<double> result;
     if(found_ik)
     {
