@@ -10,19 +10,19 @@ from ctrl_msgs.srv import CalculateIK, CalculateIKRequest
 from trajectory_planner import trajectory_planner
 
 # Y_BODY_TO_FEET_RIGHT  = 0.0555 # [m]
-Y_BODY_TO_FEET  = 0.068 #Mínimo valor =0.056 #Máximo valor =0.125#= 0.09
+Y_BODY_TO_FEET  = 0.055 #Mínimo valor =0.056 #Máximo valor =0.125#= 0.09
 # Z_ROBOT_WALK  = 0.55 # m
 Z_ROBOT_WALK    = 0.54
 Z_ROBOT_STATIC  = 0.575 # m
 Z_ROBOT_SIT     = 0.28
 
-Y_BODY_TO_FEET_RIGHT  = 0.068 #Mínimo valor =0.056 #Máximo valor =0.125#= 0.09
+Y_BODY_TO_FEET_RIGHT  = 0.09 #Mínimo valor =0.056 #Máximo valor =0.125#= 0.09
 # Z_ROBOT_WALK  = 0.55 # m
 Z_ROBOT_WALK_RIGHT    = 0.53
 Z_ROBOT_STATIC_RIGHT  = 0.575 # m
 
-stepHeight = 0.12
-kickLength = 0.10
+stepHeight = 0.14
+kickLength = 0.14
 
 # Tiempo de muestreo maximo para escribir a los servomotores
 SERVO_SAMPLE_TIME = 0.025 # [s]
@@ -63,12 +63,12 @@ def get_kick_standup_trajectory(duration, ik_client_left, ik_client_right):
 
 def get_kick_right_trajectory_start_pose(duration, stepHeight, ik_client_left, ik_client_right):
     com_start   =   [0, 0, Z_ROBOT_STATIC]
-    com_end     =   [0, Y_BODY_TO_FEET_RIGHT*0.9, Z_ROBOT_WALK]
+    com_end     =   [0.02 , Y_BODY_TO_FEET_RIGHT + 0.01, Z_ROBOT_WALK]
 
     P_CoM, T = trajectory_planner.get_polynomial_trajectory_multi_dof(com_start, com_end, duration=duration, time_step=SERVO_SAMPLE_TIME)
     
-    left_leg_relative_pos   =   [0, Y_BODY_TO_FEET_RIGHT, 0]  - P_CoM
-    right_leg_relative_pos  =   [0, -Y_BODY_TO_FEET_RIGHT, 0] - P_CoM
+    left_leg_relative_pos   =   [0, Y_BODY_TO_FEET, 0]  - P_CoM
+    right_leg_relative_pos  =   [0, -Y_BODY_TO_FEET, 0] - P_CoM
 
     r_leg_pose = np.concatenate((right_leg_relative_pos, np.full((len(T), 3), [0,0,0])), axis=1)
     l_leg_pose = np.concatenate((left_leg_relative_pos,  np.full((len(T), 3), [0,0,0])), axis=1)
@@ -84,8 +84,8 @@ def get_kick_right_trajectory_raise_foot(p_start, duration, ik_client_left, ik_c
 
     P_CoM, T = trajectory_planner.get_polynomial_trajectory_multi_dof(com_start_pose, com_end_pose, duration=duration, time_step=SERVO_SAMPLE_TIME)
 
-    initial_r_foot_pos  = np.array([0, -Y_BODY_TO_FEET_RIGHT, 0])
-    initial_l_foot_pos  = np.array([0,  Y_BODY_TO_FEET_RIGHT, 0])
+    initial_r_foot_pos  = np.array([0, -Y_BODY_TO_FEET, 0])
+    initial_l_foot_pos  = np.array([0,  Y_BODY_TO_FEET, 0])
 
     #final_r_foot_pos    = initial_r_foot_pos
     final_r_foot_pos = np.array([-kickLength,  -Y_BODY_TO_FEET_RIGHT*1.3, stepHeight])
@@ -111,10 +111,10 @@ def get_kick_right_trajectory_do_kick(com_start, duration,  ik_client_left, ik_c
 
     P_CoM, T = trajectory_planner.get_polynomial_trajectory_multi_dof(com_start_pose, com_end_pose, duration=duration, time_step=SERVO_SAMPLE_TIME)
 
-    initial_r_foot_pos  = np.array([-kickLength, -Y_BODY_TO_FEET_RIGHT, stepHeight])
-    initial_l_foot_pos  = np.array([0,  Y_BODY_TO_FEET_RIGHT, 0])
+    initial_r_foot_pos  = np.array([-kickLength, -Y_BODY_TO_FEET, stepHeight])
+    initial_l_foot_pos  = np.array([0,  Y_BODY_TO_FEET, 0])
 
-    final_r_foot_pos = np.array([kickLength,  -Y_BODY_TO_FEET_RIGHT, stepHeight])
+    final_r_foot_pos = np.array([kickLength,  -Y_BODY_TO_FEET_RIGHT, stepHeight + 0.02])
     #final_l_foot_pos    = initial_l_foot_pos
 
     r_foot_pose, _ = trajectory_planner.get_polynomial_trajectory_multi_dof(initial_r_foot_pos, final_r_foot_pos, duration=duration, time_step=SERVO_SAMPLE_TIME)
@@ -202,9 +202,9 @@ def main(args = None):
     left_leg_client     = rospy.ServiceProxy('/control/ik_leg_left', CalculateIK)
 
     # RIGHT SIDE
-    left_q, right_q, last_p_com = get_kick_standup_trajectory(duration=1, ik_client_left=left_leg_client, ik_client_right=right_leg_client)
-    np.savez(os.path.join(trajectory_dir_right, "standup"), right=right_q, left=left_q, timestep=SERVO_SAMPLE_TIME)
-    print("\n Done with standup\n")
+    #left_q, right_q, last_p_com = get_kick_standup_trajectory(duration=1, ik_client_left=left_leg_client, ik_client_right=right_leg_client)
+    #np.savez(os.path.join(trajectory_dir_right, "standup"), right=right_q, left=left_q, timestep=SERVO_SAMPLE_TIME)
+    #print("\n Done with standup\n")
 
     left_q, right_q, last_p_com = get_kick_right_trajectory_start_pose(duration=1, stepHeight=Z_ROBOT_WALK, ik_client_left=left_leg_client, ik_client_right=right_leg_client)
     np.savez(os.path.join(trajectory_dir_right, "kick_right_start_pose"), right=right_q, left=left_q, timestep=SERVO_SAMPLE_TIME)

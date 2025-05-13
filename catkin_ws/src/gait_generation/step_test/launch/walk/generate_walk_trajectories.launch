@@ -6,6 +6,6 @@
         <node name="inverse_kinematics" pkg="inverse_kinematics" type="ik_geometric_node.py" output="screen"/>
     </group>
     <node pkg="step_test" type="global_lipm_generator.py" name="traj_generator" output="screen" required="true"> 
-        <param name="trajectory_dir" value="$(find step_test)/scripts/lipm/geometric_trajectories"/>
+        <param name="trajectory_dir" value="$(find step_test)/scripts/lipm/geometric_trajectories/test"/>
     </node>
 </launch>

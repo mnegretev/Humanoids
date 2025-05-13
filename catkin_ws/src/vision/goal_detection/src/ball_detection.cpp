@@ -72,7 +72,7 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg) {
     //Circles params
     double minDist = 500;
     double param1 = 50, param2 = 50;
-    int minRadius = 5, maxRadius = 50;
+    int minRadius = 20, maxRadius = 50;
     
     std::vector<cv::Vec3f> circles;
     cv::HoughCircles(blur, circles, cv::HOUGH_GRADIENT, 1.5, minDist, param1, param2, minRadius, maxRadius);

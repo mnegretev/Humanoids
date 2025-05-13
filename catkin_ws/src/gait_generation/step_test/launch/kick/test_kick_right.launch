@@ -5,6 +5,6 @@
             <param name="kick_right_do_kick"         value="$(find step_test)/scripts/kick/right/test/kick_right_do_kick.npz"/>
             <param name="kick_right_final_stop"      value="$(find step_test)/scripts/kick/right/test/kick_right_final_stop.npz"/>
             <param name="standup"                    value="$(find step_test)/scripts/kick/right/test/standup.npz"/>
-            
         </node>
+        <include file="$(find cm730)/launch/cm730.launch"/>
 </launch>

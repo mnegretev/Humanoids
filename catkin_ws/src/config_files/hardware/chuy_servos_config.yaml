@@ -38,7 +38,7 @@ left:
       pitch:
         id:   12
         cw:   1
-        zero: 2003
+        zero: 1900
         enabled: true
         is4pin: false
     knee:
@@ -90,7 +90,7 @@ right:
       yaw:
         id:   7
         cw:   -1
-        zero: 1730
+        zero: 1800
         enabled: true
         is4pin: false
       roll:
@@ -102,7 +102,7 @@ right:
       pitch:
         id:   11
         cw:   -1
-        zero: 1541
+        zero: 1600
         enabled: true
         is4pin: false
     knee:
@@ -122,7 +122,7 @@ right:
       roll:
         id:   17
         cw:   -1
-        zero: 2032
+        zero: 1982
         enabled: true
         is4pin: false
 head:

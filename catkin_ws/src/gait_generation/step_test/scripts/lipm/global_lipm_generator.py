@@ -16,7 +16,7 @@ from manip_msgs.srv import *
 G = 9.81 # [m/s^2]
 
 # Y_BODY_TO_FEET  = 0.0555 # [m]
-Y_BODY_TO_FEET  = 0.03 #Mínimo valor =0.056 #Máximo valor =0.125#= 0.09
+Y_BODY_TO_FEET  = 0.55 #Mínimo valor =0.056 #Máximo valor =0.125#= 0.09
 # Z_ROBOT_WALK  = 0.55 # m
 Z_ROBOT_WALK    = 0.3
 Z_ROBOT_STATIC  = 0.35 #Máximo valor = 0.576 # m
@@ -25,7 +25,7 @@ stepHeight = 0.04
 STEP_LENGTH = 0.03 # [m]
 ROBOT_VEL_X = 0.1 # [m]
 
-com_x_offset = 0.00 #original=0.02
+com_x_offset = 0.02 #original=0.02
 
 # Tiempo de muestreo para resolver la ecuación diferencial del LIPM (debe ser pequeño)
 LIPM_SAMPLE_TIME = 0.0001 # [s]

@@ -162,7 +162,7 @@ def main(args = None):
     pub_legs_goal.publish(zero_msg)
 
     rate = rospy.Rate(40)
-    rate2 = rospy.Rate(20)
+    rate2 = rospy.Rate(80)
 
     first_left_q, first_right_q, last_p_com = calculate_cartesian_right_start_pose(1.0, left_leg_client, right_leg_client)
     second_left_q, second_right_q, last_p_com , final_foot_pos = calculate_cartesian_left_first_step_pose(last_p_com, left_leg_client, right_leg_client)
@@ -171,8 +171,8 @@ def main(args = None):
     while not rospy.is_shutdown():
         executeTrajectories(first_left_q, first_right_q, rate, pub_legs_goal)
         executeTrajectories(second_left_q, second_right_q, rate, pub_legs_goal)
-        executeTrajectories(third_left_q, third_right_q, rate, pub_legs_goal)
-        time.sleep(1)
+        executeTrajectories(third_left_q, third_right_q, rate2, pub_legs_goal)
+        time.sleep(5)
 
     zero_msg = Float32MultiArray()
     zero_msg.data = [0.0 for i in range(12)]

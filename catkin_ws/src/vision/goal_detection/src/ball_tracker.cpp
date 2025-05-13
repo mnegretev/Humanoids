@@ -6,7 +6,7 @@
 
 const double PAN_MIN = -M_PI / 2.1;
 const double PAN_MAX = M_PI / 2.1;
-const double TILT_MIN = 0.0;
+const double TILT_MIN = 0.5;
 const double TILT_MAX = 1.0;
 
 ros::Publisher tracker_pub;
@@ -14,7 +14,8 @@ ros::Publisher tracker_pub;
 //ros::Subscriber filtered_centroid;
 ros::Time last_detection_time;
 double timeout = 5.0;  
-float pan_robot = 0.0, tilt_robot = 0.0;
+float pan_robot = 0.0;
+float tilt_robot = 0.5;
 float last_search_pan ;
 float last_search_tilt;
 enum State { SEARCHING, TRACKING, LOST };
@@ -42,7 +43,8 @@ geometry_msgs::Point32 getSearchTrajectory() {
             if (current_tilt < TILT_MAX) current_tilt += 0.2;
         }
     }
-
+    if (current_tilt >= TILT_MAX){
+    current_tilt = TILT_MIN;}
     search_point.x = current_pan;
     search_point.y = current_tilt;
     last_search_pan = current_pan;

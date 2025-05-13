@@ -23,7 +23,7 @@ def configure_camera():
     os.system("v4l2-ctl -d /dev/video{} -c white_balance_temperature_auto=0".format(CAMERA))
     os.system("v4l2-ctl -d /dev/video{} -c exposure_auto=1".format(CAMERA))  
     os.system("v4l2-ctl -d /dev/video{} -c exposure_absolute=50".format(CAMERA)) 
-    os.system("v4l2-ctl -d /dev/video{} -c white_balance_temperature=4500".format(CAMERA))
+    os.system("v4l2-ctl -d /dev/video{} -c white_balance_temperature=45000".format(CAMERA))
 
 
 def main():

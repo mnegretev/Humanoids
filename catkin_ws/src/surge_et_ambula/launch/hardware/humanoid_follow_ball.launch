@@ -8,7 +8,7 @@
     <!-- <include file="$(find imu)/launch/mpu6050_unfiltered.launch"/> -->
 
     <!-- STATE MACHINES -->
-    <include file="$(find goal_detection)/launch/test_goal_detection.launch"/>
+    <include file="$(find goal_detection)/launch/ball_tracker.launch"/>
     <include file="$(find step_test)/launch/walk/smwalk.launch"/>
 
 </launch>
