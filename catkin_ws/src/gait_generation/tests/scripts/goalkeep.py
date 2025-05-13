@@ -6,7 +6,8 @@ from ctrl_msgs.srv import Getup
 
 def main():
     rospy.init_node("goal_keep")
-    path = rospy.get_param("path")
+    pathr = rospy.get_param("pathr")
+    pathl = rospy.get_param("pathl")
     rospy.wait_for_service('getup')
     
     pub_leg_left_goal_pose = rospy.Publisher("/hardware/leg_left_goal_pose", Float32MultiArray, queue_size=1)
@@ -27,9 +28,12 @@ def main():
     pub_arm_left_goal_pose.publish(msga)
 
     try:
-        input("Presione enter para comenzar")
+        a= input("Left or Right (L or R):_")
         getup = rospy.ServiceProxy('getup', Getup)
-        succes = getup(path)
+        if a=='L':
+          succes = getup(pathl)
+        else:
+           succes = getup(pathr)
         print(succes)
     except rospy.ServiceException as e:
         print(f"Something went wrong: {e}")

@@ -1,7 +1,7 @@
 <launch>
 <arg name="darwin" default="false" />
-    <param name="path" value="$(find tests)/scripts/goal/poses/darwin" if="$(arg darwin)"/>
-    <param name="path" value="$(find tests)/scripts/goal/poses" unless="$(arg darwin)"/>
+    <param name="pathl" value="$(find tests)/scripts/goal/poses/darwin"/>
+    <param name="pathr" value="$(find tests)/scripts/goal/poses"/>
         <node name="getup_server" pkg="step_test" type="get_up_service.py" output="screen"/>
     <node pkg="tests" type="goalkeep.py" name="getup" output="screen" required="true"> 
     </node>
