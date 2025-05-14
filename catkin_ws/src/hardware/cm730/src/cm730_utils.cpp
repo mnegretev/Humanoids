@@ -118,7 +118,7 @@ namespace CM730
         std::copy(head_servos.begin(), head_servos.end(), std::back_inserter(all_servos));
 
         if(!comm.registerIDs(all_servos))  return false;
-        bool ret = comm.wakeupAllServos(torque_enable_param);
+        if(!comm.wakeupAllServos(torque_enable_param)) return false;
         ros::Duration(1.0).sleep();
         
         present_position.resize(21);

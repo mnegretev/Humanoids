@@ -45,11 +45,11 @@ namespace Servo
                                                     &error);
         if (comm_result != COMM_SUCCESS)
         {
-            std::cout << "[SERVO_UTILS] Communication error with CM730" << std::endl;
+            std::cerr << "[SERVO_UTILS] Warning: CM730 did not respond back. Maybe it is not present" << std::endl;
         }
         else if (error != 0)
         {
-            std::cout << "[SERVO_UTILS] Packet error when communicating with CM730" << std::endl;
+            std::cerr << "[SERVO_UTILS] Packet error when communicating with CM730" << std::endl;
         }
 
         bulk_read_current_position_3pin.clearParam();
@@ -64,25 +64,23 @@ namespace Servo
                                                         &error);
             if (comm_result != COMM_SUCCESS)
             {
-                std::cout << "[SERVO_UTILS] Communication error with id: "<< servo.id << std::endl;
+                std::cerr << "[SERVO_UTILS] Communication error with id: "<< servo.id << std::endl;
+                return false;
             }
             else if (error != 0)
             {
-                std::cout << "[SERVO_UTILS] Packet error with id: "<< servo.id << std::endl;
+                std::cerr << "[SERVO_UTILS] Packet error with id: "<< servo.id << std::endl;
             }
             uint16_t dxl_model_number;
             comm_result = packet_h->ping(port_h, servo.id, &dxl_model_number, &error);
             if (comm_result != COMM_SUCCESS)
             {
-                std::cout << "[SERVO_UTILS] Failed to ping servo with id: "<< servo.id << std::endl;
+                std::cerr << "[SERVO_UTILS] Failed to ping servo with id: "<< servo.id << std::endl;
+                return false;
             }
             else if (error != 0)
             {
-                std::cout << "[SERVO_UTILS] Packet failed when ping servo with id: "<< servo.id << std::endl;
-            }
-            else
-            {
-                std::cout << "[SERVO_UTILS] ID: " << servo.id << " is awake. Ping successful." << std::endl;
+                std::cerr << "[SERVO_UTILS] Packet failed when ping servo with id: "<< servo.id << std::endl;
             }
 
             //Add param
@@ -90,17 +88,17 @@ namespace Servo
             {
                 if(!bulk_read_current_position_4pin.addParam(servo.id, MX64::PRESENT_POSITION, 2))
                 {
-                    std::cout << "[SERVO_UTILS] Failed to add id " << servo.id << " to the list of groupBulkRead" << std::endl;
+                    std::cerr << "[SERVO_UTILS] Failed to add id " << servo.id << " to the list of groupBulkRead" << std::endl;
                 }
             }
             else
             {
                 if(!bulk_read_current_position_3pin.addParam(servo.id, MX64::PRESENT_POSITION, 2))
                 {
-                    std::cout << "[SERVO_UTILS] Failed to add id " << servo.id << " to the list of groupBulkRead" << std::endl;
+                    std::cerr << "[SERVO_UTILS] Failed to add id " << servo.id << " to the list of groupBulkRead" << std::endl;
                 }
             }
-            std::cout << "[SERVO_UTILS] Added id: " << servo.id << "to the list of groupBulkRead" << std::endl;
+            // std::cout << "[SERVO_UTILS] Added id: " << servo.id << "to the list of groupBulkRead" << std::endl;
         }
         return true;
     }

@@ -5,7 +5,7 @@
 int main(int argc, char** argv)
 {   
     ros::init(argc, argv, "cm730v2");
-    CM730::Node node("/dev/ttyUSB0");
+    CM730::Node node("/dev/SERVO_COMM");
     
     if(!node.start()) return -1;
 
