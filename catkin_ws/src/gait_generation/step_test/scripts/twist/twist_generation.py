@@ -371,8 +371,8 @@ def getFootSwingTraj(initial_foot_position, final_foot_position, swing_height, t
 
 def main(args = None):
     rospy.init_node('step_test_node')
-    rospy.wait_for_service('/manipulation/ik_leg_right_pose', timeout=None)
-    rospy.wait_for_service('/manipulation/ik_leg_left_pose', timeout=None)
+    rospy.wait_for_service('/control/ik_leg_right', timeout=None)
+    rospy.wait_for_service('/control/ik_leg_left', timeout=None)
     trajectory_dir_left = rospy.get_param("~trajectory_dir_left")
     trajectory_dir_right = rospy.get_param("~trajectory_dir_right")
 
@@ -382,8 +382,8 @@ def main(args = None):
     if not os.path.isdir(trajectory_dir_right):
         raise Exception(f"File directory not found: {trajectory_dir_right}")
     
-    right_leg_client    = rospy.ServiceProxy('/manipulation/ik_leg_right_pose', CalculateIK)
-    left_leg_client     = rospy.ServiceProxy('/manipulation/ik_leg_left_pose', CalculateIK)
+    right_leg_client    = rospy.ServiceProxy('/control/ik_leg_right', CalculateIK)
+    left_leg_client     = rospy.ServiceProxy('/control/ik_leg_left', CalculateIK)
 
     # LEFT SIDE
 

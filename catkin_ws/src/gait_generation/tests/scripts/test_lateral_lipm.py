@@ -329,11 +329,11 @@ def main(args = None):
 
     arms_goal_pose      = rospy.Publisher("/hardware/arms_goal_pose", Float32MultiArray , queue_size=1)
     pub_legs_goal       = rospy.Publisher("/hardware/legs_goal_pose", Float32MultiArray, queue_size=1)
-    right_leg_client    = rospy.ServiceProxy('/manipulation/ik_leg_right_pose', CalculateIK)
-    left_leg_client     = rospy.ServiceProxy('/manipulation/ik_leg_left_pose', CalculateIK)
+    right_leg_client    = rospy.ServiceProxy('/control/ik_leg_right', CalculateIK)
+    left_leg_client     = rospy.ServiceProxy('/control/ik_leg_left', CalculateIK)
     
-    rospy.wait_for_service("/manipulation/ik_leg_right_pose")
-    rospy.wait_for_service("/manipulation/ik_leg_left_pose")
+    rospy.wait_for_service("/control/ik_leg_right")
+    rospy.wait_for_service("/control/ik_leg_left")
 
     arms_msg = Float32MultiArray()
     arms_msg.data = [0.0, 0.3, 0.0, 0.0, -0.3, 0.0]

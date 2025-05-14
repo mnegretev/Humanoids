@@ -8,5 +8,5 @@
             <param name="right_end_step"        value="$(find step_test)/scripts/lipm/geometric_trajectories/right_end_step_pose.npz"/>
             <param name="left_end_step"         value="$(find step_test)/scripts/lipm/geometric_trajectories/left_end_step_pose.npz"/>
         </node>
-        <include file="$(find cm730)/launch/cm730.launch"/>
+        <!-- <include file="$(find cm730)/launch/cm730.launch"/> -->
 </launch>

@@ -200,8 +200,8 @@ def main(args = None):
     #rospy.get_param("/gait/")
     arms_goal_pose      = rospy.Publisher("/hardware/arms_goal_pose", Float32MultiArray , queue_size=1)
     pub_legs_goal       = rospy.Publisher("/hardware/legs_goal_pose", Float32MultiArray, queue_size=1)
-    right_leg_client    = rospy.ServiceProxy('/manipulation/ik_leg_right_pose', CalculateIK)
-    left_leg_client     = rospy.ServiceProxy('/manipulation/ik_leg_left_pose', CalculateIK)
+    right_leg_client    = rospy.ServiceProxy('/control/ik_leg_right', CalculateIK)
+    left_leg_client     = rospy.ServiceProxy('/control/ik_leg_left', CalculateIK)
     rate = rospy.Rate(40)
 
     first_left_q_lateral, first_right_q_lateral, last_p_com = calculate_cartesian_right_start_pose(1.0, left_leg_client, right_leg_client)

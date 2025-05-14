@@ -6,12 +6,12 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
 def get_cartesian_positions(joint_trajectories):
-    rospy.wait_for_service('/manipulation/fk_leg_right_pose')
-    rospy.wait_for_service('/manipulation/fk_leg_left_pose')
+    rospy.wait_for_service('/control/dk_leg_right')
+    rospy.wait_for_service('/control/dk_leg_left')
     if side == "right":
-        fk_service = rospy.ServiceProxy('/manipulation/fk_leg_right_pose', CalculateDK)
+        fk_service = rospy.ServiceProxy('/control/dk_leg_right', CalculateDK)
     else:
-        fk_service = rospy.ServiceProxy('/manipulation/fk_leg_left_pose', CalculateDK)
+        fk_service = rospy.ServiceProxy('/control/dk_leg_left', CalculateDK)
     cartesian_positions = []
 
     for i, angles in enumerate(joint_trajectories):

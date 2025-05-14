@@ -18,7 +18,8 @@ com_x_offset    = None #original=0.02
 com_y_offset    = None # 
 kick_length     = None
 kick_height     = None
-
+raise_height    = None
+raise_length    = None
 # Tiempo de muestreo maximo para escribir a los servomotores
 SERVO_SAMPLE_TIME = 0.025 # [s]
 
@@ -41,12 +42,12 @@ def calculate_ik(P, service_client):
     failed_counts = 0
     joint_values = np.zeros((len(P),6))
     for i, vector in enumerate(P):
-        print(f"[{i}]: {vector}")
+        # print(f"[{i}]: {vector}")
         req = CalculateIKRequest(x = vector[0], y = vector[1], z = vector[2],
                                  roll = 0, pitch = 0, yaw = 0)                         
         try:
             response = service_client(req)
-            print(response)
+            # print(response)
             if len(response.joint_values) == 6:
                 aux = np.array([list(response.joint_values)])
                 joint_values[i] = aux
@@ -60,7 +61,7 @@ def calculate_ik(P, service_client):
 
 def calculate_cartesian_right_start_pose(y_body_to_feet_percent, ik_client_left, ik_client_right):
     p_start = [0 + com_x_offset, 0, Z_ROBOT_STATIC]
-    p_end = [0 + com_x_offset, -(y_body_to_feet_percent*Y_BODY_TO_FEET + com_y_offset), Z_ROBOT_WALK]
+    p_end = [0 + com_x_offset, -(y_body_to_feet_percent*Y_BODY_TO_FEET) + com_y_offset, Z_ROBOT_WALK]
 
     P_CoM, T = trajectory_planner.get_polynomial_trajectory_multi_dof(p_start, p_end, time_step=SERVO_SAMPLE_TIME)
     
@@ -79,7 +80,7 @@ def calculate_cartesian_left_first_step_pose(p_start, ik_client_left, ik_client_
     initial_l_foot_pos  = np.array([0,  Y_BODY_TO_FEET, 0])
 
     #final_r_foot_pos    = initial_r_foot_pos
-    final_l_foot_pos    = np.array([-0.02, Y_BODY_TO_FEET*1.1, kick_height])
+    final_l_foot_pos    = np.array([raise_length, Y_BODY_TO_FEET, raise_height])
 
     r_leg_abs_pos = np.full((len(T), 3), initial_r_foot_pos)
     l_leg_abs_pos, T = trajectory_planner.get_polynomial_trajectory_multi_dof(initial_l_foot_pos, final_l_foot_pos, time_step=SERVO_SAMPLE_TIME)
@@ -93,7 +94,7 @@ def calculate_cartesian_left_first_step_pose(p_start, ik_client_left, ik_client_
     return left_q, right_q, P_CoM[-1], final_l_foot_pos
 
 def calculate_cartesian_do_kick(p_start, final_foot_pos, ik_client_left, ik_client_right):
-    final_l_foot_pos = [kick_length*5, Y_BODY_TO_FEET, kick_height*0.3]
+    final_l_foot_pos = [kick_length, Y_BODY_TO_FEET, kick_height]
     p_end = p_start
     P_CoM , T = trajectory_planner.get_polynomial_trajectory_multi_dof(p_start, p_end, time_step=SERVO_SAMPLE_TIME)
 
@@ -114,21 +115,22 @@ def calculate_cartesian_do_kick(p_start, final_foot_pos, ik_client_left, ik_clie
 
 def executeTrajectories(left_foot_q, right_foot_q, rate: rospy.Rate, legs_publisher: rospy.Publisher):
     for left, right in zip(left_foot_q, right_foot_q):
-        np.set_printoptions(formatter={'float': lambda x: "{0:0.3f}".format(x)})
         legs_msg = Float32MultiArray()
         legs_msg.data = [*left] + [*right]
-        print(legs_msg.data)
         legs_publisher.publish(legs_msg)
         rate.sleep()
 
 def main(args = None):
     global Y_BODY_TO_FEET, Z_ROBOT_WALK, Z_ROBOT_STATIC
-    global kick_length, kick_height, com_x_offset, com_y_offset
+    global kick_length, kick_height, com_x_offset, com_y_offset, raise_height, raise_length
     global first_left_q, first_right_q, second_left_q, second_right_q, rate, rate2, third_left_q, third_right_q, pub_legs_goal
     rospy.init_node('step_test_node')
     service_execute     = rospy.Service("execute_kick_service", Lateral, handle_execute_kick)
     kick_height     = rospy.get_param("/kick/kick_height")
     kick_length     = rospy.get_param("/kick/kick_length")
+    raise_length    = rospy.get_param("/kick/raise_length")
+    raise_height    = rospy.get_param("/kick/raise_height")
+
     com_x_offset    = rospy.get_param("/kick/com_x_offset")
     com_y_offset    = rospy.get_param("/kick/com_y_offset")
     Z_ROBOT_WALK    = rospy.get_param("/kick/z_robot_walk")
@@ -145,11 +147,11 @@ def main(args = None):
 
     arms_goal_pose      = rospy.Publisher("/hardware/arms_goal_pose", Float32MultiArray , queue_size=1)
     pub_legs_goal       = rospy.Publisher("/hardware/legs_goal_pose", Float32MultiArray, queue_size=1)
-    right_leg_client    = rospy.ServiceProxy('/manipulation/ik_leg_right_pose', CalculateIK)
-    left_leg_client     = rospy.ServiceProxy('/manipulation/ik_leg_left_pose', CalculateIK)
+    right_leg_client    = rospy.ServiceProxy('/control/ik_leg_right', CalculateIK)
+    left_leg_client     = rospy.ServiceProxy('/control/ik_leg_left', CalculateIK)
     
-    rospy.wait_for_service("/manipulation/ik_leg_right_pose")
-    rospy.wait_for_service("/manipulation/ik_leg_left_pose")
+    rospy.wait_for_service("/control/ik_leg_right")
+    rospy.wait_for_service("/control/ik_leg_left")
 
     time.sleep(5)
 
@@ -161,16 +163,19 @@ def main(args = None):
     zero_msg.data = [0.0 for i in range(12)]
     pub_legs_goal.publish(zero_msg)
 
-    rate = rospy.Rate(40)
+    rate = rospy.Rate(10)
     rate2 = rospy.Rate(80)
 
     first_left_q, first_right_q, last_p_com = calculate_cartesian_right_start_pose(1.0, left_leg_client, right_leg_client)
+    print("\n Done with start pose")
     second_left_q, second_right_q, last_p_com , final_foot_pos = calculate_cartesian_left_first_step_pose(last_p_com, left_leg_client, right_leg_client)
+    print("\n Done with raise foot")
     third_left_q, third_right_q, last_p_com = calculate_cartesian_do_kick(last_p_com, final_foot_pos, left_leg_client, right_leg_client)
+    print("\n Done with kick")
 
     while not rospy.is_shutdown():
         executeTrajectories(first_left_q, first_right_q, rate, pub_legs_goal)
-        executeTrajectories(second_left_q, second_right_q, rate, pub_legs_goal)
+        executeTrajectories(second_left_q, second_right_q, rate2, pub_legs_goal)
         executeTrajectories(third_left_q, third_right_q, rate2, pub_legs_goal)
         time.sleep(5)
 

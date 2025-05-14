@@ -164,11 +164,11 @@ def main():
     max_iterations = rospy.get_param("~max_iterations", 400)
     print(prompt+"max_iterations: " + str(max_iterations))
 
-    rospy.Service("/manipulation/ik_leg_left_pose"              , CalculateIK, callback_ik_leg_left) 
-    rospy.Service("/manipulation/ik_leg_right_pose"              , CalculateIK, callback_ik_leg_right) 
+    rospy.Service("/control/ik_leg_left"              , CalculateIK, callback_ik_leg_left) 
+    rospy.Service("/control/ik_leg_right"              , CalculateIK, callback_ik_leg_right) 
 
-    rospy.Service("/manipulation/fk_leg_left_pose"              , CalculateDK, callback_fk_leg_left) 
-    rospy.Service("/manipulation/fk_leg_right_pose"              , CalculateDK, callback_fk_leg_right) 
+    rospy.Service("/control/dk_leg_left"              , CalculateDK, callback_fk_leg_left) 
+    rospy.Service("/control/dk_leg_right"              , CalculateDK, callback_fk_leg_right) 
 
     loop = rospy.Rate(40)
     while not rospy.is_shutdown():
