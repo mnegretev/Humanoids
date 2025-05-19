@@ -730,7 +730,7 @@
   </link>
   
   <link name="camera_optical" >
-    <!--
+    
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
@@ -740,7 +740,7 @@
         <color rgba="0.20 0.20 0.20 1.0"/>
       </material>
     </visual>
-    -->
+   
   </link>
   
   <joint name="camera_joint" type="fixed">
@@ -1561,7 +1561,7 @@
 
 
   <!-- camera -->
-  <gazebo reference="camera_optical">
+  <gazebo reference="head_link">
     <sensor type="camera" name="camera1">
       <pose>-0.050000 -0.010000 0.000000 -1.5708 0.000000 -3.141592</pose>
       <update_rate>30.0</update_rate>
@@ -1573,7 +1573,7 @@
           <format>R8G8B8</format>
         </image>
         <clip>
-          <near>0.0</near>
+          <near>0.05</near>
           <far>100</far>
         </clip>
         <noise>
