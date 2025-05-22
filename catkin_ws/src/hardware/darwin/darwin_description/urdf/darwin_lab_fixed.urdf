@@ -1557,7 +1557,6 @@
   </gazebo>
 
 
-
 <gazebo reference="">
     
     
@@ -1567,20 +1566,20 @@
 
 
   <!-- camera -->
-  <gazebo reference="camera_optical">
+  <gazebo reference="head_link">
     <sensor type="camera" name="camera1">
       <pose>-0.050000 -0.010000 0.000000 -1.5708 0.000000 -3.141592</pose>
       <update_rate>30.0</update_rate>
       <camera name="head">
-        <horizontal_fov>1.3962634</horizontal_fov>
+        <horizontal_fov>1.7157</horizontal_fov>
         <image>
           <width>640</width>
-          <height>480</height>
+          <height>640</height>
           <format>R8G8B8</format>
         </image>
         <clip>
-          <near>0.02</near>
-          <far>300</far>
+          <near>0.05</near>
+          <far>100</far>
         </clip>
         <noise>
           <type>gaussian</type>
@@ -1602,18 +1601,19 @@
             between the gazebo sensor image and the frame it is supposed to
             be attached to -->
         <hackBaseline>0.0</hackBaseline>
-        <distortionK1>0.0</distortionK1>
-        <distortionK2>0.0</distortionK2>
+        <distortionK1>-0.15</distortionK1>
+        <distortionK2>0.05</distortionK2>
         <distortionK3>0.0</distortionK3>
         <distortionT1>0.0</distortionT1>
         <distortionT2>0.0</distortionT2>
         <CxPrime>0</CxPrime>
-        <Cx>0.0</Cx>
-        <Cy>0.0</Cy>
-        <focalLength>0.0</focalLength>
+        <Cx>1152</Cx>
+        <Cy>648</Cy>
+        <focalLength>0.00395</focalLength>
       </plugin>
     </sensor>
   </gazebo>
+
 
   <gazebo reference="imu_link">
     <gravity>true</gravity>
