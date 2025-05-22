@@ -1,11 +1,11 @@
 walk:
-    y_body_to_feet: 0.055
-    z_robot_walk:   0.55
+    y_body_to_feet: 0.07
+    z_robot_walk:   0.54
     z_robot_static: 0.576
-    step_height:    0.1
+    step_height:    0.15
     step_length:    0.05
-    robot_vel_x:    0.1   # m/s
-    com_x_offset:   0.02
+    robot_vel_x:    0.2   # m/s
+    com_x_offset:   0.01
     com_y_offset:   0.00
     lipm_sampling:  10000 #10 KHz
     servo_rate:     40    #40 Hz

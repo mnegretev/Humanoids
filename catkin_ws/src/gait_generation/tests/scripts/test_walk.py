@@ -31,7 +31,6 @@ def calculate_ik(P, service_client):
     failed_counts = 0
     joint_values = np.zeros((len(P),6))
     for i, vector in enumerate(P):
-        print(f"[{i}]: {vector}")
         req = CalculateIKRequest(x = vector[0], y = vector[1], z = vector[2],
                                  roll = 0, pitch = 0, yaw = 0)                         
         try:
@@ -42,7 +41,7 @@ def calculate_ik(P, service_client):
                 joint_values[i] = aux
         except Exception as e:
             failed_counts += 1
-            if (failed_counts > len(joint_values)*0.5):
+            if (failed_counts > len(joint_values)*0.9):
                 raise ValueError(f"{failed_counts} failed calculations. Aborting")
             print(f"Could not calculate inverse kinematics for pose {vector}")
             joint_values[i] = joint_values[i-1]
@@ -348,12 +347,13 @@ def main(args = None):
     print(f"LIPM_SAMPLING is:\t {LIPM_SAMPLING}")
     print(f"SERVO_RATE    is:\t {SERVO_RATE}")
 
+    time.sleep(5)
 
-    first_left_q, first_right_q, last_p_com = calculate_cartesian_right_start_pose(1, 0.0, left_leg_client, right_leg_client)
+    first_left_q, first_right_q, last_p_com = calculate_cartesian_right_start_pose(2, 1.0, left_leg_client, right_leg_client)
     print("\n Done with start_pose\n")
 
     initial_halfstep_pos = last_p_com
-    final_halfstep_pos = [STEP_LENGTH/4 + COM_X_OFFSET, 0, Z_ROBOT_WALK]
+    final_halfstep_pos = [STEP_LENGTH/2 + COM_X_OFFSET, 0, Z_ROBOT_WALK]
 
     second_left_q, second_right_q, final_l_foot_pos = calculate_cartesian_left_half_step_pose(0.5, initial_halfstep_pos, final_halfstep_pos, left_leg_client, right_leg_client)
     print("\n Done with first_halfstep \n")
@@ -383,7 +383,7 @@ def main(args = None):
     rate = rospy.Rate(SERVO_RATE)
     
     executeTrajectories(first_left_q, first_right_q, rate, legs_goal_pub)
-    time.sleep(3)
+    #time.sleep(1)
     executeTrajectories(second_left_q, second_right_q, rate, legs_goal_pub)
     while not rospy.is_shutdown():
         executeTrajectories(third_left_q, third_right_q, rate,legs_goal_pub)
