@@ -17,10 +17,15 @@
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "Luckfox_node");
+
+    ros::NodeHandle n; 
+    ros::ServiceClient client = n.serviceClient<vision_msgs::ProcessObject>("ProcessObjects");
+    vision_msgs::ProcessObject srv;
+
     if (argc !=3)
     {
         ROS_INFO("Reading UDP from the luckfox");
-        return 1;
+        //return 1;
     }
     ros::Rate loop_rate(10);
 
@@ -32,15 +37,11 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    ros::NodeHandle n; 
-    ros::ServiceClient client = n.serviceClient<vision_msgs::ProcessObject>("ProcessObjects");
-    vision_msgs::ProcessObject srv;
-
     // Configurar la dirección del servidor
     sockaddr_in serverAddress;
     serverAddress.sin_family = AF_INET;
     serverAddress.sin_port = htons(5000); // Puerto 5000
-    serverAddress.sin_addr.s_addr = inet_addr("127.0.0.1"); // Dirección local
+    serverAddress.sin_addr.s_addr = inet_addr("10.42.0.102"); // Dirección local
 
     // Conectar al servidor
     if (connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) == -1) {
@@ -73,7 +74,7 @@ int main(int argc, char **argv)
         std::string message(buffer, bytesRead);
         std::cout << "Mensaje recibido: " << message;
 
-        int elementos_leidos = sscanf(cadena, "%99[^@] @ (%d %d %d %d) %f",nombre, &sX, &sY, &eX, &eY, &prop);
+        int elementos_leidos = sscanf(buffer, "%99[^@] @ (%d %d %d %d) %f",nombre, &sX, &sY, &eX, &eY, &prop);
 
         srv.request.object.id = nombre;
         srv.request.object.confidence = prop;
@@ -88,7 +89,7 @@ int main(int argc, char **argv)
             ROS_INFO("The service worked well");
             ros::Publisher pub = n.advertise<vision_msgs::VisionObject>("Luckfox_finds", 100);
             vision_msgs::VisionObject msg;
-            msg = srv.reponse;
+            msg = srv.response.object;
             pub.publish(msg);
         }   
         else
