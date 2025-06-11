@@ -45,3 +45,5 @@ logs/
 .bash_history
 .ros/
 .cache/
+
+setup/luckfox/build
