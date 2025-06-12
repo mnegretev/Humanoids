@@ -1,0 +1,20 @@
+<launch>
+
+    <!-- HARDWARE -->
+    
+    <!-- DYNAMIXEL CM730 -->
+    <include file="$(find cm730)/launch/cm730.launch">
+        <arg name="darwin" value="true"/>
+    </include>
+
+    <!-- IMU -->
+    <include file="$(find imu)/launch/mpu6050_unfiltered.launch"/>
+
+    <!-- LUCKFOX CAMERA LISTENER -->
+    <node name="luckfox_client_node" pkg="luckfox_vision" type="luckfox_client_node"/>
+
+    <!-- ROBOT STATE -->
+    <param name="robot_description" command="cat $(find darwin_description)/urdf/darwin_lab.urdf" />
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+
+</launch>
