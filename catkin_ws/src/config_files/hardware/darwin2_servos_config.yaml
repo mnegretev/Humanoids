@@ -86,8 +86,8 @@ right:
         id:   3
         cw:  -1
         zero: 1622
-        enabled: true
-        is4pin: false
+        enabled: false # TODO Fix ID in darwin2
+        is4pin: true
         joint: right_shoulder_roll
     elbow:
       pitch:

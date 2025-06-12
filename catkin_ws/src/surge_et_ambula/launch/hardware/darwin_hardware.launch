@@ -3,9 +3,7 @@
     <!-- HARDWARE -->
     
     <!-- DYNAMIXEL CM730 -->
-    <include file="$(find cm730)/launch/cm730.launch">
-        <arg name="darwin" value="true"/>
-    </include>
+    <include file="$(find cm730)/launch/cm730_no_torque.launch"/>
 
     <!-- IMU -->
     <include file="$(find imu)/launch/mpu6050_unfiltered.launch"/>
