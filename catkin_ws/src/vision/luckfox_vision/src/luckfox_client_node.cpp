@@ -87,7 +87,7 @@ int main(int argc, char **argv)
         {
             
             ROS_INFO("The service worked well");
-            ros::Publisher pub = n.advertise<vision_msgs::VisionObject>("Luckfox_finds", 100);
+            ros::Publisher pub = n.advertise<vision_msgs::VisionObject>("Luckfox_finds", 1);
             vision_msgs::VisionObject msg;
             msg = srv.response.object;
             pub.publish(msg);
