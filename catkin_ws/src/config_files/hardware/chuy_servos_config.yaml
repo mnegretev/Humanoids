@@ -6,14 +6,16 @@ left:
         id:   2 # SERVOMOTOR ID (from 0 to 255)
         cw:   1 # IS CLOCKWISE? (The only values accepted are 1 and -1)
         zero: 2070 # NATURAL ZERO POSE OF HUMANOID IN DYNAMIXEL BITS (0-4095)
-        enabled: true
-        is4pin: false
+        enabled: true # SET TO FALSE IF YOU DONT WANT TO WAKEUP THIS SERVO, OR IGNORE IT IF BROKEN
+        is4pin: false 
+        joint: left_shoulder_pitch
       roll:
         id:   4
         cw:   -1
         zero: 3177
         enabled: true # Needs to change
         is4pin: true
+        joint: left_shoulder_roll
     elbow:
       pitch:
         id:   6
@@ -21,6 +23,7 @@ left:
         zero: 1830
         enabled: true
         is4pin: true
+        joint: left_elbow_pitch
   leg:
     hip:
       yaw:
@@ -29,18 +32,21 @@ left:
         zero: 2070
         enabled: true
         is4pin: false
+        joint: left_hip_yaw
       roll:
         id:   10
         cw:   1
         zero: 2116
         enabled: true
         is4pin: false
+        joint: left_hip_roll
       pitch:
         id:   12
         cw:   1
         zero: 1900
         enabled: true
         is4pin: false
+        joint: left_hip_pitch
     knee:
       pitch: 
         id:   14
@@ -48,6 +54,7 @@ left:
         zero: 1790
         enabled: true
         is4pin: false
+        joint: left_knee_pitch
     ankle:
       pitch: 
         id:   16
@@ -55,12 +62,14 @@ left:
         zero: 2031
         enabled: true
         is4pin: false
+        joint: left_ankle_pitch
       roll:
         id:   18
         cw:   -1
         zero: 2105
         enabled: true
         is4pin: false
+        joint: left_ankle_roll
 
  # RIGHT SIDE  
 right:
@@ -72,12 +81,14 @@ right:
         zero: 2113
         enabled: true
         is4pin: false
+        joint: right_shoulder_pitch
       roll:
         id:   3
         cw:   -1
         zero: 926
         enabled: true
         is4pin: false
+        joint: right_shoulder_roll
     elbow:
       pitch:
         id:   5
@@ -85,6 +96,7 @@ right:
         zero: 2905
         enabled: true
         is4pin: false
+        joint: right_elbow_pitch
   leg:
     hip:
       yaw:
@@ -93,18 +105,21 @@ right:
         zero: 1800
         enabled: true
         is4pin: false
+        joint: right_hip_yaw
       roll:
         id:   9
         cw:   1
         zero: 1020
         enabled: true
         is4pin: false
+        joint: right_hip_roll
       pitch:
         id:   11
         cw:   -1
         zero: 1600
         enabled: true
         is4pin: false
+        joint: right_hip_pitch
     knee:
       pitch: 
         id:   13
@@ -112,6 +127,7 @@ right:
         zero: 3130
         enabled: true
         is4pin: false
+        joint: right_knee_pitch
     ankle:
       pitch:
         id:   15
@@ -119,12 +135,14 @@ right:
         zero: 2174
         enabled: true
         is4pin: false
+        joint: right_ankle_pitch
       roll:
         id:   17
         cw:   -1
         zero: 1982
         enabled: true
         is4pin: false
+        joint: right_ankle_roll
 head:
   yaw:
     id:   19
@@ -132,9 +150,11 @@ head:
     zero: 2560
     enabled: true
     is4pin: true
+    joint: neck_yaw
   pitch:
     id:   20
     cw:   -1
     zero: 2094
     enabled: true
     is4pin: true
+    joint: head_pitch

@@ -64,7 +64,7 @@ namespace Servo
     struct servo_t
     {
         int id;
-        std::string name;
+        std::string joint_name;
         int     cw;
         uint16_t zero;
         bool    enabled;

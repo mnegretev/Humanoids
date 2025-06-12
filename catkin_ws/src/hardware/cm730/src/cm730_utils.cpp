@@ -265,6 +265,7 @@ namespace CM730
             std::string param_zero_str    {name + "/zero"};
             std::string param_enabled_str {name + "/enabled"};
             std::string param_is4pin_str  {name + "/is4pin"};
+            std::string param_joint_str   {name + "/joint"};
             int zero;
             if (!ros::param::get(param_id_str, servo.id))
             {
@@ -292,16 +293,15 @@ namespace CM730
                 ROS_ERROR("Missing param in config file: %s", param_is4pin_str.c_str());
                 return false;
             }
-            std::string str = name;
-            std::replace(str.begin(), str.end(), '/', '_');
-            auto it = std::find(str.begin(), str.end(), '_');
-            if (it != str.end()) str.erase(it);
-            servo.name = str;
-
+            if (!ros::param::get(param_joint_str, servo.joint_name))
+            {
+                ROS_ERROR("Missing param in config file: %s", param_joint_str.c_str());
+                return false;
+            }
             std::cout << "[CM730_UTILS] Servo added. ID: " << servo.id 
                       << "\t CW: " << servo.cw 
                       << "\t ZERO: " << servo.zero 
-                      << "\t NAME: " << servo.name
+                      << "\t NAME: " << servo.joint_name
                       << "\t is4Pin: " << servo.is4Pin
                       << std::endl;
 
@@ -322,7 +322,7 @@ namespace CM730
         msg_joint_states.header.stamp = ros::Time::now();
         for(auto servo: all_servos)
         {
-            msg_joint_states.name[servo.id] = servo.name;
+            msg_joint_states.name[servo.id] = servo.joint_name;
             msg_joint_states.position[servo.id] = (int(present_position[servo.id]) - int(servo.zero))
                                                   * SERVO_MX_RADS_PER_BIT
                                                   * servo.cw;
