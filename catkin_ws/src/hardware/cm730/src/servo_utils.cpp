@@ -172,7 +172,7 @@ namespace Servo
         }
         for(auto servo: servo_list)
         {
-            registered_servos.push_back(servo);
+            if (servo.enabled) registered_servos.push_back(servo);
         }
         return true;
     }

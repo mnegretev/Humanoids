@@ -305,10 +305,7 @@ namespace CM730
                       << "\t is4Pin: " << servo.is4Pin
                       << std::endl;
 
-            if(servo.enabled)
-            {
-                servo_list.push_back(servo);
-            }
+            servo_list.push_back(servo);
         }
         return true;
     }
@@ -323,10 +320,18 @@ namespace CM730
         for(auto servo: all_servos)
         {
             msg_joint_states.name[servo.id] = servo.joint_name;
-            msg_joint_states.position[servo.id] = (int(present_position[servo.id]) - int(servo.zero))
-                                                  * SERVO_MX_RADS_PER_BIT
-                                                  * servo.cw;
-            msg_joint_current_angles.data[servo.id] = msg_joint_states.position[servo.id];
+            if(servo.enabled)
+            {
+                msg_joint_states.position[servo.id] = (int(present_position[servo.id]) - int(servo.zero))
+                                      * SERVO_MX_RADS_PER_BIT
+                                      * servo.cw;
+                msg_joint_current_angles.data[servo.id] = msg_joint_states.position[servo.id];
+            }
+            else
+            {
+                msg_joint_states.position[servo.id] = 0.0;
+                msg_joint_current_angles.data[servo.id] = msg_joint_states.position[servo.id];
+            }
         }
         pub_joint_states.publish(msg_joint_states);
         pub_joint_current_angles.publish(msg_joint_current_angles);
