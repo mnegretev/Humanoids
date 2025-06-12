@@ -294,6 +294,8 @@ namespace CM730
             }
             std::string str = name;
             std::replace(str.begin(), str.end(), '/', '_');
+            auto it = std::find(str.begin(), str.end(), '_');
+            if (it != str.end()) str.erase(it);
             servo.name = str;
 
             std::cout << "[CM730_UTILS] Servo added. ID: " << servo.id 
