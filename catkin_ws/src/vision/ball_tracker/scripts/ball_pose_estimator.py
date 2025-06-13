@@ -77,9 +77,9 @@ def callback_calculate_position(req):
 
     res = ProcessObjectResponse()
     res.object = req.object
-    res.object.pose.position.x = px
-    res.object.pose.position.y = py
-    res.object.pose.position.z = pz
+    res.object.pose.position.x = -py
+    res.object.pose.position.y = pz
+    res.object.pose.position.z = px
     #res.img = req.img
 
     pub.publish(ball)
