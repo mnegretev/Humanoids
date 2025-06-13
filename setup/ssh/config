@@ -1,0 +1,10 @@
+Host darwin
+	User humanoid
+	Hostname 10.42.0.2
+	StrictHostKeyChecking no
+	UserKnownHostsFile /dev/null
+
+Host luckfox
+	User root
+	Hostname 10.42.0.102
+	StrictHostKeyChecking no
