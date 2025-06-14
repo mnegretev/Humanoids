@@ -18,7 +18,7 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "Luckfox_node");
 
     ros::NodeHandle n;
-    ros::ServiceClient client = n.serviceClient<vision_msgs::ProcessObject>("/vision/img_to_cartesian_floor");
+    ros::ServiceClient client = n.serviceClient<vision_msgs::ProcessObject>("ProcessGoal");
     vision_msgs::ProcessObject srv;
 
     if (argc != 3)
@@ -83,8 +83,8 @@ int main(int argc, char **argv)
         srv.request.object.confidence = prop;
         srv.request.object.x = sX;
         srv.request.object.y = sY;
-        srv.request.object.width = abs(sX - sY);
-        srv.request.object.height = abs(eX - eY);
+        srv.request.object.width = abs(eX - sX);
+        srv.request.object.height = abs(eY - sY);
         std::cout << srv.request.object.confidence << std::endl;
         if (client.call(srv))
         {

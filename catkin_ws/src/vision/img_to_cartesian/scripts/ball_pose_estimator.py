@@ -33,7 +33,7 @@ def callback_calculate_position(req):
     print("wrt_camera", ux, uy, uz)
 
     # try:
-    #     trans = tf_buffer.lookup_transform('left_foot_link', 'camera_optical', rospy.Time(0), rospy.Duration(1.0))
+    #     trans = tf_buffer.lookup_transform('left_foot_plane_link', 'camera_optical', rospy.Time(0), rospy.Duration(1.0))
     # except Exception as e:
     #     rospy.logwarn(f"Error al obtener la transformación tf: {e}")
     #     return ProcessObjectResponse()
@@ -42,14 +42,14 @@ def callback_calculate_position(req):
     p.header.frame_id = 'camera_optical'
     p.header.stamp = rospy.Time(0)
     p.point.x, p.point.y, p.point.z = ux, uy, uz
-    listener.waitForTransform('left_foot_link','camera_optical', rospy.Time(), rospy.Duration(10.0))
-    p = listener.transformPoint('left_foot_link', p)
-    #p = tf_buffer.transform(p, 'left_foot_link')
+    listener.waitForTransform('left_foot_plane_link','camera_optical', rospy.Time(), rospy.Duration(10.0))
+    p = listener.transformPoint('left_foot_plane_link', p)
+    #p = tf_buffer.transform(p, 'left_foot_plane_link')
     print("wrt_foot", p)
     camera = PointStamped()
     camera.header.frame_id = 'camera_optical'
     camera.header.stamp = rospy.Time(0)
-    camera = listener.transformPoint('left_foot_link', camera)
+    camera = listener.transformPoint('left_foot_plane_link', camera)
 
     print("camera", camera)
 
@@ -61,7 +61,7 @@ def callback_calculate_position(req):
     print("d", d)
     px, py, pz = camera.point.x + d * lx, camera.point.y + d * ly, camera.point.z + d * lz
     ball = PointStamped()
-    ball.header.frame_id = 'left_foot_link'
+    ball.header.frame_id = 'left_foot_plane_link'
     ball.header.stamp = rospy.Time(0)
     ball.point.x, ball.point.y, ball.point.z = px, py, pz 
     print(px, py, pz)
@@ -77,10 +77,10 @@ def callback_calculate_position(req):
 
     res = ProcessObjectResponse()
     res.object = req.object
-    res.object.pose.position.x = -py
-    res.object.pose.position.y = pz
-    res.object.pose.position.z = px
-    #res.img = req.img
+    res.object.pose.position.x = px
+    res.object.pose.position.y = py
+    res.object.pose.position.z = pz
+    res.img = req.img
 
     pub.publish(ball)
 
@@ -95,7 +95,7 @@ def ball_pose_estimator():
     #tf_buffer = tf2_ros.Buffer()
     listener = tf.TransformListener()
 
-    s = rospy.Service('/vision/img_to_cartesian_floor', ProcessObject, callback_calculate_position)
+    s = rospy.Service('process_object', ProcessObject, callback_calculate_position)
     rospy.loginfo("Servicio 'process_object' listo.")
     pub = rospy.Publisher("ball_position", PointStamped, queue_size= 1)
     rospy.spin()
