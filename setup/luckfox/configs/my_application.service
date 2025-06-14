@@ -1,0 +1,20 @@
+[Unit]
+Description=My Root Program Service # Clearly indicate it's a root service
+After=network.target multi-user.target
+
+[Service]
+Type=simple
+ExecStart=luckfox_pico_rtsp_yolov5 # Your program's executable path
+WorkingDirectory=/root/luckfox_pico_rtsp_yolov5_demo
+
+# NO User= and Group= directives here, meaning it will run as root by default
+
+Restart=always
+RestartSec=3
+TimeoutStopSec=10
+
+StandardOutput=syslog
+StandardError=syslog
+
+[Install]
+WantedBy=multi-user.target
