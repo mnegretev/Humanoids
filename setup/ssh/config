@@ -1,9 +1,29 @@
-Host humanoid #Use this when connecting with Ethernet
+Host humanoid
+	#Use this when connecting with Ethernet
 	User humanoid
 	Hostname 10.42.0.2
 	StrictHostKeyChecking no
 	UserKnownHostsFile /dev/null
 
+Host wifidarwin2
+	User humanoid
+	# This only works in the BioRobotics network from the lab
+	Hostname 192.168.1.117
+	StrictHostKeyChecking no
+
+Host wifidarwin1
+	User humanoid
+	# This only works in the BioRobotics network from the lab
+	Hostname 192.168.1.118
+	StrictHostKeyChecking no
+
+Host wifinimbro
+	User humanoid
+	# This only works in the BioRobotics network from the lab
+	Hostname 192.168.1.119
+	StrictHostKeyChecking no
+
+#LUCKFOX
 Host luckfox
 	User root
 	Hostname 10.42.0.102
@@ -12,18 +32,3 @@ Host luckfox
 Host luckfox2
 	User root
 	Hostname 10.42.0.55
-
-Host wifidarwin2
-	User humanoid
-	Hostname 192.168.1.117 # This only works in the BioRobotics network from the lab
-	StrictHostKeyChecking no
-
-Host wifidarwin1
-	User humanoid
-	Hostname 192.168.1.118 # This only works in the BioRobotics network from the lab
-	StrictHostKeyChecking no
-
-Host wifinimbro
-	User humanoid
-	Hostname 192.168.1.119
-	StrictHostKeyChecking no
