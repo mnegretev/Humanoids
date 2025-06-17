@@ -268,14 +268,14 @@ int main(int argc, char *argv[]) {
                         
                         printf("%s", detection_info);
 
-                        // Enviar la información de detección
-                        // int bytesSent = send(clientSocket, detection_info, strlen(detection_info), 0);
+                        //Enviar la información de detección
+                        int bytesSent = send(clientSocket, detection_info, strlen(detection_info), 0);
                         
-                        // if (bytesSent <= 0) {
-                        //     std::cout << "Cliente desconectado o error de envio." << std::endl;
-                        //     clienteActivo = false;
-                        //     // break;
-                        // }
+                        if (bytesSent <= 0) {
+                            std::cout << "Cliente desconectado o error de envio." << std::endl;
+                            clienteActivo = false;
+                            // break;
+                        }
 
                         cv::rectangle(frame,cv::Point(sX ,sY),
                                             cv::Point(eX ,eY),
