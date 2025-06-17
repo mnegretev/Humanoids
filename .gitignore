@@ -46,4 +46,5 @@ logs/
 .ros/
 .cache/
 
-setup/luckfox/build
+setup/luckfox/demos/build/
+setup/luckfox/demos/install/
