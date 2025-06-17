@@ -26,23 +26,23 @@ class Imu_Node():
     def callback(self, msg):
         ay     = math.atan2(msg.linear_acceleration.x, math.sqrt( msg.linear_acceleration.y**2 + msg.linear_acceleration.z**2)) * 180 / math.pi
         ax     = math.atan2(msg.linear_acceleration.y, math.sqrt( msg.linear_acceleration.x**2 + msg.linear_acceleration.z**2)) * 180 / math.pi
-        
+
         self.gx     = self.gx + msg.angular_velocity.x / FREQ
-        self.gy     = self.gy - msg.angular_velocity.y / FREQ
+        self.gy     = self.gy + msg.angular_velocity.y / FREQ
         self.gz     = self.gz + msg.angular_velocity.z / FREQ
 
         self.gx = self.gx * 0.96 + ax * 0.04
         self.gy = self.gy * 0.96 + ay * 0.04
 
         self.pub_msg.x = self.gx
-        self.pub_msg.y = self.gy
-        self.pub_msg.z = self.gz 
+        self.pub_msg.y = -self.gy
+        self.pub_msg.z = self.gz
 
-        self.rotation = quaternion_from_euler(self.gx, self.gy, self.gz)
+        self.rotation = quaternion_from_euler(self.gx, -self.gy, self.gz)
         self.b.sendTransform(self.translation, self.rotation, rospy.Time.now(), 'imu_link_rotation', 'imu_link')
 
         self.pub.publish(self.pub_msg)
-        
+
         if self.gy < -40.0:
             self.pub_hs.publish("fall_front")
         elif self.gy > 40.0:
