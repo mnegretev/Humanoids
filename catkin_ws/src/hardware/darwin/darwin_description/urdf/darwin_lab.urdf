@@ -46,7 +46,7 @@
    <inertia ixx="0.0051411124"  ixy="-0.00057530255"  ixz="-0.000024729049" iyy="0.0081915737" iyz="-0.000019223094" izz="0.0011379812" />
   </inertial>
   <visual>
-    <origin xyz="0 0 0" rpy="0 0 0" />
+    <origin xyz="0 0 0" rpy="0 0 1.5707963" />
     <geometry>
       <!--box size="0.045 0.022 0.0325" /-->
       <mesh filename="package://darwin_description/meshes/neck.STL"  scale="1 1 1"/>
@@ -56,6 +56,7 @@
     </material>
   </visual>
   <collision>
+    <origin xyz="0 0 0" rpy="0 0 1.5707963" />
     <geometry>
       <mesh filename="package://darwin_description/meshes/neck_coll.stl"  scale="1 1 1"/>
     </geometry>
@@ -68,7 +69,7 @@
    <inertia ixx="0.1239683"  ixy="0.000078494368"  ixz="0.000007645979" iyy="0.11783781" iyz="0.0012199205" izz="0.1583601" />
   </inertial>
   <visual>
-    <origin xyz="0 0 0" rpy="0 0 0" />
+    <origin xyz="0 0 0" rpy="-1.5707963 0 3.14159" />
     <geometry>
       <!-- box size="0.0634 0.061 0.033" /-->
       <mesh filename="package://darwin_description/meshes/head.STL"  scale="1 1 1"/>
@@ -78,6 +79,7 @@
     </material>
   </visual>
   <collision>
+    <origin xyz="0 0 0" rpy="-1.5707963 0 3.14159" />
     <geometry>
       <mesh filename="package://darwin_description/meshes/head_coll.stl"  scale="1 1 1"/>
     </geometry>
@@ -90,7 +92,7 @@
     <inertia ixx="3.1081800"  ixy="-0.25460189"  ixz="2.0318174" iyy="6.3787776" iyz="0.16417863" izz="5.3316425" />
   </inertial>
   <visual>
-    <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+    <origin xyz="0.0 0.0 0.0" rpy="1.5707963 0 0" />
     <geometry>
       <box size="0.001 0.001 0.001"  scale="1 1 1"/>
     </geometry>
@@ -99,6 +101,7 @@
     </material>
   </visual>
   <collision>
+    <origin xyz="0.0 0.0 0.0" rpy="1.5707963 0 0" />
     <geometry>
       <box size="0.001 0.001 0.001"  scale="1 1 1"/>
     </geometry>
@@ -112,7 +115,7 @@
   </inertial>
   
   <visual>
-    <origin xyz="0 0 0" rpy="0 0 0" />
+    <origin xyz="0 0 0" rpy="3.14159 -1.5707963 1.5707963" />
     <geometry>
       <!--box size="0.016 0.033 0.02165" /-->
       <mesh filename="package://darwin_description/meshes/shoulder_l.STL"  scale="1 1 1"/>
@@ -122,6 +125,7 @@
     </material>
   </visual>
   <collision>
+    <origin xyz="0 0 0" rpy="3.14159 -1.5707963 1.5707963" />
     <geometry>
       <mesh filename="package://darwin_description/meshes/shoulder_l_coll.stl"  scale="1 1 1"/>
     </geometry>
@@ -135,7 +139,7 @@
     <inertia ixx="0.12202839"  ixy="-0.0020812626"  ixz="-0.00088143449" iyx="-0.0020812626" iyy="0.038088441" iyz="0.0018251448" izx="-0.00088143449" izy="0.0018251448" izz="0.11340830" />
   </inertial>
   <visual>
-    <origin xyz="0 0 0" rpy="0 0 0" />
+    <origin xyz="0 0 0" rpy="0 -1.5707963 0" />
     <geometry>
       <!--box size="0.06 0.032 0.035" /-->
       <mesh filename="package://darwin_description/meshes/arm_high_l.STL"  scale="1 1 1"/>
@@ -145,6 +149,7 @@
     </material>
   </visual>
   <collision>
+    <origin xyz="0 0 0" rpy="0 -1.5707963 0" />
     <geometry>
       <mesh filename="package://darwin_description/meshes/arm_high_l_coll.stl"  scale="1 1 1"/>
     </geometry>
@@ -157,7 +162,7 @@
     <inertia ixx="0.086855267"  ixy="0.0053020311"  ixz="0.00043636051" iyx="0.0053020311" iyy="0.021192085" iyz="-0.0064855932" izx="0.00043636051" izy="-0.0064855932" izz="0.086845450" />
   </inertial>
   <visual>
-    <origin xyz="0.016 0.016 0" rpy="0 0 0" />
+    <origin xyz="0 0.016 -0.016" rpy="0 0 0" />
     <geometry>
       <box size="0.032 0.032 0.035" />
     </geometry>
@@ -166,7 +171,7 @@
     </material>
   </visual>
   <collision>
-    <origin xyz="0.016 0.016 0" rpy="0 0 0" />
+    <origin xyz="0 0.016 -0.016" rpy="0 0 0" />
     <geometry>
       <box size="0.032 0.032 0.035" />
     </geometry>
@@ -179,7 +184,7 @@
     <inertia ixx="0.12202839"  ixy="-0.0020812626"  ixz="-0.00088143449" iyx="-0.0020812626" iyy="0.038088441" iyz="0.0018251448" izx="-0.00088143449" izy="0.0018251448" izz="0.11340830" />
   </inertial>
   <visual>
-    <origin xyz="0.016 0 0" rpy="0 0 0" />
+    <origin xyz="0 0 0.016" rpy="0 1.5707963 0" />
     <geometry>
       <box size="0.064 0.032 0.032" />
     </geometry>
@@ -188,7 +193,7 @@
     </material>
   </visual>
   <collision>
-    <origin xyz="0.016 0 0" rpy="0 0 0" />
+    <origin xyz="0 0 0.016" rpy="0 1.5707963 0" />
     <geometry>
       <box size="0.064 0.032 0.032" />
     </geometry>
@@ -201,7 +206,7 @@
     <inertia ixx="0.12202839"  ixy="-0.0020812626"  ixz="-0.00088143449" iyx="-0.0020812626" iyy="0.038088441" iyz="0.0018251448" izx="-0.00088143449" izy="0.0018251448" izz="0.11340830" />
   </inertial> 
   <visual>
-    <origin xyz="0 0 0" rpy="0 0 0" />
+    <origin xyz="0 0 0" rpy="0 -1.5707963 0" />
     <geometry>
       <box size="0.032 0.005 0.032" />
     </geometry>
@@ -210,6 +215,7 @@
     </material>
   </visual>
   <collision>
+    <origin xyz="0 0 0" rpy="0 -1.5707963 0" />
     <geometry>
       <box size="0.032 0.005 0.032" />
     </geometry>
@@ -222,7 +228,7 @@
     <inertia ixx="0.12202839"  ixy="-0.0020812626"  ixz="-0.00088143449" iyx="-0.0020812626" iyy="0.038088441" iyz="0.0018251448" izx="-0.00088143449" izy="0.0018251448" izz="0.11340830" />
   </inertial>
   <visual name="VIS_MP_ARM_GRIPPER_MOV_L">
-    <origin xyz="0.016 0 0" rpy="0 0 0" />
+    <origin xyz="0.016 0 0" rpy="0 -1.5707963 0" />
     <geometry>
       <box size="0.032 0.005 0.032" />
     </geometry>
@@ -231,7 +237,7 @@
     </material>
   </visual>
   <collision name="COL_MP_ARM_GRIPPER_MOV_L">
-    <origin xyz="0.016 0 0" rpy="0 0 0" />
+    <origin xyz="0.016 0 0" rpy="0 -1.5707963 0" />
     <geometry>
       <box size="0.032 0.005 0.032" />
     </geometry>
@@ -283,7 +289,7 @@
     <inertia ixx="0.0097758165"  ixy="0.0016911839"  ixz="-0.00045174329" iyx="0.0016911839" iyy="0.010511104" iyz="0.00033406955" izx="-0.00045174329" izy="0.00033406955" izz="0.005476798" />
   </inertial>
   <visual>
-    <origin xyz="0 0 0" rpy="0 0 3.14" />
+    <origin xyz="0 0 0" rpy="0 -1.5707963 1.570793" />
     <geometry>
       <!--box size="0.016 0.033 0.02165" /-->
       <mesh filename="package://darwin_description/meshes/shoulder_r.STL"  scale="1 1 1"/>
@@ -293,7 +299,7 @@
     </material>
   </visual>
   <collision>
-    <origin xyz="0 0 0" rpy="0 0 3.14" />
+    <origin xyz="0 0 0" rpy="0 -1.5707963 1.570793" />
     <geometry>
       <mesh filename="package://darwin_description/meshes/shoulder_r_coll.stl"  scale="1 1 1"/>
     </geometry>
@@ -306,7 +312,7 @@
     <inertia ixx="0.12202839"  ixy="-0.0020812626"  ixz="-0.00088143449" iyx="-0.0020812626" iyy="0.038088441" iyz="0.0018251448" izx="-0.00088143449" izy="0.0018251448" izz="0.11340830" />
   </inertial>
   <visual>
-    <origin xyz="0 0 0" rpy="3.14 0 0" />
+    <origin xyz="0 0 0" rpy="0 -1.5707963 0" />
     <geometry>
       <!--box size="0.06 0.032 0.035"/-->
       <mesh filename="package://darwin_description/meshes/arm_high_r.STL"  scale="1 1 1"/>
@@ -316,6 +322,7 @@
     </material>
   </visual>
   <collision>
+    <origin xyz="0 0 0" rpy="0 -1.5707963 0" />
     <geometry>
       <mesh filename="package://darwin_description/meshes/arm_high_r_coll.stl"  scale="1 1 1"/>
     </geometry>
@@ -328,7 +335,7 @@
     <inertia ixx="0.086855267"  ixy="0.0053020311"  ixz="0.00043636051" iyx="0.0053020311" iyy="0.021192085" iyz="-0.0064855932" izx="0.00043636051" izy="-0.0064855932" izz="0.086845450" />
   </inertial>
   <visual>
-    <origin xyz="0.016 -0.016 0" rpy="0 0 0" />
+    <origin xyz="0.016 0 -0.016" rpy="0 0 0" />
     <geometry>
       <box size="0.032 0.032 0.035" />
     </geometry>
@@ -337,7 +344,7 @@
     </material>
   </visual>
   <collision>
-    <origin xyz="0.016 -0.016 0" rpy="0 0 0" />
+    <origin xyz="0.016 0 -0.16" rpy="0 0 0" />
     <geometry>
       <box size="0.032 0.032 0.035" />
     </geometry>
@@ -350,7 +357,7 @@
     <inertia ixx="0.12202839"  ixy="-0.0020812626"  ixz="-0.00088143449" iyx="-0.0020812626" iyy="0.038088441" iyz="0.0018251448" izx="-0.00088143449" izy="0.0018251448" izz="0.11340830" />
   </inertial>
   <visual>
-    <origin xyz="0.016 0 0" rpy="0 0 0" />
+    <origin xyz="0.016 -0.016 0" rpy="0 1.5707963 0" />
     <geometry>
       <box size="0.064 0.032 0.032" />
     </geometry>
@@ -372,7 +379,7 @@
     <inertia ixx="0.12202839"  ixy="-0.0020812626"  ixz="-0.00088143449" iyx="-0.0020812626" iyy="0.038088441" iyz="0.0018251448" izx="-0.00088143449" izy="0.0018251448" izz="0.11340830" />
   </inertial> 
   <visual>
-    <origin xyz="0 0 0" rpy="0 0 0" />
+    <origin xyz="0.016 0 0" rpy="0 0 0" />
     <geometry>
       <box size="0.032 0.005 0.032" />
     </geometry>
@@ -407,21 +414,6 @@
       <box size="0.032 0.005 0.032" />
     </geometry>
   </collision>
-  <visual name="VIS_MP_ARM_GRIPPER_MOV_EXT_R">
-    <origin xyz="0.031 -0.0025 0" rpy="0 0 0" />
-    <geometry>
-      <box size="0.002 0.01 0.032" />
-    </geometry>
-    <material name="Grey">
-      <color rgba="0.20 0.20 0.20 1.0"/>
-    </material>
-  </visual>
-  <collision name="COL_MP_ARM_GRIPPER_MOV_EXT_R">
-    <origin xyz="0.031 -0.0025 0" rpy="0 0 0" />
-    <geometry>
-      <box size="0.002 0.01 0.032" />
-    </geometry>
-  </collision>
 </link>
 <link name="left_hip_yaw_link" >
   <inertial>
@@ -430,7 +422,7 @@
     <inertia ixx="0.12259691"  ixy="0.00071127469"  ixz="0.00081143913" iyx="0.00071127469" iyy="0.11066637" iyz="-0.0071635476" izx="0.00081143913" izy="-0.0071635476" izz="0.041877668" />
   </inertial>
   <visual>
-    <origin xyz="0 0 0" rpy="0 0 0" />
+    <origin xyz="0 0 0" rpy="3.14159 0 1.5707963" />
     <geometry>
       <!--box size="0.045 0.08175 0.028652" /-->
       <mesh filename="package://darwin_description/meshes/pelvis_l.STL"  scale="1 1 1"/>
@@ -440,6 +432,7 @@
     </material>
   </visual>
   <collision>
+    <origin xyz="0 0 0" rpy="3.14159 0 1.5707963" />
     <geometry>
       <mesh filename="package://darwin_description/meshes/pelvis_l_coll.stl"  scale="1 1 1"/>
     </geometry>
@@ -452,7 +445,7 @@
     <inertia ixx="0.097950272"  ixy="0.0012119368"  ixz="-0.00021223016" iyx="0.00122119368" iyy="0.032848287" iyz="-0.0019474021" izx="-0.00021223016" izy="-0.0019474021" izz="0.11493509" />
   </inertial>
   <visual>
-    <origin xyz="0 0 0" rpy="0 0 0" />
+    <origin xyz="0 0 0" rpy="-1.57079630 0 1.5707963" />
     <geometry>
       <!--box size="0.001 0.001 0.001"/-->
       <mesh filename="package://darwin_description/meshes/thigh1_l.STL"  scale="1 1 1"/>
@@ -462,6 +455,7 @@
     </material>
   </visual>
   <collision>
+    <origin xyz="0 0 0" rpy="-1.57079630 0 1.5707963" />
     <geometry>
       <mesh filename="package://darwin_description/meshes/thigh1_l_coll.stl"  scale="1 1 1"/>
     </geometry>
@@ -474,7 +468,7 @@
     <inertia ixx="0.097950272"  ixy="0.0012119368"  ixz="-0.00021223016" iyx="0.00122119368" iyy="0.032848287" iyz="-0.0019474021" izx="-0.00021223016" izy="-0.0019474021" izz="0.11493509" />
   </inertial>
   <visual>
-    <origin xyz="0 0 0" rpy="0 0 0" />
+    <origin xyz="0 0 0" rpy="1.5707963 -1.5707963 0" />
     <geometry>
       <!--box size="0.093 0.035 0.045"-->
       <mesh filename="package://darwin_description/meshes/thigh2_l.STL"  scale="1 1 1"/>
@@ -484,6 +478,7 @@
     </material>
   </visual>
   <collision>
+    <origin xyz="0 0 0" rpy="1.5707963 -1.5707963 0" />
     <geometry>
       <mesh filename="package://darwin_description/meshes/thigh2_l_coll.stl"  scale="1 1 1"/>
     </geometry>
@@ -496,7 +491,7 @@
     <inertia ixx="0.093369608"  ixy="-0.00093567395"  ixz="-0.00023992085" iyx="-0.00093567395" iyy="0.046295534" iyz="-0.012858493" izx="-0.00023992085" izy="-0.012858493" izz="0.11351516" />
   </inertial>
   <visual>
-    <origin xyz="0 0 0" rpy="0 0 0" />
+    <origin xyz="0 0 0" rpy="1.5707963 -1.5707963 0" />
     <geometry>
       <!--box size="0.093 0.035 0.045"/-->
       <mesh filename="package://darwin_description/meshes/tibia_l.STL"  scale="1 1 1"/>
@@ -506,6 +501,7 @@
     </material>
   </visual>
   <collision>
+    <origin xyz="0 0 0" rpy="1.5707963 -1.5707963 0" />
     <geometry>
       <mesh filename="package://darwin_description/meshes/tibia_l_coll.stl"  scale="1 1 1"/>
     </geometry>
@@ -518,7 +514,7 @@
     <inertia ixx="0.12079175"  ixy="-0.00079781067"  ixz="-0.00039322246" iyx="-0.00079781067" iyy="0.10885465" iyz="0.0070770117" izx="-0.00039322246" izy="0.0070770117" izz="0.041871103" />
   </inertial>
   <visual>
-    <origin xyz="0 0 0" rpy="0 0 0" />
+    <origin xyz="0 0 0" rpy="1.5707963 -1.5707963 3.14159" />
     <geometry>
       <!--box size="0.028652 0.08175 0.045"/-->
       <mesh filename="package://darwin_description/meshes/ankle1_l.STL"  scale="1 1 1"/>
@@ -528,6 +524,7 @@
     </material>
   </visual>
   <collision>
+    <origin xyz="0 0 0" rpy="1.5707963 -1.5707963 3.14159" />
     <geometry>
       <mesh filename="package://darwin_description/meshes/ankle1_l_coll.stl"  scale="1 1 1"/>
     </geometry>
@@ -563,7 +560,7 @@
     <inertia ixx="0.12259691"  ixy="0.00071127469"  ixz="0.00081143913" iyx="0.00071127469" iyy="0.11066637" iyz="-0.0071635476" izx="0.00081143913" izy="-0.0071635476" izz="0.041877668" />
   </inertial>
   <visual>
-    <origin xyz="0 0 0" rpy="0 0 0" />
+    <origin xyz="0 0 0" rpy="3.14159 0 1.5707963" />
     <geometry>
       <!--box size="0.045 0.08175 0.028652" /-->
       <mesh filename="package://darwin_description/meshes/pelvis_r.STL"  scale="1 1 1"/>
@@ -573,6 +570,7 @@
     </material>
   </visual>
   <collision>
+    <origin xyz="0 0 0" rpy="3.14159 0 1.5707963" />
     <geometry>
       <mesh filename="package://darwin_description/meshes/pelvis_r_coll.stl"  scale="1 1 1"/>
     </geometry>
@@ -585,7 +583,7 @@
     <inertia ixx="0.097950272"  ixy="0.0012119368"  ixz="-0.00021223016" iyx="0.00122119368" iyy="0.032848287" iyz="-0.0019474021" izx="-0.00021223016" izy="-0.0019474021" izz="0.11493509" />
   </inertial>
   <visual>
-    <origin xyz="0 0 0" rpy="0 0 0" />
+    <origin xyz="0 0 0" rpy="1.5707963 0 -1.5707963" />
     <geometry>
       <!--box size="0.001 0.001 0.001"/-->
       <mesh filename="package://darwin_description/meshes/thigh1_r.STL"  scale="1 1 1"/>
@@ -595,6 +593,7 @@
     </material>
   </visual>
   <collision>
+    <origin xyz="0 0 0" rpy="1.5707963 0 -1.5707963" />
     <geometry>
       <mesh filename="package://darwin_description/meshes/thigh1_r_coll.stl"  scale="1 1 1"/>
     </geometry>
@@ -607,7 +606,7 @@
     <inertia ixx="0.097950272"  ixy="0.0012119368"  ixz="-0.00021223016" iyx="0.00122119368" iyy="0.032848287" iyz="-0.0019474021" izx="-0.00021223016" izy="-0.0019474021" izz="0.11493509" />
   </inertial>
   <visual>
-    <origin xyz="0 0 0" rpy="0 0 0" />
+    <origin xyz="0 0 0" rpy="-1.5707963 1.5707963 0" />
     <geometry>
       <!--box size="0.093 0.035 0.045"/-->
       <mesh filename="package://darwin_description/meshes/thigh2_r.STL"  scale="1 1 1"/>
@@ -617,6 +616,7 @@
     </material>
   </visual>
   <collision>
+    <origin xyz="0 0 0" rpy="-1.5707963 1.5707963 0" />
     <geometry>
       <mesh filename="package://darwin_description/meshes/thigh2_r_coll.stl"  scale="1 1 1"/>
     </geometry>
@@ -629,7 +629,7 @@
     <inertia ixx="0.093369608"  ixy="-0.00093567395"  ixz="-0.00023992085" iyx="-0.00093567395" iyy="0.046295534" iyz="-0.012858493" izx="-0.00023992085" izy="-0.012858493" izz="0.11351516" />
   </inertial>
   <visual>
-    <origin xyz="0 0 0" rpy="0 0 0" />
+    <origin xyz="0 0 0" rpy="-1.5707963 1.5707963 0" />
     <geometry>
       <!--box size="0.093 0.035 0.045"/-->
       <mesh filename="package://darwin_description/meshes/tibia_r.STL"  scale="1 1 1"/>
@@ -639,6 +639,7 @@
     </material>
   </visual>
   <collision>
+    <origin xyz="0 0 0" rpy="-1.5707963 1.5707963 0" />
     <geometry>
       <mesh filename="package://darwin_description/meshes/tibia_r_coll.stl"  scale="1 1 1"/>
     </geometry>
@@ -651,7 +652,7 @@
     <inertia ixx="0.12079175"  ixy="-0.00079781067"  ixz="-0.00039322246" iyx="-0.00079781067" iyy="0.10885465" iyz="0.0070770117" izx="-0.00039322246" izy="0.0070770117" izz="0.041871103" />
   </inertial>
   <visual>
-    <origin xyz="0 0 0" rpy="0 0 0" />
+    <origin xyz="0 0 0" rpy="1.5707963 1.5707963 0" />
     <geometry>
       <!--box size="0.028652 0.08175 0.045"/-->
       <mesh filename="package://darwin_description/meshes/ankle1_r.STL"  scale="1 1 1"/>
@@ -707,198 +708,187 @@
 <joint name="camera_joint" type="fixed">
   <parent link="head_link"/>
   <child link="camera_optical"/>
-  <origin xyz="0 0 0.0235" rpy="3.14159 1.5707963 0" />
-  <axis xyz="0 0 1" />
-  <limit effort="2.8" velocity="5.6548668" lower="-2.6179939" upper="2.6179939" />
+  <origin xyz="0 0 0.0235" rpy="0 0 0" />
 </joint>
 
 <joint name="neck_yaw" type="revolute">
   <parent link="trunk_link"/>
   <child link="neck_link"/>
-  <origin xyz="0 0 0.0235" rpy="0 0 1.5707963" />
+  <origin xyz="0 0 0.0235" rpy="0 0 0" />
   <axis xyz="0 0 1" />
   <limit effort="2.8" velocity="5.6548668" lower="-2.6179939" upper="2.6179939" />
 </joint>
 <joint name="head_pitch" type="revolute">
   <parent link="neck_link"/>
   <child link="head_link"/>
-  <origin xyz="0 0 0.02715" rpy="-1.5707963 0 1.5707963" />
-  <axis xyz="0 0 1" />
+  <origin xyz="0 0 0.02715" rpy="0 0 0" />
+  <axis xyz="0 1 0" />
   <limit effort="2.8" velocity="5.6548668" lower="-2.6179939" upper="2.6179939" />
 </joint>
 <joint name="j_back_l" type="fixed">
   <parent link="trunk_link"/>
   <child link="MP_BACK_L"/>
-  <origin xyz="0 0.06035 0" rpy="-1.5707963 0 0" />
+  <origin xyz="0 0.06035 0" rpy="0 0 0" />
   <limit effort="2.8" velocity="5.6548668" lower="-2.6179939" upper="2.6179939" />
 </joint>
 <joint name="left_shoulder_pitch" type="revolute">
   <parent link="MP_BACK_L"/>
   <child link="left_shoulder_pitch_link"/>
-  <origin xyz="0 0 0" rpy="0 0 -1.5707963" />
-  <axis xyz="0 0 1" />
+  <origin xyz="0 0 0" rpy="0 0 0" />
+  <axis xyz="0 1 0" />
   <limit effort="2.8" velocity="5.6548668" lower="-2.6179939" upper="2.6179939" />
 </joint>
 <joint name="left_shoulder_roll" type="revolute">
   <parent link="left_shoulder_pitch_link"/>
   <child link="left_upper_arm_link"/>
-  <origin xyz="-0.016 0 0.02165" rpy="1.5707963 1.5707963 0" />
-  <axis xyz="0 0 1" />
+  <origin xyz="0 0.02165 -0.016" rpy="0 0 0" />
+  <axis xyz="1 0 0" />
   <limit effort="2.8" velocity="5.648668" lower="-2.6179939" upper="2.6179939" />
 </joint>
 <joint name="left_elbow_pitch" type="revolute">
   <parent link="left_upper_arm_link"/>
   <child link="left_lower_arm_link"/>
-  <origin xyz="-0.06 0 -0.016" rpy="-1.5707963 3.14159 0" />
-  <axis xyz="0 0 1" />
+  <origin xyz="0 -0.016 -0.06" rpy="0 0 0" />
+  <axis xyz="0 1 0" />
   <limit effort="2.8" velocity="5.6548668" lower="-2.6179939" upper="2.6179939" />
 </joint>
 <joint name="j_wrist_l" type="fixed">
   <parent link="left_lower_arm_link"/>
   <child link="MP_ARM_GRIPPER_FIX_L"/>
-  <origin xyz="0.048 0.016 0" rpy="1.5707963 0 0" />
-  <axis xyz="0 0 1" />
-  <limit effort="2.8" velocity="5.6548668" lower="-2.6179939" upper="2.6179939" />
+  <origin xyz="0 0.016 -0.048" rpy="0 0 0" />
 </joint>
 <joint name="j_wrist_dummy_l" type="fixed">
   <parent link="MP_ARM_GRIPPER_FIX_L"/>
   <child link="MP_ARM_GRIPPER_FIX_DUMMY_L"/>
-  <origin xyz="0.064 -0.01 0" rpy="0 0 0" />
+  <origin xyz="0 -0.01 -0.03" rpy="0 0 0" />
 </joint>
 <joint name="j_gripper_l" type="fixed">
   <parent link="MP_ARM_GRIPPER_FIX_L"/>
   <child link="MP_ARM_GRIPPER_MOV_L"/>
-  <origin xyz="0.048 0.01 0" rpy="0 0 1.0" />
-  <axis xyz="0 0 1" />
-  <limit effort="2.8" velocity="5.6548668" lower="-2.6179939" upper="2.6179939" />
+  <origin xyz="0 0.01 -0.01" rpy="0 1.5707963 0" />
 </joint>
 <joint name="j_back_r" type="fixed">
   <parent link="trunk_link"/>
   <child link="MP_BACK_R"/>
-  <origin xyz="0 -0.06035 0" rpy="1.5707963 0 0" />
-  <limit effort="2.8" velocity="5.6548668" lower="-2.6179939" upper="2.6179939" />
+  <origin xyz="0 -0.06035 0" rpy="0 0 0" />
 </joint>
 <joint name="right_shoulder_pitch" type="revolute">
   <parent link="MP_BACK_R"/>
   <child link="right_shoulder_pitch_link"/>
-  <origin xyz="0 0 0" rpy="0 0 -1.5707963" />
-  <axis xyz="0 0 1" />
+  <origin xyz="0 0 0" rpy="0 0 0" />
+  <axis xyz="0 1 0"/>
   <limit effort="2.8" velocity="5.6548668" lower="-2.6179939" upper="2.6179939" />
 </joint>
 <joint name="right_shoulder_roll" type="revolute">
   <parent link="right_shoulder_pitch_link"/>
   <child link="right_upper_arm_link"/>
-  <origin xyz="0.016 0 0.02165" rpy="-1.5707963 1.5707963 0" />
-  <axis xyz="0 0 1" />
+  <origin xyz="0 -0.02165 -0.016" rpy="0 0 0" />
+  <axis xyz="1 0 0" />
   <limit effort="2.8" velocity="5.648668" lower="-2.6179939" upper="2.6179939" />
 </joint>
 <joint name="right_elbow_pitch" type="revolute">
   <parent link="right_upper_arm_link"/>
   <child link="right_lower_arm_link"/>
-  <origin xyz="-0.06 0 0.016" rpy="-1.5707963 3.14159 0" />
-  <axis xyz="0 0 1" />
+  <origin xyz="-0.016 0 -0.06 " rpy="0 0 0" />
+  <axis xyz="0 1 0 " />
   <limit effort="2.8" velocity="5.6548668" lower="-1.635" upper="2.6179939" />
 </joint>
 <joint name="j_wrist_r" type="fixed">
   <parent link="right_lower_arm_link"/>
   <child link="MP_ARM_GRIPPER_FIX_R"/>
-  <origin xyz="0.048 -0.016 0" rpy="1.5707963 0 0" />
-  <axis xyz="0 0 1" />
-  <limit effort="2.8" velocity="5.6548668" lower="-2.6179939" upper="2.6179939" />
+  <origin xyz="0 0.016 -0.048" rpy="0 0 0" />
 </joint>
 <joint name="j_wrist_dummy_r" type="fixed">
   <parent link="MP_ARM_GRIPPER_FIX_R"/>
   <child link="MP_ARM_GRIPPER_FIX_DUMMY_R"/>
-  <origin xyz="0.064 -0.01 0" rpy="0 0 0" />
+  <origin xyz="0 -0.026 -0.04" rpy="0 0 0" />
 </joint>
 <joint name="j_gripper_r" type="fixed">
   <parent link="MP_ARM_GRIPPER_FIX_R"/>
   <child link="MP_ARM_GRIPPER_MOV_R"/>
-  <origin xyz="0.048 0.01 0" rpy="0 0 1.0" />
-  <axis xyz="0 0 1" />
-  <limit effort="2.8" velocity="5.6548668" lower="-2.6179939" upper="2.6179939" />
+  <origin xyz="0 -0.006 -0.04" rpy="0 0 0" />
 </joint>
 <joint name="left_hip_yaw" type="revolute">
   <parent link="trunk_link"/>
   <child link="left_hip_yaw_link"/>
-  <origin xyz="-0.005 0.037 -0.09355" rpy="0 3.14159 -1.5707963" />
+  <origin xyz="-0.005 0.037 -0.09355" rpy="0 0 0" />
   <axis xyz="0 0 1" />
   <limit effort="10" velocity="5.6548668" lower="-2.6179939" upper="2.6179939" />
 </joint>
 <joint name="left_hip_roll" type="revolute">
   <parent link="left_hip_yaw_link"/>
   <child link="left_hip_roll_link"/>
-  <origin xyz="0 0 0.028652" rpy="1.5707963 0 0" />
-  <axis xyz="0 0 1" />
+  <origin xyz="0 0 -0.028652" rpy="0 0 0" />
+  <axis xyz="1 0 0" />
   <limit effort="10" velocity="5.6548668" lower="-2.6179939" upper="2.6179939" />
 </joint>
 <joint name="left_hip_pitch" type="revolute">
   <parent link="left_hip_roll_link"/>
   <child link="left_thigh_link"/>
-  <origin xyz="0 0 0" rpy="1.5707963 0 -1.5707963" />
-  <axis xyz="0 0 1" />
+  <origin xyz="0 0 0" rpy="0 0 0" />
+  <axis xyz="0 1 0" />
   <limit effort="10" velocity="5.6548668" lower="-2.6179939" upper="2.6179939" />
 </joint>
 <joint name="left_knee_pitch" type="revolute">
   <parent link="left_thigh_link"/>
   <child link="left_shank_link"/>
-  <origin xyz="-0.093 0 0" rpy="0 0 0" />
-  <axis xyz="0 0 1" />
+  <origin xyz="0 0 -0.093" rpy="0 0 0" />
+  <axis xyz="0 1 0" />
   <limit effort="10" velocity="5.6548668" lower="-2.6179939" upper="2.6179939" />
 </joint>
 <joint name="left_ankle_pitch" type="revolute">
   <parent link="left_shank_link"/>
   <child link="left_ankle_link"/>
-  <origin xyz="-0.093 0 0" rpy="3.14159 0 0" />
-  <axis xyz="0 0 1" />
+  <origin xyz="0 0 -0.093" rpy="0 0 0" />
+  <axis xyz="0 1 0" />
   <limit effort="10" velocity="5.6548668" lower="-2.6179939" upper="2.6179939" />
 </joint>
 <joint name="left_ankle_roll" type="revolute">
   <parent link="left_ankle_link"/>
   <child link="left_foot_link"/>
-  <origin xyz="0 0 0" rpy="1.5707 0 1.5707" />
+  <origin xyz="0 0 0" rpy="0 0 0" />
   <axis xyz="1 0 0" />
   <limit effort="10" velocity="5.6548668" lower="-2.6179939" upper="2.6179939" />
 </joint>
 <joint name="right_hip_yaw" type="revolute">
   <parent link="trunk_link"/>
   <child link="right_hip_yaw_link"/>
-  <origin xyz="-0.005 -0.037 -0.09355" rpy="0 3.14159 1.5707963" />
+  <origin xyz="-0.005 -0.037 -0.09355" rpy="0 0 0" />
   <axis xyz="0 0 1" />
   <limit effort="10" velocity="5.6548668" lower="-2.6179939" upper="2.6179939" />
 </joint>
 <joint name="right_hip_roll" type="revolute">
   <parent link="right_hip_yaw_link"/>
   <child link="right_hip_roll_link"/>
-  <origin xyz="0 0 0.028652" rpy="-1.5707963 0 0" />
-  <axis xyz="0 0 1" />
+  <origin xyz="0 0 -0.028652" rpy="0 0 0" />
+  <axis xyz="1 0 0" />
   <limit effort="10" velocity="5.6548668" lower="-2.6179939" upper="2.6179939" />
 </joint>
 <joint name="right_hip_pitch" type="revolute">
   <parent link="right_hip_roll_link"/>
   <child link="right_thigh_link"/>
-  <origin xyz="0 0 0" rpy="1.5707963 0 -1.5707963" />
-  <axis xyz="0 0 1" />
+  <origin xyz="0 0 0" rpy="0 0 0" />
+  <axis xyz="0 1 0" />
   <limit effort="10" velocity="5.6548668" lower="-2.6179939" upper="2.6179939" />
 </joint>
 <joint name="right_knee_pitch" type="revolute">
   <parent link="right_thigh_link"/>
   <child link="right_shank_link"/>
-  <origin xyz="0.093 0 0" rpy="0 0 0" />
-  <axis xyz="0 0 1" />
+  <origin xyz="0 0 -0.093" rpy="0 0 0" />
+  <axis xyz="0 1 0" />
   <limit effort="10" velocity="5.6548668" lower="-2.6179939" upper="2.6179939" />
 </joint>
 <joint name="right_ankle_pitch" type="revolute">
   <parent link="right_shank_link"/>
   <child link="right_ankle_link"/>
-  <origin xyz="0.093 0 0" rpy="3.14159 0 0" />
-  <axis xyz="0 0 1" />
+  <origin xyz="0 0 -0.093" rpy="0 0 0" />
+  <axis xyz="0 1 0" />
   <limit effort="10" velocity="5.6548668" lower="-2.6179939" upper="2.6179939" />
 </joint>
 <joint name="right_ankle_roll" type="revolute">
   <parent link="right_ankle_link"/>
   <child link="right_foot_link"/>
-  <origin xyz="0 0 0" rpy="-1.5707 0 1.5707" />
+  <origin xyz="0 0 0" rpy="0 0 0" />
   <axis xyz="1 0 0" />
   <limit effort="10" velocity="5.6548668" lower="-2.6179939" upper="2.6179939" />
 </joint>
