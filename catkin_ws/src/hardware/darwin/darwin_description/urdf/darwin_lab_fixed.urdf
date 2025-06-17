@@ -668,6 +668,7 @@
     </material>
   </visual>
   <collision>
+    <origin xyz="0 0 0" rpy="1.5707963 1.5707963 0" />
     <geometry>
       <mesh filename="package://darwin_description/meshes/ankle1_r_coll.stl"  scale="1 1 1"/>
     </geometry>
