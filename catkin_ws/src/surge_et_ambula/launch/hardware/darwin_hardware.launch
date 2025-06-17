@@ -14,5 +14,7 @@
     <!-- ROBOT STATE -->
     <param name="robot_description" command="cat $(find darwin_description)/urdf/darwin_lab.urdf" />
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
-
+ <group ns="map">
+        <node name = "map_node" pkg = "localization_robot" type = "map_node"/> 
+    </group>
 </launch>
