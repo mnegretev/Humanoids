@@ -29,8 +29,8 @@
 #include <unistd.h>
 #include <csignal>
 
-#define DISP_WIDTH  720
-#define DISP_HEIGHT 480
+#define DISP_WIDTH  640
+#define DISP_HEIGHT 360
 
 // disp size
 int width    = DISP_WIDTH;

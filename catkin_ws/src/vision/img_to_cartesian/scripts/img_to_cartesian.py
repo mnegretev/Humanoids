@@ -12,11 +12,13 @@ import tf.transformations as tft
 import numpy as np
 
 PI = 3.14159265
-HFOV = 1.7157
-VFOV = 1.7157
+HFOV = np.radians(98.3)
+VFOV = np.radians(55.29)
 HRES = 640
-VRES = 640
+VRES = 360
 BALL_RADIUS = 0.06207
+center_x = HRES / 2
+center_y = VRES / 2
 
 def broadcaster_frame_object(frame, child_frame, pose):   # Emite la transformacion en el frame base_link,
     #br = tf2_ros.TransformBroadcaster()
@@ -140,15 +142,61 @@ def process_goal(req):
     res.object.pose.position = camera_pos.point
     return res
 
+def process_object(req):
 
+    x_B = req.object.x
+    y_B = req.object.y
+
+
+    theta = (VFOV / VRES) * (center_y - y_B)
+    phi = (HFOV / HRES) * (center_x - x_B)
+
+    ux = np.cos(theta) * np.cos(phi)
+    uy = np.cos(theta) * np.sin(phi)
+    uz = np.sin(theta)
+    print("wrt_camera", ux, uy, uz)
+
+    p = PointStamped()
+    p.header.frame_id = 'camera_optical'
+    p.header.stamp = rospy.Time(0)
+    p.point.x, p.point.y, p.point.z = ux, uy, uz
+    listener.waitForTransform('left_foot_link','camera_optical', rospy.Time(), rospy.Duration(10.0))
+    p = listener.transformPoint('left_foot_link', p)
+    print("wrt_foot", p)
+    camera = PointStamped()
+    camera.header.frame_id = 'camera_optical'
+    camera.header.stamp = rospy.Time(0)
+    camera = listener.transformPoint('left_foot_link', camera)
+
+    print("camera", camera)
+
+    lx, ly, lz = p.point.x - camera.point.x, p.point.y - camera.point.y, p.point.z - camera.point.z
+    mag = np.sqrt(lx * lx + ly * ly + lz * lz)
+    lx, ly, lz = lx / mag, ly / mag, lz / mag
+    print("l", lx, ly, lz)
+    d = (-camera.point.z / (lz))
+    print("d", d)
+    px, py, pz = camera.point.x + d * lx, camera.point.y + d * ly, camera.point.z + d * lz
+    ball = PointStamped()
+    ball.header.frame_id = 'left_foot_link'
+    ball.header.stamp = rospy.Time(0)
+    ball.point.x, ball.point.y, ball.point.z = px, py, pz 
+    print(px, py, pz)
+
+    res = ProcessObjectResponse()
+    res.object = req.object
+    res.object.pose.position.x = -py
+    res.object.pose.position.y = pz
+    res.object.pose.position.z = px
+    return res
 
 def callback_process_object(msg):
-    if msg.object.header == "ball":
+    if msg.object.header == "test":
         return process_ball(msg)
-    elif msg.object.header == "goal":
+    elif msg.object.header == "test":
         return process_goal(msg)
     else:
-        return ProcessObjectResponse(VisionObject())
+        return process_object(msg)
 
 
 def main():
