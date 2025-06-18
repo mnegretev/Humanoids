@@ -18,7 +18,7 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "Luckfox_node");
 
     ros::NodeHandle n;
-    ros::ServiceClient client = n.serviceClient<vision_msgs::ProcessObject>("ProcessGoal");
+    ros::ServiceClient client = n.serviceClient<vision_msgs::ProcessObject>("/intercept_plane_service");
     vision_msgs::ProcessObject srv;
 
     if (argc != 3)

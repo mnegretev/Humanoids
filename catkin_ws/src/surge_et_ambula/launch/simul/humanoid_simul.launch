@@ -6,7 +6,7 @@
 
     <group ns="hri">
 		<arg name="rviz" default="true"/>
-        <node name="rviz" pkg="rviz" type="rviz" args="-d $(find config_files)/rviz/config.rviz" required="true" if="$(arg rviz)"/>
+        <node name="rviz" pkg="rviz" type="rviz" args="-d $(find config_files)/rviz/config_localization.rviz" required="true" if="$(arg rviz)"/>
     </group>
 
 	<node name="humanoid_gui" pkg="humanoid_gui" type="humanoid_gui" output="screen"/>
@@ -18,6 +18,11 @@
         <node name="inverse_kinematics" pkg="inverse_kinematics" type="ik_moveit_node" output="screen"/>
     </group>
     
+    <group ns="localization">
+        <node name = "map_node" pkg = "localization_robot" type = "map_node"/> 
+		<node name="particle_generator" pkg="localization_robot" type="particle_generator" output="screen"/>
+		<node name = "particle_filter_node" pkg = "localization_robot" type = "particle_filter_node" output="screen"/>
+    </group>
     <!-- Load joint controller configurations from YAML file to parameter server -->
     <rosparam file="$(find nimbro_op_gazebo)/config/controllers.yaml" command="load"/>
 
@@ -53,8 +58,7 @@
 		joint_state_controller
 		"
           />
-	<node name = "map_node" pkg = "localization_robot" type = "map_node"/> 
-	<node name="particle_generator" pkg="localization_robot" type="particle_generator"/>
+
 	<node name="get_predef_poses_server" pkg="humanoid" type="get_predef_poses_server.py" output="screen"/>
 	<node name="speed_profile_server"    pkg="humanoid" type="speed_profile_server.py"/>
 	<node name="vision_mask" 			 pkg="goal_detection" type="ball_detection_node.py"/>

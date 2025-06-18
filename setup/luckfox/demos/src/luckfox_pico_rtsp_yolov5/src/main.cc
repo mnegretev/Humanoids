@@ -29,8 +29,8 @@
 #include <unistd.h>
 #include <csignal>
 
-#define DISP_WIDTH  720
-#define DISP_HEIGHT 480
+#define DISP_WIDTH  640
+#define DISP_HEIGHT 360
 
 // disp size
 int width    = DISP_WIDTH;
@@ -204,20 +204,30 @@ int main(int argc, char *argv[]) {
 
 	printf("venc init success\n");	
 	
+    // Aceptar una conexión entrante
+    sockaddr_in clientAddress;
+    socklen_t clientAddressLength = sizeof(clientAddress);
+    bool clienteActivo = false;
+    int clientSocket = accept(serverSocket, (struct sockaddr*)&clientAddress, &clientAddressLength);
+    while(clientSocket == -1) {
+        std::cerr << "Error al aceptar la conexión. Intentando de nuevo" << std::endl;
+        clientSocket = accept(serverSocket, (struct sockaddr*)&clientAddress, &clientAddressLength);
+    }
+    
+    clienteActivo = true;
+    std::cout << "Cliente conectado. Comenzando loop" << std::endl;
+
     while(true)
     {
-        // Aceptar una conexión entrante
-        sockaddr_in clientAddress;
-        socklen_t clientAddressLength = sizeof(clientAddress);
-        int clientSocket = accept(serverSocket, (struct sockaddr*)&clientAddress, &clientAddressLength);
-        
-        if (clientSocket == -1) {
-            std::cerr << "Error al aceptar la conexión" << std::endl;
-            continue;
+        while(!clienteActivo)
+        {
+            std::cout << "Cliente conectado. Volviendo a buscar al cliente" << std::endl;
+            clientSocket = accept(serverSocket, (struct sockaddr*)&clientAddress, &clientAddressLength);
+            if(clientSocket != -1)
+            {
+                clienteActivo = true;
+            }
         }
-
-        std::cout << "Cliente conectado. Enviando mensajes..." << std::endl;
-
         while(1)
         {	
             // get vi frame
@@ -258,12 +268,13 @@ int main(int argc, char *argv[]) {
                         
                         printf("%s", detection_info);
 
-                        // Enviar la información de detección
+                        //Enviar la información de detección
                         int bytesSent = send(clientSocket, detection_info, strlen(detection_info), 0);
                         
                         if (bytesSent <= 0) {
                             std::cout << "Cliente desconectado o error de envio." << std::endl;
-                            break;
+                            clienteActivo = false;
+                            // break;
                         }
 
                         cv::rectangle(frame,cv::Point(sX ,sY),
@@ -277,7 +288,7 @@ int main(int argc, char *argv[]) {
                 }
 
             }
-            memcpy(data, frame.data, width * height * 3);					
+            memcpy(data, frame.data, width * height * 3);
             
             // encode H264
             RK_MPI_VENC_SendFrame(0, &h264_frame,-1);
@@ -305,36 +316,34 @@ int main(int argc, char *argv[]) {
             if (s32Ret != RK_SUCCESS) {
                 RK_LOGE("RK_MPI_VENC_ReleaseStream fail %x", s32Ret);
             }
-            memset(text,0,8);
+            memset(text,0,8);					
         }
-
-
-        // Destory MB
-        RK_MPI_MB_ReleaseMB(src_Blk);
-        // Destory Pool
-        RK_MPI_MB_DestroyPool(src_Pool);
-        
-        RK_MPI_VI_DisableChn(0, 0);
-        RK_MPI_VI_DisableDev(0);
-
-        SAMPLE_COMM_ISP_Stop(0);
-        
-        RK_MPI_VENC_StopRecvFrame(0);
-        RK_MPI_VENC_DestroyChn(0);
-
-        free(stFrame.pstPack);
-
-        if (g_rtsplive)
-            rtsp_del_demo(g_rtsplive);
-        
-        RK_MPI_SYS_Exit();
-
-        // Release rknn model
-        release_yolov5_model(&rknn_app_ctx);		
-        deinit_post_process();
-        
-        // Cerrar el socket del cliente
-        close(clientSocket);
-        return 0;
+    
     }
+            // Destory MB
+    RK_MPI_MB_ReleaseMB(src_Blk);
+        // Destory Pool
+    RK_MPI_MB_DestroyPool(src_Pool);
+        
+    RK_MPI_VI_DisableChn(0, 0);
+    RK_MPI_VI_DisableDev(0);
+
+    SAMPLE_COMM_ISP_Stop(0);
+        
+    RK_MPI_VENC_StopRecvFrame(0);
+    RK_MPI_VENC_DestroyChn(0);
+
+    free(stFrame.pstPack);
+
+    if (g_rtsplive)
+        rtsp_del_demo(g_rtsplive);
+    
+    RK_MPI_SYS_Exit();
+
+    // Release rknn model
+    release_yolov5_model(&rknn_app_ctx);		
+    deinit_post_process();
+    // Cerrar el socket del cliente
+    close(clientSocket);
+    return 0;
 }

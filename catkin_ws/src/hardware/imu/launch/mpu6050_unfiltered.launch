@@ -2,10 +2,8 @@
 <launch>
  
   <node name="mpu_node" pkg="imu" type="mpu6050_node" respawn="true">
-    <rosparam file="$(find imu)/config/mpu_settings.yaml" command="load"/>
-  </node>c
-  <node name="mpu_orientation" pkg="imu" type="imu_handler_node.py" required="true">
-    <rosparam file="$(find imu)/config/mpu_settings.yaml" command="load"/>
+    <rosparam file="$(find imu)/config/$(env IMU)" command="load"/>
   </node>
+  <node name="mpu_orientation" pkg="imu" type="imu_handler_node.py" required="true"/>
 
 </launch>
