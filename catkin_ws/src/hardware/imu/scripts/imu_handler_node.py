@@ -38,7 +38,7 @@ class Imu_Node():
         self.pub_msg.y = -self.gy
         self.pub_msg.z = self.gz
 
-        self.rotation = quaternion_from_euler(self.gx, -self.gy, self.gz)
+        self.rotation = quaternion_from_euler(math.radians(self.gx), math.radians(self.gy), math.radians(self.gz))
         self.b.sendTransform(self.translation, self.rotation, rospy.Time.now(), 'imu_link_rotation', 'imu_link')
 
         self.pub.publish(self.pub_msg)

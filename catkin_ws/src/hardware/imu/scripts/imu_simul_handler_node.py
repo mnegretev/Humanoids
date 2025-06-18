@@ -5,6 +5,8 @@ from sensor_msgs.msg import Imu
 from geometry_msgs.msg import Vector3, Point
 from visualization_msgs.msg import Marker
 import math
+from tf import TransformBroadcaster
+from tf.transformations import quaternion_from_euler
 
 FREQ=25
 
@@ -15,10 +17,15 @@ class Imu_Node():
         self.pub_hs = rospy.Publisher("/imu/state", String, queue_size=1)
         self.pub_acc= rospy.Publisher("/rviz/acceleration", Marker, queue_size=2)
         self.pub_msg    = Vector3()
+        self.b      = TransformBroadcaster()
         self.rate   = rospy.Rate(5)
         self.gx     = 0
         self.gy     = 0
         self.gz     = 0
+        self.translation    = (0.0, 0.0, 0.0)
+        self.rotation       = None#(0.0, 0.0, 0.0, 1.0)
+
+
         self.acc_marker = Marker()
         self.acc_marker.header.frame_id = "imu_link"
         self.acc_marker.header.stamp = rospy.Time.now()
@@ -70,8 +77,11 @@ class Imu_Node():
         self.gy = self.gy * 0.96 + ay * 0.04
 
         self.pub_msg.x = self.gx
-        self.pub_msg.y = self.gy
+        self.pub_msg.y = -self.gy
         self.pub_msg.z = self.gz
+
+        self.rotation = quaternion_from_euler(math.radians(self.gx), math.radians(self.gy), math.radians(self.gz))
+        self.b.sendTransform(self.translation, self.rotation, rospy.Time.now(), 'imu_link_rotation', 'imu_link')
 
         self.pub.publish(self.pub_msg)
         
