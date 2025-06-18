@@ -1,0 +1,7 @@
+<launch>
+
+  <param name="yolo_model_path" textfile="$(find config_files)/vision/best.pt" />  
+
+  <node name="yolo_sim_node" pkg="luckfox_vision" type="yolo_sim.py" />
+
+</launch>
