@@ -10,6 +10,8 @@
 
     <!-- LUCKFOX CAMERA LISTENER -->
     <node name="luckfox_client_node" pkg="luckfox_vision" type="luckfox_client_node"/>
+    <node name="ProcessObject" pkg="img_to_cartesian" type="img_to_cartesian.py"/>
+
 
     <!-- ROBOT STATE -->
     <param name="robot_description" command="cat $(find darwin_description)/urdf/darwin_lab.urdf" />
