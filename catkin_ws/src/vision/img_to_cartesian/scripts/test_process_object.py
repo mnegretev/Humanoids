@@ -9,14 +9,14 @@ from std_msgs.msg import Header
 def call_service():
     rospy.init_node('test_process_object')
 
-    rospy.wait_for_service('process_object')
+    rospy.wait_for_service('/intercept_plane_service')
     try:
-        process_object = rospy.ServiceProxy('process_object', ProcessObject)
+        process_object = rospy.ServiceProxy('/intercept_plane_service', ProcessObject)
 
         # Crear objeto simulado
         obj = VisionObject()
-        obj.x = 640
-        obj.y = 360
+        obj.x = 320
+        obj.y = 180
         obj.header.frame_id = "camera_link"
 
         img = Image()
@@ -24,7 +24,7 @@ def call_service():
 
         req = ProcessObjectRequest()
         req.object = obj
-        req.img = img
+        #req.img = img
 
         res = process_object(req)
 

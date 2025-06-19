@@ -53,6 +53,7 @@ def get_direction_vector(cv,cu):
     return direc
 
 def process_ball(msg):
+    print("Calculating pose in the German way..")
     global tf_listener, tf_buf, scaling_constant, cam_range
     u = msg.object.x
     v = msg.object.y
@@ -121,6 +122,7 @@ def calculate_angle(x,y):
         print(f"No se pudo calcular el angulo {e}")
 
 def process_goal(req):
+    print("Calculatin pose in a Romanly manner")
     print(f"Client send: {req.object.id}")
     d=calculate_distance(req.object.width, req.object.height)
     (theta,phi) = calculate_angle(req.object.x+(req.object.width/2), req.object.y+(req.object.height/2))
@@ -143,7 +145,7 @@ def process_goal(req):
     return res
 
 def process_object(req):
-
+    print("Calculating pose Miriamly")
     x_B = req.object.x
     y_B = req.object.y
 
@@ -154,7 +156,8 @@ def process_object(req):
     ux = np.cos(theta) * np.cos(phi)
     uy = np.cos(theta) * np.sin(phi)
     uz = np.sin(theta)
-    print("wrt_camera", ux, uy, uz)
+    print("point wrt camera: ", ux, uy, uz)
+    print("")
 
     p = PointStamped()
     p.header.frame_id = 'camera_optical'
@@ -162,32 +165,34 @@ def process_object(req):
     p.point.x, p.point.y, p.point.z = ux, uy, uz
     listener.waitForTransform('left_foot_link','camera_optical', rospy.Time(), rospy.Duration(10.0))
     p = listener.transformPoint('left_foot_link', p)
-    print("wrt_foot", p)
+    print("point wrt_foot:", p)
+    print("")
     camera = PointStamped()
     camera.header.frame_id = 'camera_optical'
     camera.header.stamp = rospy.Time(0)
     camera = listener.transformPoint('left_foot_link', camera)
 
-    print("camera", camera)
+    print("camera pose wrt foot: ", camera)
+    print("")
 
     lx, ly, lz = p.point.x - camera.point.x, p.point.y - camera.point.y, p.point.z - camera.point.z
     mag = np.sqrt(lx * lx + ly * ly + lz * lz)
     lx, ly, lz = lx / mag, ly / mag, lz / mag
-    print("l", lx, ly, lz)
+    print("l vector: ", lx, ly, lz)
     d = (-camera.point.z / (lz))
-    print("d", d)
+    print("distance d: ", d)
     px, py, pz = camera.point.x + d * lx, camera.point.y + d * ly, camera.point.z + d * lz
     ball = PointStamped()
     ball.header.frame_id = 'left_foot_link'
     ball.header.stamp = rospy.Time(0)
     ball.point.x, ball.point.y, ball.point.z = px, py, pz 
-    print(px, py, pz)
-
+    print("Final result: ", px, py, pz)
+    print("")
     res = ProcessObjectResponse()
     res.object = req.object
-    res.object.pose.position.x = -py
-    res.object.pose.position.y = pz
-    res.object.pose.position.z = px
+    res.object.pose.position.x = px
+    res.object.pose.position.y = py
+    res.object.pose.position.z = pz
     return res
 
 def callback_process_object(msg):
