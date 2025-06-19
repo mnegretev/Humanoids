@@ -10,20 +10,15 @@ def main():
     rospy.init_node('talker', anonymous=True)
     host = rospy.get_param('~host',"0.0.0.0")
     port = 3838
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
     server_socket.bind((host, port))
 
     while not rospy.is_shutdown():
         data, addr = server_socket.recvfrom(1024)  
-
-
-        if len(data) < GameState.sizeof():
-            continue
-
-
         try:
             gamestate = GameState.parse(data)
         except Exception as e:
+            print (f"Un error ha ocurrido {e}")
             continue
         pub_game_state.publish(gamestate.game_state)
         pub_secondary_game_state.publish(gamestate.secondary_state)
