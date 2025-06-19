@@ -196,9 +196,9 @@ def process_object(req):
     return res
 
 def callback_process_object(msg):
-    if msg.object.header == "test":
+    if msg.object.id == "test":
         return process_ball(msg)
-    elif msg.object.header == "test":
+    elif msg.object.id == "test":
         return process_goal(msg)
     else:
         return process_object(msg)

@@ -1,5 +1,8 @@
 #include "ros/ros.h"
 #include "vision_msgs/ProcessObject.h"
+#include "visualization_msgs/Marker.h"
+#include "visualization_msgs/MarkerArray.h"
+#include "geometry_msgs/PointStamped.h"
 #include <cstdlib>
 
 // socket libs
@@ -19,7 +22,12 @@ int main(int argc, char **argv)
 
     ros::NodeHandle n;
     ros::ServiceClient client = n.serviceClient<vision_msgs::ProcessObject>("/intercept_plane_service");
+    ros::Publisher pub = n.advertise<vision_msgs::VisionObject>("/vision/landmarks", 1);
+    ros::Publisher pub_point = n.advertise<visualization_msgs::MarkerArray>("/vision/landmarks_points", 1);
     vision_msgs::ProcessObject srv;
+    std::string ip_server; 
+    ros::param::param<std::string>("~ip_server", ip_server, "10.42.0.102");
+
 
     if (argc != 3)
     {
@@ -40,7 +48,7 @@ int main(int argc, char **argv)
     sockaddr_in serverAddress;
     serverAddress.sin_family = AF_INET;
     serverAddress.sin_port = htons(5000);                     // Puerto 5000
-    serverAddress.sin_addr.s_addr = inet_addr("10.42.0.102"); // Dirección local
+    serverAddress.sin_addr.s_addr = inet_addr(ip_server.c_str()); // Dirección local
 
     // Conectar al servidor
     if (connect(clientSocket, (struct sockaddr *)&serverAddress, sizeof(serverAddress)) == -1)
@@ -58,7 +66,6 @@ int main(int argc, char **argv)
     int sX, sY, eX, eY;
     float prop;
     
-    ros::Publisher pub = n.advertise<vision_msgs::VisionObject>("/vision/landmarks", 1);
 
     while (ros::ok())
     {
@@ -90,13 +97,61 @@ int main(int argc, char **argv)
         {
             ROS_INFO("The service worked well");
             vision_msgs::VisionObject msg;
+            visualization_msgs::MarkerArray marks;
+            visualization_msgs::Marker marker;
             msg = srv.response.object;
+            marker.header.stamp = ros::Time();
+            marker.action = visualization_msgs::Marker::ADD;
+            marker.pose.position.x = msg.pose.position.x;
+            marker.pose.position.y = msg.pose.position.x;
+            marker.pose.position.z = msg.pose.position.x;
+            marker.scale.x = 1;
+            marker.scale.y = 0.1;
+            marker.scale.z = 0.1;
+            marker.color.a = 1.0; // Don't forget to set the alpha!
+            if(msg.id =="ball") 
+            {
+                marker.type = visualization_msgs::Marker::SPHERE;
+                marker.color.r = 0.0;
+                marker.color.g = 0.0;
+                marker.color.b = 0.0;
+                marks.markers[0]=marker;
+            }
+            else if(msg.id =="goal") 
+            {
+                marker.type = visualization_msgs::Marker::CYLINDER;
+                marker.color.r = 0.0;
+                marker.color.g = 1.0;
+                marker.color.b = 0.0;
+                marks.markers[1]=marker;
+            }
+            else if(msg.id =="humanoid") 
+            {
+                marker.type = visualization_msgs::Marker::CUBE;
+                marker.color.r = 1.0;
+                marker.color.g = 0.0;
+                marker.color.b = 0.0;
+                marks.markers[2]=marker;
+            }
+            else if(msg.id =="center") 
+            {
+                marker.type = visualization_msgs::Marker::CYLINDER;
+                marker.scale.z = 0.01;
+                marker.color.r = 0.0;
+                marker.color.g = 0.0;
+                marker.color.b = 1.0;
+                marks.markers[3]=marker;
+            }
+            else
+            {
+                ROS_ERROR("Objeto desconocido detectado %s",msg.id.c_str());
+            }
             pub.publish(msg);
+            pub_point.publish(marks);
         }
         else
         {
             ROS_ERROR("Failed to call service Process objects");
-            // Opcional: puedes imprimir más información de error aquí
             ROS_ERROR("Service call failed: %s", client.getService().c_str());
             return 1;
         }
