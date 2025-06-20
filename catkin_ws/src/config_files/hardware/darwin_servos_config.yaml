@@ -19,7 +19,7 @@ left:
     elbow:
       pitch:
         id:   6
-        cw:   -1
+        cw:   1
         zero: 2922
         enabled: true
         is4pin: true
