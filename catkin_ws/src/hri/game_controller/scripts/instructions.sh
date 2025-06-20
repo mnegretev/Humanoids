@@ -15,11 +15,15 @@ sudo apt install libwebkit2gtk-4.0-dev \
     librsvg2-dev
 
 curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
+source ~/.bashrc
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
 source ~/.bashrc
 nvm install node
 sudo apt install clang
-cd frontend npm ci 
+cd frontend 
+npm ci 
 npm run build
 cargo build -r
+cd ..
+cd game_controller_app/
 cargo run -- -l
