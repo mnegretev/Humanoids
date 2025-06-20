@@ -4,7 +4,7 @@ cd
 git clone https://github.com/RoboCup-Humanoid-TC/GameController.git
 cd GameController/ 
 sudo apt update
-sudo apt install libwebkit2gtk-4.0-dev \
+sudo apt install -y libwebkit2gtk-4.0-dev \
     build-essential \
     curl \
     wget \
@@ -16,10 +16,10 @@ sudo apt install libwebkit2gtk-4.0-dev \
 
 curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
 source ~/.bashrc
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install -y.sh | sh
 source ~/.bashrc
 nvm install node
-sudo apt install clang
+sudo apt install -y clang
 cd frontend 
 npm ci
 npm audit fix --force
