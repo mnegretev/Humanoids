@@ -21,7 +21,8 @@ source ~/.bashrc
 nvm install node
 sudo apt install clang
 cd frontend 
-npm ci 
+npm ci
+npm audit fix --force
 npm run build
 cargo build -r
 cd ..
