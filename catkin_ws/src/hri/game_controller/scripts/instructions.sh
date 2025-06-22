@@ -16,7 +16,7 @@ sudo apt install -y libwebkit2gtk-4.0-dev \
 
 curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
 source ~/.bashrc
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | sh
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install -y.sh | sh
 source ~/.bashrc
 nvm install node
 sudo apt install -y clang
