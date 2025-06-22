@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import rospy
 
@@ -42,7 +42,7 @@ def get_direction_vector(cv,cu):
 
     Rot_mtx = tft.euler_matrix(0,theta,phi,'sxyz')
     #print(Rot_mtx)
-    dir_vect = Rot_mtx @ np.array([1.0,0.0,0.0,0.0])
+    dir_vect = np.matmul(Rot_mtx, np.array([1.0,0.0,0.0,0.0])) 
 
     direc = PointStamped()
     direc.header.frame_id = 'camera_optical'
