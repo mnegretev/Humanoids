@@ -9,7 +9,6 @@
 	<!-- ROBOT CONTROL -->
 	<include file="$(find darwin_control)/launch/darwin_control.launch"/>
 	<node name="darwin_walker" pkg="darwin_gazebo" type="walker.py" />
-
 	<!-- GAZEBO -->
 	<env name="GAZEBO_MODEL_PATH" value="$(find nimbro_op_gazebo)/models:$(optenv GAZEBO_MODEL_PATH)"/>
    	<include file="$(find gazebo_ros)/launch/empty_world.launch">
@@ -28,7 +27,7 @@
     </group>
 	<node name="humanoid_gui" pkg="humanoid_gui" type="humanoid_gui" output="screen"/>
 
-	<!-- YOLO_SIM -->
+	<!-- LUCKFOX VISION SIM -->
 	<include file="$(find luckfox_vision)/launch/yolo_sim.launch" />
 
 </launch>
