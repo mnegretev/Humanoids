@@ -1488,7 +1488,7 @@
   <!-- camera -->
   <gazebo reference="head_link">
     <sensor type="camera" name="camera1">
-      <pose>-0.050000 -0.010000 0.000000 0.000000 0.000000 -3.141592</pose>
+      <pose>0.050000 0.010000 0.000000 0.000000 0.000000 0.0000000</pose>
       <update_rate>30.0</update_rate>
       <camera name="head">
         <horizontal_fov>1.7157</horizontal_fov>
@@ -1510,6 +1510,8 @@
           <stddev>0.007</stddev>
         </noise>
       </camera>
+      <visualize>1</visualize>
+
       <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
         <alwaysOn>true</alwaysOn>
         <updateRate>30.0</updateRate>
