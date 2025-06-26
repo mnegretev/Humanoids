@@ -1,6 +1,7 @@
 #include <iostream>
 #include "IKWalk.hpp"
-
+#include "std_msgs/Float32MultiArray.h"
+#include <ros/ros.h>
 /**
  * Run the walk for given among of time and update
  * phase and time state
@@ -9,13 +10,16 @@ static void runWalk(
     const Rhoban::IKWalkParameters& params, 
     double timeLength, 
     double& phase, 
-    double& time)
+    double& time,
+    ros::Publisher& pub,
+    ros::Rate&      rate)
 {
     //Leg motor computed positions
     struct Rhoban::IKWalkOutputs outputs;
-    
+    std_msgs::Float32MultiArray msg;
+    msg.data.clear();
     //Walk engine frequency
-    double engineFrequency = 50.0;
+    double engineFrequency = 40.0;
 
     for (double t=0.0;t<=timeLength;t+=1.0/engineFrequency) {
         time += 1.0/engineFrequency;
@@ -31,45 +35,54 @@ static void runWalk(
         } else {
             std::cout << time << " ";
             std::cout << phase << " ";
-            std::cout << outputs.left_hip_yaw << " ";
-            std::cout << outputs.left_hip_pitch << " ";
-            std::cout << outputs.left_hip_roll << " ";
-            std::cout << outputs.left_knee << " ";
-            std::cout << outputs.left_ankle_pitch << " ";
-            std::cout << outputs.left_ankle_roll << " ";
-            std::cout << outputs.right_hip_yaw << " ";
-            std::cout << outputs.right_hip_pitch << " ";
-            std::cout << outputs.right_hip_roll << " ";
-            std::cout << outputs.right_knee << " ";
-            std::cout << outputs.right_ankle_pitch << " ";
-            std::cout << outputs.right_ankle_roll << " ";
+            msg.data = 
+            {
+                /* LEFT */
+                (float)outputs.left_hip_yaw,
+                (float)outputs.left_hip_roll,
+                (float)outputs.left_hip_pitch,
+                (float)outputs.left_knee,
+                (float)outputs.left_ankle_pitch,
+                (float)outputs.left_ankle_roll,
+                /* RIGHT */
+                (float)outputs.right_hip_yaw,
+                (float)outputs.right_hip_roll,
+                (float)outputs.right_hip_pitch,
+                (float)outputs.right_knee,
+                (float)outputs.right_ankle_pitch,
+                (float)outputs.right_ankle_roll
+            };
             std::cout << std::endl;
+            pub.publish(msg);
+            rate.sleep();
         }
     }
 }
 
-int main()
+int main(int argc, char** argv)
 {
-    /**
-     * Initialization of walk parameters.
-     * Following values where used during 
-     * Robocup 2015 in China on Sigmaban
-     * Kid-Size Humanoid Robot.
-     */
+
+    ros::init(argc, argv, "walk_node");
+    ros::NodeHandle n;
+    ros::Publisher legs_pub = n.advertise<std_msgs::Float32MultiArray>("/hardware/legs_goal_pose", 1);
+    ros::Rate rate(40); // 1 Hz
+
     struct Rhoban::IKWalkParameters params;
     
+    //if fillHumanoidParameters(struct Rhoban::IKWalkParameters params)
+
     /**
      * Model leg typical length between
      * each rotation axis
      */
     params.distHipToKnee = 0.093;
-    params.distKneeToAnkle = 0.105;
-    params.distAnkleToGround = 0.032;
+    params.distKneeToAnkle = 0.93;
+    params.distAnkleToGround = 0.035;
     /**
      * Distance between the two feet in lateral
      * axis while in zero position
      */
-    params.distFeetLateral = 0.092;
+    params.distFeetLateral = 0.072;
     /**
      * Complete (two legs) walk cycle frequency
      * in Hertz
@@ -90,7 +103,7 @@ int main()
      * 0 is null double support and full single support
      * 1 is full double support and null single support
      */
-    params.supportPhaseRatio = 0.0;
+    params.supportPhaseRatio = 0.2;
     /**
      * Lateral offset on default foot 
      * position in meters (foot lateral distance)
@@ -110,7 +123,7 @@ int main()
      * Vertical rise height of each foot
      * in meters (positive)
      */
-    params.riseGain = 0.035;
+    params.riseGain = 0.05;
     /**
      * Angular yaw rotation of each 
      * foot for each step in radian.
@@ -184,7 +197,7 @@ int main()
      * >0 moves the trunk forward
      * <0 moves the trunk backward
      */
-    params.trunkXOffset = 0.02;
+    params.trunkXOffset = 0.1;
     /**
      * Lateral trunk-foot offset
      * with respect to foot in meters
@@ -239,48 +252,45 @@ int main()
     params.stepGain = 0.0;
     params.lateralGain = 0.0;
     params.turnGain = 0.0;
-    runWalk(params, 2.0, phase, time);
+    runWalk(params, 2.0, phase, time, legs_pub, rate);
     
+    
+
     //The walk is started while walking on place
     params.enabledGain = 1.0;
     params.stepGain = 0.0;
     params.lateralGain = 0.0;
     params.turnGain = 0.0;
-    runWalk(params, 2.0, phase, time);
+    runWalk(params, 2.0, phase, time, legs_pub, rate);
 
     //Walk forward
     params.enabledGain = 1.0;
     params.stepGain = 0.02;
     params.lateralGain = 0.0;
     params.turnGain = 0.0;
-    runWalk(params, 2.0, phase, time);
+    runWalk(params, 2.0, phase, time, legs_pub, rate);
 
     //Walk on the left with lateral steps
     params.enabledGain = 1.0;
     params.stepGain = 0.0;
     params.lateralGain = 0.02;
     params.turnGain = 0.0;
-    runWalk(params, 2.0, phase, time);
+    runWalk(params, 2.0, phase, time, legs_pub, rate);
     
     //Turn on the right
     params.enabledGain = 1.0;
     params.stepGain = 0.0;
     params.lateralGain = 0.0;
     params.turnGain = -0.1;
-    runWalk(params, 2.0, phase, time);
+    runWalk(params, 2.0, phase, time, legs_pub, rate);
 
     //Stop the walk
     params.enabledGain = 0.0;
     params.stepGain = 0.0;
     params.lateralGain = 0.0;
     params.turnGain = 0.0;
-    runWalk(params, 2.0, phase, time);
+    runWalk(params, 2.0, phase, time, legs_pub, rate);
 
-    /**
-     * Note that in practice params.stepGain = 0.0 does not 
-     * make the robot walk on place. Some offset step trim have to
-     * be tunned to really find the robot "neutral". 
-     */
     return 0;
 }
 
