@@ -27,7 +27,7 @@ int main(int argc, char **argv)
     
     vision_msgs::ProcessObject srv;
     std::string ip_server; 
-    ros::param::param<std::string>("~ip_server", ip_server, "127.0.0.1"); // Cambiado a localhost por defecto
+    ros::param::param<std::string>("~ip_server", ip_server, "0.0.0.0"); // Cambiado a localhost por defecto
     
     // Configuración del socket UDP
     int sockfd;
@@ -91,6 +91,7 @@ int main(int argc, char **argv)
         if (elementos_leidos != 6)
         {
             ROS_WARN("Formato de mensaje incorrecto. Se esperaba: nombre@(x1,y1,x2,y2)conf");
+            printf("\n Formato recibido %s \n", buffer);
             continue;
         }
 

@@ -11,20 +11,19 @@
 #include <sys/poll.h>
 #include <time.h>
 #include <unistd.h>
-#include <vector>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
+#include <vector>
 #include "rtsp_demo.h"
 #include "luckfox_mpi.h"
 #include "yolov5.h"
-
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 
-#define DISP_WIDTH  640
+#define DISP_WIDTH 640
 #define DISP_HEIGHT 360
 
 int width = DISP_WIDTH;
@@ -37,26 +36,24 @@ int topPadding;
 
 int serverSocket = -1;
 bool running = true;
+sockaddr_in broadcastAddr;
 
-struct UDPClient {
-    sockaddr_in address;
-    socklen_t addr_len;
-};
-std::vector<UDPClient> udpClients;
-
-void handleSignal(int signal) {
+void handleSignal(int signal)
+{
     running = false;
-    if (serverSocket != -1) {
+    if (serverSocket != -1)
+    {
         close(serverSocket);
     }
     exit(0);
 }
 
-cv::Mat letterbox(cv::Mat input) {
+cv::Mat letterbox(cv::Mat input)
+{
     float scaleX = (float)model_width / (float)width;
     float scaleY = (float)model_height / (float)height;
     scale = scaleX < scaleY ? scaleX : scaleY;
-    
+
     int inputWidth = (int)((float)width * scale);
     int inputHeight = (int)((float)height * scale);
 
@@ -64,37 +61,50 @@ cv::Mat letterbox(cv::Mat input) {
     topPadding = (model_height - inputHeight) / 2;
 
     cv::Mat inputScale;
-    cv::resize(input, inputScale, cv::Size(inputWidth,inputHeight), 0, 0, cv::INTER_LINEAR);
-    cv::Mat letterboxImage(640, 640, CV_8UC3,cv::Scalar(0,0,0));
+    cv::resize(input, inputScale, cv::Size(inputWidth, inputHeight), 0, 0, cv::INTER_LINEAR);
+    cv::Mat letterboxImage(640, 640, CV_8UC3, cv::Scalar(0, 0, 0));
     cv::Rect roi(leftPadding, topPadding, inputWidth, inputHeight);
     inputScale.copyTo(letterboxImage(roi));
 
     return letterboxImage;
 }
 
-void mapCoordinates(int *x, int *y) {
+void mapCoordinates(int *x, int *y)
+{
     int mx = *x - leftPadding;
     int my = *y - topPadding;
     *x = (int)((float)mx / scale);
     *y = (int)((float)my / scale);
 }
 
-void sendToAllUDPClients(const char* message) {
-    for (auto& client : udpClients) {
-        sendto(serverSocket, message, strlen(message), 0,
-             (struct sockaddr*)&client.address, client.addr_len);
-    }
+void sendBroadcastMessage(const char *message)
+{
+    sendto(serverSocket, message, strlen(message), 0,
+           (struct sockaddr *)&broadcastAddr, sizeof(broadcastAddr));
+
+    printf("Información enviada %s", message);
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
     system("RkLunch-stop.sh");
     RK_S32 s32Ret = 0;
-    int sX,sY,eX,eY;
+    int sX, sY, eX, eY;
 
     signal(SIGINT, handleSignal);
 
     serverSocket = socket(AF_INET, SOCK_DGRAM, 0);
-    if (serverSocket < 0) {
+    if (serverSocket < 0)
+    {
+        perror("Error al crear el socket");
+        return 1;
+    }
+
+    int broadcastEnable = 1;
+    if (setsockopt(serverSocket, SOL_SOCKET, SO_BROADCAST, &broadcastEnable, sizeof(broadcastEnable)) < 0)
+    {
+        perror("Error al habilitar broadcast");
+        close(serverSocket);
         return 1;
     }
 
@@ -104,10 +114,17 @@ int main(int argc, char *argv[]) {
     serverAddress.sin_port = htons(5000);
     serverAddress.sin_addr.s_addr = INADDR_ANY;
 
-    if (bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0) {
+    if (bind(serverSocket, (struct sockaddr *)&serverAddress, sizeof(serverAddress)) < 0)
+    {
+        perror("Error en bind");
         close(serverSocket);
         return 1;
     }
+
+    memset(&broadcastAddr, 0, sizeof(broadcastAddr));
+    broadcastAddr.sin_family = AF_INET;
+    broadcastAddr.sin_port = htons(5000);
+    broadcastAddr.sin_addr.s_addr = inet_addr("10.42.0.255");
 
     char text[16];
     rknn_app_context_t rknn_app_ctx;
@@ -140,7 +157,7 @@ int main(int argc, char *argv[]) {
     h264_frame.stVFrame.u32FrameFlag = 160;
     h264_frame.stVFrame.pMbBlk = src_Blk;
     unsigned char *data = (unsigned char *)RK_MPI_MB_Handle2VirAddr(src_Blk);
-    cv::Mat frame(cv::Size(width,height),CV_8UC3,data);
+    cv::Mat frame(cv::Size(width, height), CV_8UC3, data);
 
     RK_BOOL multi_sensor = RK_FALSE;
     const char *iq_dir = "/etc/iqfiles";
@@ -148,7 +165,8 @@ int main(int argc, char *argv[]) {
     SAMPLE_COMM_ISP_Init(0, hdr_mode, multi_sensor, iq_dir);
     SAMPLE_COMM_ISP_Run(0);
 
-    if (RK_MPI_SYS_Init() != RK_SUCCESS) {
+    if (RK_MPI_SYS_Init() != RK_SUCCESS)
+    {
         return -1;
     }
 
@@ -165,99 +183,71 @@ int main(int argc, char *argv[]) {
     RK_CODEC_ID_E enCodecType = RK_VIDEO_ID_AVC;
     venc_init(0, width, height, enCodecType);
 
-    while(running) {
-        fd_set readfds;
-        FD_ZERO(&readfds);
-        FD_SET(serverSocket, &readfds);
-        struct timeval timeout = {0, 10000};
-
-        if (select(serverSocket+1, &readfds, NULL, NULL, &timeout) > 0) {
-            sockaddr_in clientAddr;
-            socklen_t addrLen = sizeof(clientAddr);
-            char buffer[1024];
-
-            ssize_t bytes = recvfrom(serverSocket, buffer, sizeof(buffer), 0,
-                                   (struct sockaddr*)&clientAddr, &addrLen);
-
-            if (bytes > 0) {
-                bool exists = false;
-                for (auto& c : udpClients) {
-                    if (c.address.sin_addr.s_addr == clientAddr.sin_addr.s_addr &&
-                        c.address.sin_port == clientAddr.sin_port) {
-                        exists = true;
-                        break;
-                    }
-                }
-
-                if (!exists) {
-                    UDPClient newClient;
-                    newClient.address = clientAddr;
-                    newClient.addr_len = addrLen;
-                    udpClients.push_back(newClient);
-                }
-            }
-        }
-
+    while (running)
+    {
         h264_frame.stVFrame.u32TimeRef = H264_TimeRef++;
         h264_frame.stVFrame.u64PTS = TEST_COMM_GetNowUs();
         s32Ret = RK_MPI_VI_GetChnFrame(0, 0, &stViFrame, -1);
-        if(s32Ret == RK_SUCCESS) {
+        if (s32Ret == RK_SUCCESS)
+        {
             void *vi_data = RK_MPI_MB_Handle2VirAddr(stViFrame.stVFrame.pMbBlk);
 
             cv::Mat yuv420sp(height + height / 2, width, CV_8UC1, vi_data);
             cv::Mat bgr(height, width, CV_8UC3, data);
 
             cv::cvtColor(yuv420sp, bgr, cv::COLOR_YUV420sp2BGR);
-            cv::resize(bgr, frame, cv::Size(width,height), 0, 0, cv::INTER_LINEAR);
+            cv::resize(bgr, frame, cv::Size(width, height), 0, 0, cv::INTER_LINEAR);
 
             cv::Mat letterboxImage = letterbox(frame);
-            memcpy(rknn_app_ctx.input_mems[0]->virt_addr, letterboxImage.data, model_width*model_height*3);
+            memcpy(rknn_app_ctx.input_mems[0]->virt_addr, letterboxImage.data, model_width * model_height * 3);
             inference_yolov5_model(&rknn_app_ctx, &od_results);
 
-            for(int i = 0; i < od_results.count; i++) {
-                if(od_results.count >= 1) {
+            for (int i = 0; i < od_results.count; i++)
+            {
+                if (od_results.count >= 1)
+                {
                     object_detect_result *det_result = &(od_results.results[i]);
 
                     sX = (int)(det_result->box.left);
                     sY = (int)(det_result->box.top);
                     eX = (int)(det_result->box.right);
                     eY = (int)(det_result->box.bottom);
-                    mapCoordinates(&sX,&sY);
-                    mapCoordinates(&eX,&eY);
+                    mapCoordinates(&sX, &sY);
+                    mapCoordinates(&eX, &eY);
 
                     char detection_info[256];
-                    sprintf(detection_info, "%s@(%d,%d,%d,%d)%.2f",
-                            coco_cls_to_name(det_result->cls_id),
+                    sprintf(detection_info, "%s@(%d,%d,%d,%d)%.3f\n", coco_cls_to_name(det_result->cls_id),
                             sX, sY, eX, eY, det_result->prop);
+                    sendBroadcastMessage(detection_info);
 
-                    sendToAllUDPClients(detection_info);
-
-                    cv::rectangle(frame,cv::Point(sX,sY),
-                                        cv::Point(eX,eY),
-                                        cv::Scalar(0,255,0),3);
+                    cv::rectangle(frame, cv::Point(sX, sY),
+                                  cv::Point(eX, eY),
+                                  cv::Scalar(0, 255, 0), 3);
                     sprintf(text, "%s %.1f%%", coco_cls_to_name(det_result->cls_id), det_result->prop * 100);
-                    cv::putText(frame,text,cv::Point(sX, sY - 8),
-                                        cv::FONT_HERSHEY_SIMPLEX,1,
-                                        cv::Scalar(0,255,0),2);
+                    cv::putText(frame, text, cv::Point(sX, sY - 8),
+                                cv::FONT_HERSHEY_SIMPLEX, 1,
+                                cv::Scalar(0, 255, 0), 2);
                 }
             }
 
             memcpy(data, frame.data, width * height * 3);
-            RK_MPI_VENC_SendFrame(0, &h264_frame,-1);
+            RK_MPI_VENC_SendFrame(0, &h264_frame, -1);
 
             s32Ret = RK_MPI_VENC_GetStream(0, &stFrame, -1);
-            if(s32Ret == RK_SUCCESS) {
-                if(g_rtsplive && g_rtsp_session) {
+            if (s32Ret == RK_SUCCESS)
+            {
+                if (g_rtsplive && g_rtsp_session)
+                {
                     void *pData = RK_MPI_MB_Handle2VirAddr(stFrame.pstPack->pMbBlk);
                     rtsp_tx_video(g_rtsp_session, (uint8_t *)pData, stFrame.pstPack->u32Len,
-                                stFrame.pstPack->u64PTS);
+                                  stFrame.pstPack->u64PTS);
                     rtsp_do_event(g_rtsplive);
                 }
             }
 
             s32Ret = RK_MPI_VI_ReleaseChnFrame(0, 0, &stViFrame);
             s32Ret = RK_MPI_VENC_ReleaseStream(0, &stFrame);
-            memset(text,0,16);
+            memset(text, 0, 16);
         }
     }
 
