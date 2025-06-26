@@ -59,6 +59,76 @@ static void runWalk(
     }
 }
 
+template <typename T>
+bool getParamWithLog(const std::string& param_name, T& value, const T& default_value)
+{
+    if (ros::param::get(param_name, value))
+    {
+        ROS_INFO("  Read parameter: %s = %f", param_name.c_str(), static_cast<double>(value));
+        return true;
+    }
+    else
+    {
+        value = default_value;
+        ROS_WARN("  Failed to read parameter: %s. Using default value: %f", param_name.c_str(), static_cast<double>(default_value));
+        return false;
+    }
+}
+
+bool fillHumanoidParameters(struct Rhoban::IKWalkParameters& params)
+{
+    ROS_INFO("Attempting to read 'walk' parameters one by one...");
+
+    // Humanoid Shape parameters
+    if(!getParamWithLog("/walk/distHipToKnee", params.distHipToKnee, 0.0))          return false;
+    if(!getParamWithLog("/walk/distKneeToAnkle", params.distKneeToAnkle, 0.0))      return false;
+    if(!getParamWithLog("/walk/distAnkleToGround", params.distAnkleToGround, 0.0))  return false;
+    if(!getParamWithLog("/walk/distFeetLateral", params.distFeetLateral, 0.0))      return false;
+
+    //Walking cycle parameters
+    if(!getParamWithLog("/walk/frequency",          params.freq, 0.0)) return false;
+    if(!getParamWithLog("/walk/enabledGain",        params.enabledGain, 0.0)) return false;
+    if(!getParamWithLog("/walk/supportPhaseRatio",  params.supportPhaseRatio, 0.0)) return false;
+    if(!getParamWithLog("/walk/footYOffset",        params.footYOffset, 0.0)) return false;
+    if(!getParamWithLog("/walk/stepGain",           params.stepGain, 0.0)) return false;
+    if(!getParamWithLog("/walk/riseGain",           params.riseGain, 0.0)) return false;
+    if(!getParamWithLog("/walk/turnGain",           params.turnGain, 0.0)) return false;
+    if(!getParamWithLog("/walk/lateralGain",        params.lateralGain, 0.0)) return false;
+    if(!getParamWithLog("/walk/trunkZOffset",       params.trunkZOffset, 0.0)) return false;
+    if(!getParamWithLog("/walk/swingGain",          params.swingGain, 0.0)) return false;
+    if(!getParamWithLog("/walk/swingRollGain",      params.swingRollGain, 0.0)) return false;
+    if(!getParamWithLog("/walk/swingPhase",         params.swingPhase, 0.0)) return false;
+    if(!getParamWithLog("/walk/stepUpVel",          params.stepUpVel, 0.0)) return false;
+    if(!getParamWithLog("/walk/stepDownVel",        params.stepDownVel, 0.0)) return false;
+    if(!getParamWithLog("/walk/riseUpVel",          params.riseUpVel, 0.0)) return false;
+    if(!getParamWithLog("/walk/riseDownVel",        params.riseDownVel, 0.0)) return false;
+    if(!getParamWithLog("/walk/swingPause",         params.swingPause, 0.0)) return false;
+    if(!getParamWithLog("/walk/swingVel",           params.swingVel, 0.0)) return false;
+    if(!getParamWithLog("/walk/trunkXOffset",       params.trunkXOffset, 0.0)) return false;
+    if(!getParamWithLog("/walk/trunkYOffset",       params.trunkYOffset, 0.0)) return false;
+    if(!getParamWithLog("/walk/trunkPitch",         params.trunkPitch, 0.0)) return false;
+    if(!getParamWithLog("/walk/trunkRoll",          params.trunkRoll, 0.0)) return false;
+
+    // Extra offsets on X, Y, Z for feet (index 26 onwards)
+    if(!getParamWithLog("/walk/extraLeftX",         params.extraLeftX, 0.0)) return false;
+    if(!getParamWithLog("/walk/extraLeftY",         params.extraLeftY, 0.0)) return false;
+    if(!getParamWithLog("/walk/extraLeftZ",         params.extraLeftZ, 0.0)) return false;
+    if(!getParamWithLog("/walk/extraRightX",        params.extraRightX, 0.0)) return false;
+    if(!getParamWithLog("/walk/extraRightY",        params.extraRightY, 0.0)) return false;
+    if(!getParamWithLog("/walk/extraRightZ",        params.extraRightZ, 0.0)) return false;
+
+    // Extra angular offset of roll, pitch, yaw on left and right foot (index 32 onwards)
+    if(!getParamWithLog("/walk/extraLeftYaw",       params.extraLeftYaw, 0.0)) return false;
+    if(!getParamWithLog("/walk/extraLeftPitch",     params.extraLeftPitch, 0.0)) return false;
+    if(!getParamWithLog("/walk/extraLeftRoll",      params.extraLeftRoll, 0.0)) return false;
+    if(!getParamWithLog("/walk/extraRightYaw",      params.extraRightYaw, 0.0)) return false;
+    if(!getParamWithLog("/walk/extraRightPitch",    params.extraRightPitch, 0.0)) return false;
+    if(!getParamWithLog("/walk/extraRightRoll",     params.extraRightRoll, 0.0)) return false;
+
+    ROS_INFO("WALKING PARAMS FETCHED SUCCESFULLY");
+    return true;
+}
+
 int main(int argc, char** argv)
 {
 
@@ -69,7 +139,10 @@ int main(int argc, char** argv)
 
     struct Rhoban::IKWalkParameters params;
     
-    //if fillHumanoidParameters(struct Rhoban::IKWalkParameters params)
+    if(! fillHumanoidParameters(params))
+    {
+        return 0;
+    }
 
     /**
      * Model leg typical length between
@@ -82,7 +155,7 @@ int main(int argc, char** argv)
      * Distance between the two feet in lateral
      * axis while in zero position
      */
-    params.distFeetLateral = 0.072;
+    params.distFeetLateral = 0.073;
     /**
      * Complete (two legs) walk cycle frequency
      * in Hertz
@@ -253,8 +326,6 @@ int main(int argc, char** argv)
     params.lateralGain = 0.0;
     params.turnGain = 0.0;
     runWalk(params, 2.0, phase, time, legs_pub, rate);
-    
-    
 
     //The walk is started while walking on place
     params.enabledGain = 1.0;

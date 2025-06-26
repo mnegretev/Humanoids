@@ -1,0 +1,46 @@
+walk:
+    # Humanoid Shape
+    distHipToKnee: 0.093
+    distKneeToAnkle: 0.093
+    distAnkleToGround: 0.035
+    distFeetLateral: 0.073
+
+    # Walking cycle
+    frequency:        1.7
+    enabledGain:      1.0
+    supportPhaseRatio: 0.2
+    footYOffset:      0.025
+    stepGain:         0.0
+    riseGain:         0.05
+    turnGain:         0.0
+    lateralGain:      0.0
+    trunkZOffset:     0.02
+    swingGain:        0.02
+    swingRollGain:    0.0
+    swingPhase:       0.25
+    stepUpVel:        4.0
+    stepDownVel:      4.0
+    riseUpVel:        4.0
+    riseDownVel:      4.0
+    swingPause:       0.0
+    swingVel:         4.0
+    trunkXOffset:     0.1
+    trunkYOffset:     0.0
+    trunkPitch:       0.15
+    trunkRoll:        0.0
+
+    # Extra offsets on X, Y, Z for feet in meters (can be userd to implement dynamic kick)
+    extraLeftX:       0.0
+    extraLeftY:       0.0
+    extraLeftZ:       0.0
+    extraRightX:      0.0
+    extraRightY:      0.0
+    extraRightZ:      0.0
+
+    # Extra angular offset of roll, pitch, yaw on left and right foot in radians.
+    extraLeftYaw:     0.0
+    extraLeftPitch:   0.0
+    extraLeftRoll:    0.0
+    extraRightYaw:    0.0
+    extraRightPitch:  0.0
+    extraRightRoll:   0.0
