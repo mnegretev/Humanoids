@@ -150,7 +150,7 @@ int main(int argc, char** argv)
 
     std_msgs::Float32MultiArray arms_msg;
     arms_msg.data.clear();
-    arms_msg.data = {0.3, 0.3, -1.8707, 0.3, -0.3, -1.8707};
+    arms_msg.data = {1.0, 0.3, -1.8707, 1.0, -0.3, -1.8707};
     arms_pub.publish(arms_msg);
     rate.sleep()
 
