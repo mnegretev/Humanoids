@@ -8,8 +8,8 @@ walk:
     # Walking cycle
     frequency:        1.5
     enabledGain:      1.0
-    supportPhaseRatio: 0.4
-    footYOffset:      0.01
+    supportPhaseRatio: 0.5
+    footYOffset:      0.015
     stepGain:         0.0
     riseGain:         0.05
     turnGain:         0.0
@@ -24,8 +24,8 @@ walk:
     riseDownVel:      4.0
     swingPause:       0.0
     swingVel:         4.0
-    trunkXOffset:     0.02
-    trunkYOffset:     0.01
+    trunkXOffset:     0.03
+    trunkYOffset:     0.005
     trunkPitch:       0.0
     trunkRoll:        0.0
 
