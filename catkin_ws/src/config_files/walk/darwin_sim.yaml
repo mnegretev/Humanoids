@@ -6,10 +6,10 @@ walk:
     distFeetLateral: 0.073
 
     # Walking cycle
-    frequency:        1.7
+    frequency:        1.5
     enabledGain:      1.0
-    supportPhaseRatio: 0.2
-    footYOffset:      0.025
+    supportPhaseRatio: 0.4
+    footYOffset:      0.01
     stepGain:         0.0
     riseGain:         0.05
     turnGain:         0.0
@@ -24,9 +24,9 @@ walk:
     riseDownVel:      4.0
     swingPause:       0.0
     swingVel:         4.0
-    trunkXOffset:     0.1
-    trunkYOffset:     0.0
-    trunkPitch:       0.15
+    trunkXOffset:     0.02
+    trunkYOffset:     0.01
+    trunkPitch:       0.0
     trunkRoll:        0.0
 
     # Extra offsets on X, Y, Z for feet in meters (can be userd to implement dynamic kick)
