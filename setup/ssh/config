@@ -16,7 +16,9 @@ Host wifidarwin1
 	# This only works in the BioRobotics network from the lab
 	Hostname 192.168.1.118
 	StrictHostKeyChecking no
-
+	BatchMode yes
+	ConnectTimeout 10
+	PreferredAuthentications password		
 Host wifinimbro
 	User humanoid
 	# This only works in the BioRobotics network from the lab
