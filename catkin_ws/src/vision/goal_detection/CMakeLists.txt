@@ -17,6 +17,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   smach
   smach_ros
+  vision_msgs
 )
 find_package(Eigen3 REQUIRED)
 ## System dependencies are found with CMake's conventions
