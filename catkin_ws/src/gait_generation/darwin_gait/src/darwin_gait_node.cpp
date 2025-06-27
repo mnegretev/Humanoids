@@ -152,7 +152,7 @@ int main(int argc, char** argv)
     arms_msg.data.clear();
     arms_msg.data = {1.0, 0.3, -1.8707, 1.0, -0.3, -1.8707};
     arms_pub.publish(arms_msg);
-    rate.sleep()
+    rate.sleep();
 
     while(ros::ok())
     {
