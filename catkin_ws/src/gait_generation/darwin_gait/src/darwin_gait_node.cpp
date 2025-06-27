@@ -135,6 +135,7 @@ int main(int argc, char** argv)
     ros::init(argc, argv, "walk_node");
     ros::NodeHandle n;
     ros::Publisher legs_pub = n.advertise<std_msgs::Float32MultiArray>("/hardware/legs_goal_pose", 1);
+    ros::Publisher arms_pub = n.advertise<std_msgs::Float32MultiArray>("/hardware/arms_goal_pose", 1);
     ros::Rate rate(40); // 1 Hz
 
     struct Rhoban::IKWalkParameters params;
@@ -146,6 +147,12 @@ int main(int argc, char** argv)
 
     double phase = 0.0;
     double time = 0.0;
+
+    std_msgs::Float32MultiArray arms_msg;
+    arms_msg.data.clear();
+    arms_msg.data = {0.3, 0.3, -1.8707, 0.3, -0.3, -1.8707};
+    arms_pub.publish(arms_msg);
+    rate.sleep()
 
     while(ros::ok())
     {
