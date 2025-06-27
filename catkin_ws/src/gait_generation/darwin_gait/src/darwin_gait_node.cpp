@@ -147,48 +147,22 @@ int main(int argc, char** argv)
     double phase = 0.0;
     double time = 0.0;
 
-    //The walk is stopped
-    params.enabledGain = 0.0;
-    params.stepGain = 0.0;
-    params.lateralGain = 0.0;
-    params.turnGain = 0.0;
-    runWalk(params, 2.0, phase, time, legs_pub, rate);
+    while(ros::ok())
+    {
+            //The walk is stopped
+        params.enabledGain = 0.0;
+        params.stepGain = 0.0;
+        params.lateralGain = 0.0;
+        params.turnGain = 0.0;
+        runWalk(params, 2.0, phase, time, legs_pub, rate);
 
-    //The walk is started while walking on place
-    params.enabledGain = 1.0;
-    params.stepGain = 0.0;
-    params.lateralGain = 0.0;
-    params.turnGain = 0.0;
-    runWalk(params, 2.0, phase, time, legs_pub, rate);
-
-    //Walk forward
-    params.enabledGain = 1.0;
-    params.stepGain = 0.02;
-    params.lateralGain = 0.0;
-    params.turnGain = 0.0;
-    runWalk(params, 2.0, phase, time, legs_pub, rate);
-
-    //Walk on the left with lateral steps
-    params.enabledGain = 1.0;
-    params.stepGain = 0.0;
-    params.lateralGain = 0.02;
-    params.turnGain = 0.0;
-    runWalk(params, 2.0, phase, time, legs_pub, rate);
-    
-    //Turn on the right
-    params.enabledGain = 1.0;
-    params.stepGain = 0.0;
-    params.lateralGain = 0.0;
-    params.turnGain = -0.1;
-    runWalk(params, 2.0, phase, time, legs_pub, rate);
-
-    //Stop the walk
-    params.enabledGain = 0.0;
-    params.stepGain = 0.0;
-    params.lateralGain = 0.0;
-    params.turnGain = 0.0;
-    runWalk(params, 2.0, phase, time, legs_pub, rate);
-
+        //The walk is started while walking on place
+        params.enabledGain = 1.0;
+        params.stepGain = 0.0;
+        params.lateralGain = 0.0;
+        params.turnGain = 0.0;
+        runWalk(params, 10.0, phase, time, legs_pub, rate);
+    }
     return 0;
 }
 
