@@ -1,0 +1,6 @@
+<launch>
+
+    <include file="$(find surge_et_ambula)/launch/hardware/darwin_hardware.launch"/>
+    <include file="$(find darwin_gait)/launch/walk.launch"/>
+
+</launch>
