@@ -27,8 +27,10 @@ int main(int argc, char **argv)
     
     vision_msgs::ProcessObject srv;
     std::string ip_server; 
-    ros::param::param<std::string>("~ip_server", ip_server, "0.0.0.0"); // Cambiado a localhost por defecto
+    ros::param::param<std::string>("~ip_server", ip_server, "0.0.0.0"); // Cambiado a 0.0.0.0 para escuchar todas las interfaces por culpa de la cochina luckfox 
     
+    ros::service::waitForService("/intercept_plane_service", -1);
+
     // Configuración del socket UDP
     int sockfd;
     struct sockaddr_in servaddr, cliaddr;
@@ -138,7 +140,15 @@ int main(int argc, char **argv)
                 marker.color.a = 1.0; // No olvidar el alpha
                 marks.markers.push_back(marker);
             }
-            // Añadir más casos según necesites
+            else 
+            {
+                marker.id = 1;
+                marker.type = visualization_msgs::Marker::CUBE;
+                marker.scale.x = marker.scale.y = 0.5; marker.scale.z = 1.0;
+                marker.color.r = 0.0; marker.color.g = 1.0; marker.color.b = 0.0;
+                marker.color.a = 1.0; // No olvidar el alpha
+                marks.markers.push_back(marker);
+            }
             
             pub.publish(msg);
             pub_point.publish(marks);
