@@ -9,6 +9,8 @@ const double PAN_MIN = -M_PI / 2.1;
 const double PAN_MAX = M_PI / 2.1;
 const double TILT_MIN = 0.5;
 const double TILT_MAX = 0.7;
+const double TILT_MIN_TRACK = 0.1;
+const double TILT_MAX_TRACK = 0.9;
 
 ros::Publisher tracker_pub;
 //ros::Subscriber head_position_sub;
@@ -96,39 +98,38 @@ void centroidCallback(const vision_msgs::VisionObject::ConstPtr& msg) {
         current_state = TRACKING;
     }
 
-    if (current_state == TRACKING && msg->confidence > 0.8){
+    if (current_state == TRACKING){
+        const int IMAGE_WIDTH = 640;
+        const int IMAGE_HEIGHT = 360;
+
         float 
-        center_x = msg->x, 
-        center_y = msg->y,
-        kpan=0.05/320,
-        ktilt = 0.025/240;
+        center_x = (msg->x+(msg->width/2.0)), 
+        center_y = (msg->y+(msg->height/2.0)),
 
-        int 
-        Cx=320,
-        Cy=240,
-        ex = center_x-Cx, 
-        ey = center_y-Cy;
+        kpan=0.18/320,
+        ktilt = 0.05/180,
 
-        float
+        ex = center_x - (IMAGE_WIDTH/2),
+        ey = center_y - (IMAGE_HEIGHT/2),
+    
         pan_correction = -kpan * ex,
         tilt_correction = ktilt * ey;
 
-        current_robot_pan= pan_correction;
-        current_robot_tilt= tilt_correction;
+        current_robot_pan += pan_correction;
+        current_robot_tilt += tilt_correction;
 
         current_robot_pan = std::max((double)PAN_MIN, std::min((double)PAN_MAX, (double)current_robot_pan));
-        current_robot_tilt = std::max((double)TILT_MIN, std::min((double)TILT_MAX, (double)current_robot_tilt));
-        std::cout << "Center:"<<center_x<<","<<center_y<<std::endl;
-        std::cout<<"Coordenadas:"<<current_robot_pan<<","<<current_robot_tilt<<std::endl;
-        std::cout<<"Error***:"<<ex<<","<<ey<<std::endl;
+        current_robot_tilt = std::max((double)TILT_MIN_TRACK, std::min((double)TILT_MAX_TRACK, (double)current_robot_tilt));
+        
+        std::cout << "Ball Center: "<<center_x<<","<<center_y<<std::endl;
+        std::cout<<"Current Head Pose Goal: "<<current_robot_pan<<","<<current_robot_tilt<<std::endl;
+        std::cout<<"Error: "<<ex<<","<<ey<<std::endl;
+        
         head_goal_pose_msg.data = {current_robot_pan, current_robot_tilt};
         tracker_pub.publish(head_goal_pose_msg);
     }
 }
-// float ballDistance (const std_msgs::Float32MultiArray::ConstPtr& angle){
-//     const float height = 0.89, tilt = angle->data[1], pan = angle->data[0];
-//     return height * std::tan(std::abs(tilt))* std::cos(pan);
-// }
+
 void headPositionCallback(const std_msgs::Float32MultiArray::ConstPtr& msg) {
     current_robot_pan = msg->data[18];
     current_robot_tilt = msg->data[19];

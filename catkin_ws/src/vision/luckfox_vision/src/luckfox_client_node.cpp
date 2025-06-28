@@ -23,6 +23,7 @@ int main(int argc, char **argv)
     ros::NodeHandle n;
     ros::ServiceClient client = n.serviceClient<vision_msgs::ProcessObject>("/intercept_plane_service");
     ros::Publisher pub = n.advertise<vision_msgs::VisionObject>("/vision/landmarks", 1);
+    ros::Publisher pub_ball = n.advertise<vision_msgs::VisionObject>("/vision/ball", 1);
     ros::Publisher pub_point = n.advertise<visualization_msgs::MarkerArray>("/vision/landmarks_points", 1);
     
     vision_msgs::ProcessObject srv;
@@ -120,10 +121,11 @@ int main(int argc, char **argv)
             marker.action = visualization_msgs::Marker::ADD;
             marker.pose.position = msg.pose.position;
             marker.pose.orientation.w = 1.0;
-            
+            //ROS_ERROR("hola%shola",msg.id.c_str());
             // Configurar marcador según el tipo de objeto
-            if(msg.id == "ball") 
+            if(msg.id == "ball"&& msg.confidence > 0.9) 
             {
+                pub_ball.publish(msg);
                 marker.id = 0;
                 marker.type = visualization_msgs::Marker::SPHERE;
                 marker.scale.x = marker.scale.y = marker.scale.z = 0.1;
@@ -140,7 +142,7 @@ int main(int argc, char **argv)
                 marker.color.a = 1.0; // No olvidar el alpha
                 marks.markers.push_back(marker);
             }
-            else 
+            else if (msg.id == "humanoid") 
             {
                 marker.id = 1;
                 marker.type = visualization_msgs::Marker::CUBE;
@@ -149,7 +151,15 @@ int main(int argc, char **argv)
                 marker.color.a = 1.0; // No olvidar el alpha
                 marks.markers.push_back(marker);
             }
-            
+            else
+            {
+                ROS_ERROR("Objeto desconocido detectado %s",msg.id.c_str());
+            }
+
+            pub.publish(msg);
+
+
+            pub_point.publish(marks);
             pub.publish(msg);
             pub_point.publish(marks);
         }
