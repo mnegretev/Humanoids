@@ -150,7 +150,8 @@ int main(int argc, char** argv)
 
     std_msgs::Float32MultiArray arms_msg;
     arms_msg.data.clear();
-    arms_msg.data = {1.0, 0.3, -1.8707, 1.0, -0.3, -1.8707};
+    std::vector<float> arms_data = {1.0, 0.3, -1.8707, 1.0, -0.3, -1.8707};
+    arms_msg.data = arms_data;
     arms_pub.publish(arms_msg);
     rate.sleep();
 
@@ -168,7 +169,28 @@ int main(int argc, char** argv)
         params.stepGain = 0.0;
         params.lateralGain = 0.0;
         params.turnGain = 0.0;
-        runWalk(params, 10.0, phase, time, legs_pub, rate);
+        runWalk(params, 2.0, phase, time, legs_pub, rate);
+
+        //The walk is started while walking on place
+        params.enabledGain = 1.0;
+        params.stepGain = 0.0;
+        params.lateralGain = 0.0;
+        params.turnGain = 0.0;
+        runWalk(params, 2.0, phase, time, legs_pub, rate);
+
+        //Walk enabled
+        params.enabledGain = 1.0;
+        params.stepGain = 0.05;
+        params.lateralGain = 0.0;
+        params.turnGain = 0.0;
+        runWalk(params, 5.0, phase, time, legs_pub, rate);
+
+        //The walk is started while walking on place
+        params.enabledGain = 1.0;
+        params.stepGain = 0.0;
+        params.lateralGain = 0.0;
+        params.turnGain = 0.0;
+        runWalk(params, 2.0, phase, time, legs_pub, rate);
     }
     return 0;
 }
