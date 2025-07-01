@@ -123,7 +123,6 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -208,10 +207,12 @@ include_directories(
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
+
 add_executable(ball_detection src/ball_detection.cpp)
 target_link_libraries(ball_detection ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 
 add_executable(ball_tracker src/ball_tracker.cpp)
+add_dependencies(ball_tracker ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(ball_tracker ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 
 add_executable(goal_detector src/goal_detector.cpp)
