@@ -1,2 +1,7 @@
+L-Intersection
+T-Intersection
+X-Intersection
 ball
-goal
+goalpost
+obstacle
+robot

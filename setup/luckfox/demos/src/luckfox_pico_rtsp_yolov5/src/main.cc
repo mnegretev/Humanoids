@@ -129,7 +129,7 @@ int main(int argc, char *argv[])
     char text[16];
     rknn_app_context_t rknn_app_ctx;
     object_detect_result_list od_results;
-    const char *model_path = "./model/yolov5_ball_goal.rknn";
+    const char *model_path = "./model/yolov5_robot.rknn";
     memset(&rknn_app_ctx, 0, sizeof(rknn_app_context_t));
     init_yolov5_model(model_path, &rknn_app_ctx);
     init_post_process();

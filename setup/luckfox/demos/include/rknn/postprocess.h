@@ -7,7 +7,7 @@
 
 #define OBJ_NAME_MAX_SIZE 20
 #define OBJ_NUMB_MAX_SIZE 2
-#define OBJ_CLASS_NUM 2
+#define OBJ_CLASS_NUM 8
 #define NMS_THRESH 0.45
 #define BOX_THRESH 0.25
 #define PROP_BOX_SIZE (5 + OBJ_CLASS_NUM)
