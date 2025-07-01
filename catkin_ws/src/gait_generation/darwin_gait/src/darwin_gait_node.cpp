@@ -1,5 +1,6 @@
 #include <iostream>
 #include "IKWalk.hpp"
+#include "darwin_gait/SetGains.h" // Include your updated service header
 #include "std_msgs/Float32MultiArray.h"
 #include <ros/ros.h>
 /**
@@ -129,6 +130,22 @@ bool fillHumanoidParameters(struct Rhoban::IKWalkParameters& params)
     return true;
 }
 
+// Service callback function
+bool handleSetGains(darwin_gait::SetGains::Request  &req,
+    darwin_gait::SetGains::Response &res)
+{
+    ROS_INFO("Received gains:");
+    ROS_INFO("  enabled_gain: %.2f", req.enabled_gain);
+    ROS_INFO("  step_gain:    %.2f", req.step_gain);
+    ROS_INFO("  lateral_gain: %.2f", req.lateral_gain);
+    ROS_INFO("  tun_gain:     %.2f", req.tun_gain);
+
+    res.success = true;
+
+    ROS_INFO("Sending response: %s", res.success ? "true" : "false");
+    return true;
+}
+
 int main(int argc, char** argv)
 {
 
@@ -136,7 +153,7 @@ int main(int argc, char** argv)
     ros::NodeHandle n;
     ros::Publisher legs_pub = n.advertise<std_msgs::Float32MultiArray>("/hardware/legs_goal_pose", 1);
     ros::Publisher arms_pub = n.advertise<std_msgs::Float32MultiArray>("/hardware/arms_goal_pose", 1);
-    ros::Rate rate(40); // 1 Hz
+    ros::Rate rate(40); // 1 Hz  
 
     struct Rhoban::IKWalkParameters params;
     
@@ -144,6 +161,9 @@ int main(int argc, char** argv)
     {
         return 0;
     }
+
+    ros::ServiceServer service = n.advertiseService("set_gains", handleSetGains);
+    ROS_INFO("Ready to set walking gains.");
 
     double phase = 0.0;
     double time = 0.0;
@@ -157,7 +177,7 @@ int main(int argc, char** argv)
 
     while(ros::ok())
     {
-            //The walk is stopped
+        //The walk is stopped
         params.enabledGain = 0.0;
         params.stepGain = 0.0;
         params.lateralGain = 0.0;
