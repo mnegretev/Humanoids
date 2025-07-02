@@ -1,0 +1,7 @@
+# SetGains.srv
+float32 enabled_gain
+float32 step_gain
+float32 lateral_gain
+float32 turn_gain
+---
+bool success
