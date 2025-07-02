@@ -1,22 +1,22 @@
-#include <iostream>
+#include "WalkHandler.hpp"
+#include <std_msgs/String.h>
+#include <darwin_gait/SetGains.h>
 #include "IKWalk.hpp"
-#include "darwin_gait/WalkGains.h" // Include your updated service header
-#include "std_msgs/Float32MultiArray.h"
-#include <ros/ros.h>
-/**
- * Run the walk for given among of time and update
- * phase and time state
- */
 
-struct Rhoban::IKWalkParameters params;
+WalkNode::WalkNode(ros::NodeHandle& nh, int rate = 40) :
+    private_nh_(nh)
+{
+    my_publisher_       = private_nh_.advertise<std_msgs::String>("my_topic", 10);
+    my_service_server_  = private_nh_.advertiseService("set_gains", &darwin_gait::handleSetGains, this);
+    rate_               = ros::Rate(40);
+    ROS_INFO("MyRosNode initialized. Publisher on 'my_topic', Service 'set_gains' ready.");
+}
 
-static void runWalk(
+void WalkNode::runWalk(
     const Rhoban::IKWalkParameters& params, 
     double timeLength, 
     double& phase, 
-    double& time,
-    ros::Publisher& pub,
-    ros::Rate&      rate)
+    double& time)
 {
     //Leg motor computed positions
     struct Rhoban::IKWalkOutputs outputs;
@@ -57,29 +57,13 @@ static void runWalk(
                 (float)outputs.right_ankle_roll
             };
             std::cout << std::endl;
-            pub.publish(msg);
-            rate.sleep();
+            legs_pub_.publish(msg);
+            rate_.sleep();
         }
     }
 }
 
-template <typename T>
-bool getParamWithLog(const std::string& param_name, T& value, const T& default_value)
-{
-    if (ros::param::get(param_name, value))
-    {
-        ROS_INFO("  Read parameter: %s = %f", param_name.c_str(), static_cast<double>(value));
-        return true;
-    }
-    else
-    {
-        value = default_value;
-        ROS_WARN("  Failed to read parameter: %s. Using default value: %f", param_name.c_str(), static_cast<double>(default_value));
-        return false;
-    }
-}
-
-bool fillHumanoidParameters(struct Rhoban::IKWalkParameters& params)
+void MyRosNode::fillHumanoidParameters(struct Rhoban::IKWalkParameters& params)
 {
     ROS_INFO("Attempting to read 'walk' parameters one by one...");
 
@@ -133,93 +117,31 @@ bool fillHumanoidParameters(struct Rhoban::IKWalkParameters& params)
     return true;
 }
 
-// Service callback function
-bool handleSetGains(darwin_gait::WalkGains::Request  &req,
-    darwin_gait::WalkGains::Response &res)
-{
-    double phase = 0.0;
-    double time = 0.0;
+bool WalkNode::handleSetGains(your_package::SetGains::Request& req,
+                              your_package::SetGains::Response& res) {
+    p_gain_ = req.p_gain;
+    i_gain_ = req.i_gain;
+    d_gain_ = req.d_gain;
 
-    ROS_INFO("Received gains:");
-    ROS_INFO("  enabled_gain: %.2f", req.enabled_gain);
-    ROS_INFO("  step_gain:    %.2f", req.step_gain);
-    ROS_INFO("  lateral_gain: %.2f", req.lateral_gain);
-    ROS_INFO("  turn_gain:     %.2f", req.turn_gain);
-    ROS_INFO("  turn_gain:     %.2f", req.time);
-    params.enabledGain  = req.enabled_gain;
-    params.stepGain     = req.step_gain;
-    params.lateralGain  = req.lateral_gain;
-    params.turnGain     = req.turn_gain;
-    runWalk(params, req.time, phase, time, legs_pub)
+    ROS_INFO("Received request to set gains: P=%.2f, I=%.2f, D=%.2f", p_gain_, i_gain_, d_gain_);
+
     res.success = true;
-
-
-
-    ROS_INFO("Sending response: %s", res.success ? "true" : "false");
+    res.message = "Gains set successfully.";
     return true;
 }
 
-int main(int argc, char** argv)
+template <typename T>
+bool getParamWithLog(const std::string& param_name, T& value, const T& default_value)
 {
-
-    ros::init(argc, argv, "walk_node");
-    ros::NodeHandle n;
-    ros::Publisher legs_pub = n.advertise<std_msgs::Float32MultiArray>("/hardware/legs_goal_pose", 1);
-    ros::Publisher arms_pub = n.advertise<std_msgs::Float32MultiArray>("/hardware/arms_goal_pose", 1);
-    ros::Rate rate(40); // 1 Hz  
-    
-    if(! fillHumanoidParameters(params))
+    if (ros::param::get(param_name, value))
     {
-        return 0;
+        ROS_INFO("  Read parameter: %s = %f", param_name.c_str(), static_cast<double>(value));
+        return true;
     }
-
-    ros::ServiceServer service = n.advertiseService("set_gains", handleSetGains);
-    ROS_INFO("Ready to set walking gains.");
-
-    std_msgs::Float32MultiArray arms_msg;
-    arms_msg.data.clear();
-    std::vector<float> arms_data = {1.0, 0.3, -1.8707, 1.0, -0.3, -1.8707};
-    arms_msg.data = arms_data;
-    arms_pub.publish(arms_msg);
-    rate.sleep();
-
-    while(ros::ok())
+    else
     {
-        //The walk is stopped
-        params.enabledGain = 0.0;
-        params.stepGain = 0.0;
-        params.lateralGain = 0.0;
-        params.turnGain = 0.0;
-        runWalk(params, 2.0, phase, time, legs_pub, rate);
-
-        //The walk is started while walking on place
-        params.enabledGain = 1.0;
-        params.stepGain = 0.0;
-        params.lateralGain = 0.0;
-        params.turnGain = 0.0;
-        runWalk(params, 2.0, phase, time, legs_pub, rate);
-
-        //The walk is started while walking on place
-        params.enabledGain = 1.0;
-        params.stepGain = 0.0;
-        params.lateralGain = 0.0;
-        params.turnGain = 0.0;
-        runWalk(params, 2.0, phase, time, legs_pub, rate);
-
-        //Walk enabled
-        params.enabledGain = 1.0;
-        params.stepGain = 0.05;
-        params.lateralGain = 0.0;
-        params.turnGain = 0.0;
-        runWalk(params, 5.0, phase, time, legs_pub, rate);
-
-        //The walk is started while walking on place
-        params.enabledGain = 1.0;
-        params.stepGain = 0.0;
-        params.lateralGain = 0.0;
-        params.turnGain = 0.0;
-        runWalk(params, 2.0, phase, time, legs_pub, rate);
+        value = default_value;
+        ROS_WARN("  Failed to read parameter: %s. Using default value: %f", param_name.c_str(), static_cast<double>(default_value));
+        return false;
     }
-    return 0;
 }
-

@@ -1,7 +1,7 @@
-# SetGains.srv
-float32 enabled_gain
-float32 step_gain
-float32 lateral_gain
-float32 turn_gain
+float32 enabled_gain # 1.0
+float32 step_gain # 0.005 - 0.05 
+float32 lateral_gain # 0.005
+float32 turn_gain # 
+float32 time
 ---
 bool success
