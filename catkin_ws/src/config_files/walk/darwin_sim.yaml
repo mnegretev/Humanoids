@@ -24,7 +24,7 @@ walk:
     riseDownVel:      4.0
     swingPause:       0.0
     swingVel:         4.0
-    trunkXOffset:     0.03
+    trunkXOffset:     0.027
     trunkYOffset:     0.005
     trunkPitch:       0.0
     trunkRoll:        0.0
