@@ -175,6 +175,17 @@ bool WalkNode::handleSetGains(darwin_gait::WalkGains::Request& req,
         return false;
     }
 
+    params_.enabledGain = 1.0;
+    params_.stepGain    = 0.0;
+    params_.lateralGain = 0.0;
+    params_.turnGain    = 0.0;
+    
+    if(!runWalk(2.0, phase, start_time))
+    {
+        res.success = false;
+        return false;
+    }
+
     res.success = true;
     return true;
 }
