@@ -26,6 +26,7 @@ set(SOURCE_FILES_WALK
     src/LegIK.cpp
     src/Polynom.cpp
     src/Spline.cpp
+    src/WalkHandler.cpp
 )
 
 
