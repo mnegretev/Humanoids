@@ -22,8 +22,11 @@ Host wifidarwin1
 Host wifinimbro
 	User humanoid
 	# This only works in the BioRobotics network from the lab
-	Hostname 192.168.1.119
+	Hostname 192.168.1.135
 	StrictHostKeyChecking no
+	BatchMode yes
+        ConnectTimeout 10
+        PreferredAuthentications password
 
 #LUCKFOX
 Host luckfox
