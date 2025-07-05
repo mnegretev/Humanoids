@@ -18,90 +18,32 @@ def get_linear_traj(q0,q1,step):
     return Q
 
 
-def getnum(file):
-    num=int(re.findall(r'\d+', file)[0])
-    return num
-def read_poses(trajectory_dir):
-    global arms, legs
-    arms=[]
-    legs=[]
-    files=[]
-    files = sorted(glob.glob(os.path.join(trajectory_dir, '*.npz')), key=getnum)
-    for traj in files[0:2]:
-        if "arms" in traj:
-            arms.append(np.load(traj))
-        else:
-            legs.append(np.load(traj))   
+def read_poses(dir_name):
+    pose_array = []
+    f = open(dir_name, "r")
+    a = (f.read()).split("\n")
+
+    for s in a[:-1]:
+        pose = np.array([float(x) for x in s.strip('[]').split(',')])
+        pose_array.append(pose)
+
+    return pose_array
 
 def handle(req):
-    leg_left_waypoints = [
-        [0.0,0.0,0.0,0.0,0.0,0.0],
-        [0.0,0.0,0.0,0.0,0.0,0.0],
-        [0.0,0.0,0.0,0.0,0.0,0.0],
-        [0.0,0.0,0.0,0.0,0.0,0.0],
-        # [0.0,0.0,0.0,0.0,0.0,0.0],
-        # [0.0,0.0,0.0,0.0,0.0,0.0],
-        # [0.0,0.0,-2.6,2.2,-0.8,0.0],
-        # [0.0,0.0,-2.6,2.2,-1.4,0.0],
-        # [0.0,0.0,-2.3,2.1,-0.8,0.0],
-        # [0.0,0.0,-1.8,1.7,-0.6,0.0],
-        # [0.0,0.0,-1.7,1.7,-0.6,0.0],
-        # [0.0,0.0,-1.6,1.7,-0.6,0.0],
-        # [0.0,0.0,-1.5,1.7,-0.6,0.0],
-        # [0.0,0.0,-1.4,1.5,-0.6,0.0],
-        # [0.0,0.0,0.0,0.0,0.0,0.0],
-    ]
-    leg_right_waypoints = [
-        [0.0,0.0,0.0,0.0,0.0,0.0],
-        [0.0,0.0,2.0,0.5,0.7,0.0],
-        [0.0,0.0,2.0,0.5,0.7,0.0],
-        [-0.5,0.0,2.0,0.7,0.7,0.0],
-        # [0.0,0.0,0.0,0.0,0.0,0.0],
-        # [0.0,0.0,0.0,0.0,0.0,0.0],
-        # [0.0,0.0,-2.6,2.2,-0.8,0.0],
-        # [0.0,0.0,-2.6,2.2,-1.4,0.0],
-        # [0.0,0.0,-2.3,2.1,-0.8,0.0],
-        # [0.0,0.0,-1.8,1.7,-0.6,0.0],
-        # [0.0,0.0,-1.7,1.7,-0.6,0.0],
-        # [0.0,0.0,-1.6,1.7,-0.6,0.0],
-        # [0.0,0.0,-1.5,1.7,-0.6,0.0],
-        # [0.0,0.0,-1.4,1.5,-0.6,0.0],
-        # [0.0,0.0,0.0,0.0,0.0,0.0],
-    ]
-    arm_left_waypoints = [
-        [0.0,0.0,0.0],
-        [-0.4,0.0,0.0],
-        [-0.4,0.0,0.0],
-        [-0.4,0.0,0.0],
-        # [0.0,0.0,0.0],
-        # [1.6,0.0,-2.7],
-        # [-2.0,0.0,-1.4],
-        # [-0.8,0.0,-0.3],
-        # [-0.0,0.0,-0.3],
-        # [-0.0,0.0,-0.3],
-        # [-0.0,0.0,-0.3],
-        # [-0.0,0.0,-0.3],
-        # [-0.0,0.0,-0.3],
-        # [-0.0,0.0,-0.3],
-        # [0.0,0.0,0.0],
-    ]
-    arm_right_waypoints = [
-        [0.0,0.0,0.0],
-        [1.6,0.0,-0.2],
-        [1.6,0.0,-0.2],
-        [1.6,0.0,-0.2],
-        # [0.0,0.0,0.0],
-        # [1.6,0.0,-2.7],
-        # [-2.0,0.0,-1.4],
-        # [-0.8,0.0,-0.3],
-        # [-0.0,0.0,-0.3],
-        # [-0.0,0.0,-0.3],
-        # [-0.0,0.0,-0.3],
-        # [-0.0,0.0,-0.3],
-        # [-0.0,0.0,-0.3],
-        # [-0.0,0.0,-0.3],
-        # [0.0,0.0,0.0],
-    ]
+    if req.path == "back":
+        leg_left_waypoints  = back_leg_left_waypoints 
+        leg_right_waypoints = back_leg_right_waypoints
+        arm_left_waypoints  = back_arm_left_waypoints 
+        arm_right_waypoints = back_arm_right_waypoints
+    elif req.path == "front":
+        leg_left_waypoints  = front_leg_left_waypoints 
+        leg_right_waypoints = front_leg_right_waypoints
+        arm_left_waypoints  = front_arm_left_waypoints 
+        arm_right_waypoints = front_arm_right_waypoints
+    else:
+        return "ERROR NOT a valid argument"
+
+
     step = 0.1
     try:
 
@@ -150,15 +92,30 @@ def handle(req):
     return resp   
 
 def main():
+    #publishers
     global pub_arm_left_goal_pose, pub_arm_right_goal_pose, pub_leg_left_goal_pose, pub_leg_right_goal_pose, pub_head_goal_pose
+    #files
+    global front_arm_right_waypoints, front_arm_left_waypoints, front_leg_right_waypoints, front_leg_left_waypoints, back_arm_right_waypoints, back_arm_left_waypoints, back_leg_right_waypoints, back_leg_left_waypoints  
+
     pub_head_goal_pose = rospy.Publisher("/hardware/head_goal_pose", Float32MultiArray, queue_size=1)
     pub_leg_left_goal_pose = rospy.Publisher("/hardware/leg_left_goal_pose", Float32MultiArray, queue_size=1)
     pub_leg_right_goal_pose = rospy.Publisher("/hardware/leg_right_goal_pose", Float32MultiArray , queue_size=1)
     pub_arm_left_goal_pose = rospy.Publisher("/hardware/arm_left_goal_pose", Float32MultiArray, queue_size=1)
     pub_arm_right_goal_pose = rospy.Publisher("/hardware/arm_right_goal_pose", Float32MultiArray , queue_size=1)
+
     rospy.init_node("getup_server")
     path = rospy.get_param("~path", "/home/k1000/Humanoids/catkin_ws/src/gait_generation/step_test/src/getup/poses")
-    read_poses(path)
+
+    front_arm_right_waypoints = read_poses(path+"/front/r_arm.txt")
+    front_arm_left_waypoints  = read_poses(path+"/front/l_arm.txt")
+    front_leg_right_waypoints = read_poses(path+"/front/r_leg.txt")
+    front_leg_left_waypoints  = read_poses(path+"/front/l_leg.txt")
+
+    back_arm_right_waypoints = read_poses(path+"/back/r_arm.txt")
+    back_arm_left_waypoints  = read_poses(path+"/back/l_arm.txt")
+    back_leg_right_waypoints = read_poses(path+"/back/r_leg.txt")
+    back_leg_left_waypoints  = read_poses(path+"/back/l_leg.txt")
+
     print("Iniciando servicio")
     service = rospy.Service('getup', Getup, handle)
     rospy.spin()
