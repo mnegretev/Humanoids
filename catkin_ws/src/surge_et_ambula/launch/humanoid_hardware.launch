@@ -10,4 +10,7 @@
     <include file="$(find cm730)/launch/cm730_no_torque.launch"/>
     <!--include file="$(find imu)/launch/mpu6050_unfiltered.launch"-->
 
+    <!-- WALK ENGINE -->
+    <include file="$(find darwin_gait)/launch/nimbro_walk.launch"/>
+
 </launch>

@@ -1,0 +1,4 @@
+<launch>
+  <node name="walk_engine" pkg="darwin_gait" type="darwin_gait_node" required="true" output="screen"/>
+  <rosparam command="load" file="$(find config_files)/walk/nimbro.yaml" />
+</launch>
