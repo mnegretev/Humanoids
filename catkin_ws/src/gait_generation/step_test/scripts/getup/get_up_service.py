@@ -23,7 +23,7 @@ def read_poses(dir_name):
     f = open(dir_name, "r")
     a = (f.read()).split("\n")
 
-    for s in a[:-1]:
+    for s in a:
         pose = np.array([float(x) for x in s.strip('[]').split(',')])
         pose_array.append(pose)
 
