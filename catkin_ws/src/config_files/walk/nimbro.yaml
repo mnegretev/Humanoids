@@ -9,7 +9,7 @@ walk:
     frequency:        1.5
     enabledGain:      1.0
     supportPhaseRatio: 0.5
-    footYOffset:      0.015
+    footYOffset:      0.04
     stepGain:         0.0
     riseGain:         0.05
     turnGain:         0.0

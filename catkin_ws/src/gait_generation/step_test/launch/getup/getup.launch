@@ -3,5 +3,5 @@
     <node name="getup_server" pkg="step_test" type="get_up_service.py" output="screen">
         <param name="path" value="$(find config_files)/getup/$(env ROBOT)"/>
     </node>
-    <include file="$(find cm730)/launch/cm730.launch"/>
+    <!-- <include file="$(find cm730)/launch/cm730.launch"/> -->
 </launch>

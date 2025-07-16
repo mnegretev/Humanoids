@@ -3,14 +3,22 @@
     <param name="robot_description_semantic" textfile="$(find nimbro_op_srdf)/config/nimbro_op_hull.srdf" />
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
 
+    <!-- _________________HARDWARE _____________________-->
+
     <!-- LUCKFOX CAMERA LISTENER -->
     <node name="luckfox_client_node" pkg="luckfox_vision" type="luckfox_client_node"/>
     <node name="img_to_cartesian" pkg="img_to_cartesian" type="img_to_cartesian.py" output="screen"/>
 
-    <include file="$(find cm730)/launch/cm730_no_torque.launch"/>
-    <!--include file="$(find imu)/launch/mpu6050_unfiltered.launch"-->
+    <!-- IMU -->
+    <!-- <include file="$(find cm730)/launch/cm730_no_torque.launch"/> -->
+    
+    <!-- DYNAMIXEL -->
+    <include file="$(find imu)/launch/mpu6050_unfiltered.launch"/>
+
+    <!-- _________________LOCOMOTION _____________________-->
 
     <!-- WALK ENGINE -->
     <include file="$(find darwin_gait)/launch/nimbro_walk.launch"/>
+    <include file="$(find step_test)/launch/getup/getup.launch"/>
 
 </launch>

@@ -24,6 +24,7 @@
 
     <!-- WALK SERVICE -->
     <include file="$(find darwin_gait)/launch/walk.launch"/>
+    <include file="$(find step_test)/launch/getup/getup.launch"/>
 
 
 </launch>
