@@ -6,7 +6,7 @@ This repository contains the software developed for the humanoid robot of the Bi
 [![YouTube](http://i.ytimg.com/vi/X2F5HTAJ2lE/hqdefault.jpg)](https://www.youtube.com/watch?v=X2F5HTAJ2lE)
 ## Getting Started
 
-### Prerrequisites
+### Prerequisites
 
 * [Ubuntu 20.04](https://releases.ubuntu.com/focal/)
 * [ROS Noetic](http://wiki.ros.org/noetic/Installation/Ubuntu) (`ros-noetic-desktop-full` required)
