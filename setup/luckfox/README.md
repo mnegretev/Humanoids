@@ -14,23 +14,28 @@ This section will help you to train your own YOLOv5 model from Pytorch to ONNX t
 * Install Python Environment
 
         sudo apt-get update
-
         sudo apt-get install python3 python3-dev python3-pip
-
         sudo apt-get install libxslt1-dev zlib1g zlib1g-dev libglib2.0-0 libsm6 libgl1-mesa-glx libprotobuf-dev gcc
 
 * *(Recommended)*  Create a virtual environment. Example: 
 
         cd rknn-toolkit2
-
         python3 -m venv rknn-toolkit2-env
 
 
 ## 1.2 Install RKNN-Toolkit2 Dependencies
 * Activate the virtual environment
-    `source rknn-toolkit2-env/bin/activate` and install the requirements. `pip3 install -r rknn-toolkit2/packages/requirements_cp310-1.6.0.txt`
+    `source rknn-toolkit2-env/bin/activate` and install the requirements. `pip3 install -r rknn-toolkit2/packages/requirements_cp38-1.6.0.txt`
 
-## 1.3 How to run
+*NOTE: If an error occurs, try: `pip3 install -r rknn-toolkit2/packages/requirements_cp38-1.6.0.txt -i https://pypi.mirrors.ustc.edu.cn/simple/`*
+## 1.3 Install RKNN-Toolkit2
+* `pip3 install rknn-toolkit2/packages/rknn_toolkit2-1.6.0+81f21f4d-cp38-cp38-linux_x86_64.whl`
+
+If there are no errors after executing the following command, the installation is successful:
+
+        python3
+        from rknn.api import RKNN
+ ![MENU](/Documentation/Images/successRKNN.png)
 
 </details>
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -60,6 +65,11 @@ This section will help you to run a trained model of yolov5 on luckfox pico pro.
 ## 2.3 How to run
 1. Go to Luckfox ssh `ssh root@<your_luckfox_ip>`, then 
 `cd luckfox_pico_rtsp_yolov5_demo/` and run with `./luckfox_pico_rtsp_yolov5`
-2. To only visualize the model running on the luckfox pico camera, on your computer, run: `ffplay -flags low_delay -probesize 32 -vf setpts=0 rtsp://<your_luckfox_ip>/live/0`
+
+2. To only visualize the model running on the luckfox pico camera, on your computer, run: 
+
+        ffplay -flags low_delay -probesize 32 -vf setpts=0 rtsp://<your_luckfox_ip>/live/0
+
+
 3. Yoy will be able to see the model running.
 ![YOLO running](/Documentation/Images/yolorunning.jpeg)
