@@ -46,5 +46,10 @@ logs/
 .ros/
 .cache/
 
+#Ignore generated dirs by colcon build
+colcon_ws/build/
+colcon_ws/install/
+colcon_ws/log/
+
 setup/luckfox/demos/build/
 setup/luckfox/demos/install/
