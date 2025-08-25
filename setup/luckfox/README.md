@@ -20,6 +20,7 @@ This section will help you to convert your own YOLOv5 model from Pytorch to ONNX
 * *(Recommended)*  Create a virtual environment. Example: 
 
         cd rknn-toolkit2
+        
         python3 -m venv rknn-toolkit2-env
 
 
