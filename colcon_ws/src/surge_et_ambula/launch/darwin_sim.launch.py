@@ -26,10 +26,6 @@ def generate_launch_description():
        
     robot_state_publisher_params = [{'robot_description': robot_description_content}]
 
-    # xarm_descrip_pkg_path = get_package_share_directory('xarm_description')
-    # xarm_controller_pkg_path = get_package_share_directory('xarm_controller')
-    # xarm_controller_file = PathJoinSubstitution([xarm_controller_pkg_path, 'config', 'xarm6_controllers.yaml'])
-
     return LaunchDescription([
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(gz_sim_launch_path),
