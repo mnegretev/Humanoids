@@ -1,5 +1,5 @@
 FROM osrf/ros:jazzy-desktop-full
-ARG USERNAME=miguel
+ARG USERNAME=pumas
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 
@@ -26,3 +26,4 @@ ENV SHELL=/bin/bash
 # [Optional] Set the default user. Omit if you want to keep the default as root.
 USER $USERNAME
 CMD ["/bin/bash"]
+WORKDIR /home/$USERNAME

@@ -13,7 +13,7 @@ find_package(ros_gz_image REQUIRED)
 find_package(ros_gz_sim REQUIRED)
 
 install (
-  DIRECTORY launch models worlds config
+  DIRECTORY models worlds config
   DESTINATION share/${PROJECT_NAME}
 )
 
