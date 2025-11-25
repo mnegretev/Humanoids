@@ -13,13 +13,13 @@ from ctrl_msgs.srv import CalculateIK, CalculateIKRequest
 G = 9.81 # [m/s^2]
 
 # Y_BODY_TO_FEET  = 0.0555 # [m]
-Y_BODY_TO_FEET  = 0.1
+Y_BODY_TO_FEET  = 0.06
 # Z_ROBOT_WALK    = 0.55 # m
-Z_ROBOT_WALK    = 0.50
+Z_ROBOT_WALK    = 0.55
 # Z_ROBOT_STATIC= 0.56 # m
-Z_ROBOT_STATIC= 0.60 # m
+Z_ROBOT_STATIC = 0.57 # m
 
-stepHeight = 0.05
+stepHeight = 0.1
 STEP_LENGTH = 0.1 # [m]
 ROBOT_VEL_X = 0.1 # [m]
 
@@ -148,11 +148,11 @@ def main(args = None):
     steps.append(start_pose_step)
 
     ax = plt.figure().add_subplot(projection='3d')
-    ax.axes.set_xlim3d(left=0, right=0.4) 
-    ax.axes.set_ylim3d(bottom=-0.2, top=0.2) 
-    ax.axes.set_zlim3d(bottom=0, top=0.8) 
+    ax.axes.set_xlim3d(left=-0.1, right=0.1) 
+    ax.axes.set_ylim3d(bottom=-0.1, top=0.1) 
+    ax.axes.set_zlim3d(bottom=0.0, top=1.0) 
     
-    ax.plot(body_position[:,0],body_position[:,1],body_position[:,2], "o")
+    # ax.plot(body_position[:,0],body_position[:,1],body_position[:,2], "o")
 
     #################################################################
     ## PART 2: MAKE A HALF STEP
@@ -230,26 +230,26 @@ def main(args = None):
     left_leg_joint_values = np.delete(left_leg_joint_values, 0, axis=0)
     np.savez("first_half_step", right=right_leg_joint_values, left=left_leg_joint_values, timestep=SERVO_SAMPLE_TIME)
 
-    ax.plot(body_position[:,0],body_position[:,1],body_position[:,2], "o")
-    ax.plot([initial_left_foot_pos[0]],
-            [initial_left_foot_pos[1]],
-            [initial_left_foot_pos[2]], "o")
+    # ax.plot(body_position[:,0],body_position[:,1],body_position[:,2], "o")
+    # ax.plot([initial_left_foot_pos[0]],
+    #         [initial_left_foot_pos[1]],
+    #         [initial_left_foot_pos[2]], "o")
 
-    ax.plot([initial_right_foot_pos[0]],
-            [initial_right_foot_pos[1]],
-            [initial_right_foot_pos[2]], "o")
+    # ax.plot([initial_right_foot_pos[0]],
+    #         [initial_right_foot_pos[1]],
+    #         [initial_right_foot_pos[2]], "o")
 
-    ax.plot([final_left_foot_pos[0]],
-            [final_left_foot_pos[1]],
-            [final_left_foot_pos[2]], "o")
+    # ax.plot([final_left_foot_pos[0]],
+    #         [final_left_foot_pos[1]],
+    #         [final_left_foot_pos[2]], "o")
 
-    ax.plot([final_right_foot_pos[0]],
-            [final_right_foot_pos[1]],
-            [final_right_foot_pos[2]], "o")
+    # ax.plot([final_right_foot_pos[0]],
+    #         [final_right_foot_pos[1]],
+    #         [final_right_foot_pos[2]], "o")
 
-    ax.plot(first_step.footleft[:,0],
-            first_step.footleft[:,1],
-            first_step.footleft[:,2], "o")
+    # ax.plot(first_step.footleft[:,0],
+    #         first_step.footleft[:,1],
+    #         first_step.footleft[:,2], "o")
 
     #################################################################
     ## PART 3: MAKE CONSECUTIVE STEPS
@@ -289,14 +289,14 @@ def main(args = None):
     body_position = np.delete(body_position, 0, axis=0)
     # [state0, initial_left_foot_pos[0], initial_left_foot_pos[1]] = changeLeg(states[-1], body_position)
     
-    ax.plot(body_position[:,0],body_position[:,1],body_position[:,2], "o")
+    ax.plot(body_position[:,0],body_position[:,1],body_position[:,2], "-")
     
     left_foot_swing = np.full((len(steptimeVector), 3), initial_left_foot_pos)
     right_foot_swing = getFootSwingTraj(initial_right_foot_pos, final_right_foot_pos, stepHeight, steptimeVector)
 
-    ax.plot(right_foot_swing[:,0],
-            right_foot_swing[:,1],
-            right_foot_swing[:,2], "o")
+    ax.plot(left_foot_swing[:,0],
+            left_foot_swing[:,1],
+            left_foot_swing[:,2], "o")
 
     right_leg_relative_pos =  right_foot_swing - body_position
     left_leg_relative_pos = left_foot_swing - body_position
@@ -343,6 +343,13 @@ def main(args = None):
     except rospy.ServiceException as e:
         print(f"Service call failed: {e}")
 
+    ax.view_init(elev=90, azim=0)
+    point1 = np.array([0.05, 0.06, 0])  # (x1, y1, z1)
+    point2 = np.array([0.05, 0.02, Z_ROBOT_WALK])  # (x2, y2, z2)
+    x_coords = np.array([point1[0], point2[0]])
+    y_coords = np.array([point1[1], point2[1]])
+    z_coords = np.array([point1[2], point2[2]])
+    ax.plot3D(x_coords, y_coords, z_coords, color='blue', linewidth=2)
     plt.show()
     # NEXT STEP (LEFT MOVES, RIGHT STATIC)
     #Right foot is the support foot
@@ -430,9 +437,9 @@ def main(args = None):
     except rospy.ServiceException as e:
         print(f"Service call failed: {e}")
 
-    ax.plot(left_foot_swing[:,0],
-            left_foot_swing[:,1],
-            left_foot_swing[:,2], "o")
+    # ax.plot(left_foot_swing[:,0],
+    #         left_foot_swing[:,1],
+    #         left_foot_swing[:,2], "o")
 
     plt.show()
 

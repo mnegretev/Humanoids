@@ -329,8 +329,6 @@ def getFootSwingTraj(initial_foot_position, final_foot_position, swing_height, t
 
 def main(args = None):
     rospy.init_node('step_test_node')
-
-    trajectory_dir      = rospy.get_param("~trajectory_dir")
     right_leg_client    = rospy.ServiceProxy('/control/ik_leg_right', CalculateIK)
     left_leg_client     = rospy.ServiceProxy('/control/ik_leg_left', CalculateIK)
     right_Dleg_client   = rospy.ServiceProxy('/control/fk_leg_right_pose', CalculateDK)

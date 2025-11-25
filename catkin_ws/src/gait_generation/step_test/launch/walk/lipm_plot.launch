@@ -1,0 +1,9 @@
+<launch>
+    <param name="robot_description" textfile="$(find nimbro_op_model)/robots/simple_nimbro_op_hull.xml" />
+    <param name="robot_description_semantic" textfile="$(find nimbro_op_srdf)/config/nimbro_op_hull.srdf" />
+    <group ns="control">
+        <rosparam command="load" file="$(find nimbro_op_srdf)/config/kinematics.yaml"/>
+        <node name="inverse_kinematics" pkg="inverse_kinematics" type="ik_moveit_node" output="screen"/>
+    </group>
+    <node pkg="step_test" type="global_lipm_generator_old.py" name="traj_generator" output="screen" required="true"/> 
+</launch>
